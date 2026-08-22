@@ -1,13 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/context.hpp>
 
 #include <ossia-qt/qml_protocols.hpp>
-
-#include "include_catch.hpp"
 
 #include <QCoreApplication>
 #include <QJSEngine>
@@ -102,7 +102,8 @@ TEST_CASE("test_qml_serial_write", "test_qml_serial")
   REQUIRE(!res.isNull());
   REQUIRE(res.isQObject());
 
-  auto write = f.engine.evaluate(QStringLiteral("(function(s) { s.write(\"hello\"); })"));
+  auto write
+      = f.engine.evaluate(QStringLiteral("(function(s) { s.write(\"hello\"); })"));
   REQUIRE(!write.isError());
   auto call_res = write.call({res});
   REQUIRE(!call_res.isError());

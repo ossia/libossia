@@ -62,7 +62,7 @@ struct var_size_prefix_framing
           return;
 
         read_size(std::move(f), ec, sz);
-          });
+      });
     }
 
     template <typename F>
@@ -94,7 +94,7 @@ struct var_size_prefix_framing
           return;
 
         read_data(std::move(f), ec, sz);
-          });
+      });
     }
 
     template <typename F>

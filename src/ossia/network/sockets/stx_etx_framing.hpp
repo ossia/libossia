@@ -54,7 +54,7 @@ struct delimiter_framing
           process_bytes(f, m_readbuf, sz);
 
         receive(std::move(f));
-          });
+      });
     }
 
     template <typename F>

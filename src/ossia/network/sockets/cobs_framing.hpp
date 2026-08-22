@@ -43,7 +43,7 @@ struct cobs_decoder
         process_bytes(f, m_readbuf, sz);
 
       receive(std::move(f));
-        });
+    });
   }
 
   template <typename F>

@@ -66,7 +66,7 @@ struct no_framing
 
         f(m_readbuf, sz);
         receive(std::move(f));
-          });
+      });
     }
   };
 };

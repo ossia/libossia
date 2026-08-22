@@ -1,6 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/node_functions.hpp>
@@ -8,8 +10,6 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/local/local.hpp>
-
-#include "include_catch.hpp"
 
 #include <atomic>
 #include <thread>
@@ -87,7 +87,8 @@ TEST_CASE("test_device_parameter_index_clear", "test_device_parameter_index")
 
 // The serial protocol resolves addresses from its own thread while another owns
 // the tree. find_node() there can read an already-destroyed node; this must not.
-TEST_CASE("test_device_parameter_index_concurrent_removal", "test_device_parameter_index")
+TEST_CASE(
+    "test_device_parameter_index_concurrent_removal", "test_device_parameter_index")
 {
   constexpr int iterations = 3000;
 
@@ -124,7 +125,6 @@ TEST_CASE("test_device_parameter_index_concurrent_removal", "test_device_paramet
   INFO("applied: " << applied.load());
   REQUIRE(index.size() == 0);
 }
-
 
 namespace
 {
@@ -183,7 +183,9 @@ private:
   std::unique_ptr<ossia::net::parameter_base> m_param;
 };
 
-class uncached_device final : public ossia::net::device_base, public uncached_node
+class uncached_device final
+    : public ossia::net::device_base
+    , public uncached_node
 {
 public:
   uncached_device()

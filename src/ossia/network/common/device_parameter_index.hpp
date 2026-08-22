@@ -54,8 +54,7 @@ public:
   bool apply(std::string_view address, F&& f)
   {
     std::string buf;
-    return m_index.visit(
-               normalize(address, buf), [&](const auto& e) { f(*e.second); })
+    return m_index.visit(normalize(address, buf), [&](const auto& e) { f(*e.second); })
            > 0;
   }
 
@@ -101,8 +100,7 @@ private:
   void on_parameter_created(const ossia::net::parameter_base& param)
   {
     m_index.insert_or_assign(
-        address_of(param.get_node()),
-        const_cast<ossia::net::parameter_base*>(&param));
+        address_of(param.get_node()), const_cast<ossia::net::parameter_base*>(&param));
   }
 
   void on_parameter_removing(const ossia::net::parameter_base& param)

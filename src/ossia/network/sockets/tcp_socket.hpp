@@ -102,9 +102,8 @@ public:
     m_socket.set_option(boost::asio::socket_base::reuse_address{true}, ec);
 
     m_socket.async_connect(
-        m_endpoint,
-        [this, alive = m_lifetime.watch()](
-            const boost::system::error_code& ec, auto&&...) {
+        m_endpoint, [this, alive = m_lifetime.watch()](
+                        const boost::system::error_code& ec, auto&&...) {
       // The client may have been destroyed while the connect was in flight;
       // see lifetime_token.
       if(alive.expired())
