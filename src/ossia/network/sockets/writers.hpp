@@ -38,6 +38,16 @@ struct lifetime_token
 
   [[nodiscard]] std::weak_ptr<void> watch() const noexcept { return m_token; }
 
+  /**
+   * Expire every outstanding watch.
+   *
+   * Members are destroyed after the destructor body, so a socket that closes
+   * itself in its own destructor still looks alive to a handler that is being
+   * dispatched at that moment. Calling this first is what makes such a handler
+   * give up instead of touching a socket another thread is already closing.
+   */
+  void reset() noexcept { m_token.reset(); }
+
 private:
   std::shared_ptr<void> m_token{std::make_shared<char>()};
 };

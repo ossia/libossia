@@ -103,7 +103,18 @@ public:
   can_socket& operator=(const can_socket&) = delete;
   can_socket& operator=(can_socket&&) = delete;
 
-  ~can_socket() { close_impl(); }
+  ~can_socket()
+  {
+    // Expire the watches before touching the socket. close() posts a lambda
+    // that calls close_impl() on the io_context thread, and the usual shutdown
+    // is close() immediately followed by dropping the owner -- so without this
+    // that lambda and this destructor can both be inside
+    // basic_descriptor::close() on one impl, on two threads. The observed
+    // outcome is a SIGSEGV in epoll_reactor::deregister_descriptor, reading a
+    // reactor_data_ the other thread has just nulled.
+    m_lifetime.reset();
+    close_impl();
+  }
 
   //! Open, configure and bind the socket. Throws std::system_error on failure.
   void open()
