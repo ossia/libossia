@@ -12,6 +12,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
 
 ### Tests ###
+ossia_add_test(SafeMathTest "${CMAKE_CURRENT_SOURCE_DIR}/Math/SafeMathTest.cpp")
+ossia_add_test(FiltersTest  "${CMAKE_CURRENT_SOURCE_DIR}/Math/FiltersTest.cpp")
 ossia_add_test(PresetTest   "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
 ossia_add_test(CueTest      "${CMAKE_CURRENT_SOURCE_DIR}/Preset/CueTest.cpp")
 ossia_add_test(AddressTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")

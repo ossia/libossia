@@ -76,6 +76,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/variant.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/yield.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/filters.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/point_tracker.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/tracking.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/safe_math.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/misc_visitors.hpp"
