@@ -53,8 +53,21 @@ double time_interval::get_speed(time_value date) const noexcept
   }
   else
   {
-    return m_speed * tempo(date) / ossia::root_tempo;
+    return m_speed * speed_override() * tempo(date) / ossia::root_tempo;
   }
+}
+
+double time_interval::speed_override() const noexcept
+{
+  // The Speed inlet only exists once set_tempo_curve created the extra inlets,
+  // which is also the only case in which the callers multiply by this: an
+  // interval without a tempo curve never pays for the check.
+#if defined(OSSIA_SCENARIO_DATAFLOW)
+  const float s = static_cast<ossia::nodes::interval*>(node.get())->speed_override;
+  if(BOOST_UNLIKELY(s != ossia::nodes::interval::no_speed))
+    return s;
+#endif
+  return 1.;
 }
 
 tick_transport_info time_interval::current_transport_info() const noexcept
@@ -131,7 +144,11 @@ void time_interval::tick_impl(
   }
 
   m_current_signature = signature(old_date, parent_request);
-  m_current_tempo = m_speed * tempo(old_date, parent_request);
+  // The Speed inlet folds into the tempo handed to children, not only into the
+  // rate the interval advances at: otherwise token_request::speed would carry
+  // the override while token_request::tempo did not, and every process reading
+  // musical time (bars, quarters) would disagree with the playhead.
+  m_current_tempo = m_speed * speed_override() * tempo(old_date, parent_request);
 
   if(m_hasTempo)
   {
@@ -141,8 +158,27 @@ void time_interval::tick_impl(
   {
     m_globalSpeed = m_parentSpeed * m_speed;
   }
-  if(m_hasSignature)
+  // A tempo-locked interval advances its own date at its own rate, so it must
+  // derive its own musical positions even without a local signature map:
+  // inheriting the parent's would leave musical time disagreeing with the
+  // playhead, so that processes reading token_request::tempo (sound files)
+  // follow the local tempo while those reading the musical grid (Patternist,
+  // metronomes, quantified processes) follow the parent's.
+  if(m_hasSignature || m_hasTempo)
   {
+    const bool has_map = m_hasSignature && !m_timeSignature.empty();
+
+    // Without a local map the grid starts at 0 in the parent's meter.
+    const auto signature_at
+        = [&](ossia::time_value d) -> std::pair<ossia::time_value, ossia::time_signature> {
+      if(has_map)
+      {
+        if(auto it = ossia::last_before(m_timeSignature, d); it != m_timeSignature.end())
+          return {it->first, it->second};
+      }
+      return {ossia::time_value{}, parent_request.signature};
+    };
+
     // Compute the amount of bars for each signature change.
     // We need the exact amount of time that happens between two signature
     // changes.
@@ -157,7 +193,7 @@ void time_interval::tick_impl(
     {
       const double num_quarters = old_date.impl / m_quarter_duration;
 
-      auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
+      auto [time, sig] = signature_at(old_date);
 
       auto quarters_since_last_measure_change
           = (old_date - time).impl / m_quarter_duration;
@@ -177,7 +213,7 @@ void time_interval::tick_impl(
       auto d = ossia::time_value{new_date.impl};
       const double num_quarters = d.impl / m_quarter_duration;
 
-      auto [time, sig] = *ossia::last_before(m_timeSignature, d);
+      auto [time, sig] = signature_at(d);
 
       auto quarters_since_last_measure_change = (d - time).impl / m_quarter_duration;
       auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
@@ -233,7 +269,8 @@ double time_interval::local_time_factor(
     const ossia::token_request& parent_request) const noexcept
 {
   if(BOOST_UNLIKELY(m_hasTempo && parent_request.speed != 0))
-    return (m_speed * tempo(m_date) / ossia::root_tempo) / parent_request.speed;
+    return (m_speed * speed_override() * tempo(m_date) / ossia::root_tempo)
+           / parent_request.speed;
   return m_speed;
 }
 
@@ -298,7 +335,8 @@ void time_interval::tick_offset(
 
     // absolute tempo given : we negate the speed of the parent
     // todo : this should be done outside for the scenario
-    double speed = (m_speed * t0 / ossia::root_tempo) / parent_request.speed;
+    double speed
+        = (m_speed * speed_override() * t0 / ossia::root_tempo) / parent_request.speed;
 
     tick_impl(
         m_date, m_date + take_step(date.impl * speed), to_local_offset(offset, speed),

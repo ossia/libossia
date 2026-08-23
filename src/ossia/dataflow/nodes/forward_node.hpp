@@ -3,6 +3,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/math/safe_math.hpp>
 namespace ossia::nodes
 {
 class forward_node : public ossia::nonowning_graph_node
@@ -88,6 +89,15 @@ public:
         }
       }
       {
+        ossia::value_port& vp = *m_inlets[2]->target<ossia::value_port>();
+        if(auto& data = vp.get_data(); !data.empty())
+        {
+          const float s = ossia::convert<float>(data.back().value);
+          if(ossia::safe_isfinite(s) && s > no_speed && s < -no_speed)
+            speed_override = s;
+        }
+      }
+      {
         ossia::value_port& vp = *m_inlets[3]->target<ossia::value_port>();
         if(auto& data = vp.get_data(); !data.empty())
         {
@@ -99,7 +109,15 @@ public:
   }
 
   static const constexpr float no_tempo = -1000.f;
+  static const constexpr float no_speed = -1000.f;
   float tempo{no_tempo};
+
+  //! Dimensionless rate multiplier written into the Speed inlet (m_inlets[2]).
+  //! Latched like tempo: the last value written stays in effect.
+  //! Consumed by time_interval::speed_override() as a multiplier on top of
+  //! m_speed, so a phase-locked follower can trim the rate without touching
+  //! BPM semantics.
+  float speed_override{no_speed};
   int64_t seek{std::numeric_limits<int64_t>::min()};
 };
 class loop final : public forward_node

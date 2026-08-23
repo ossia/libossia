@@ -58,6 +58,11 @@ public:
 
   double get_speed(time_value date) const noexcept;
 
+  //! Dimensionless rate multiplier last written into the interval node's Speed
+  //! inlet, 1. if nothing was ever written there. Only meaningful when the
+  //! interval has a tempo curve, since that is when the inlet exists.
+  double speed_override() const noexcept;
+
   //! The factor between the parent's model time and ours for this tick: the
   //! same one the tick duration is scaled by. A tempo-locked interval runs at
   //! its tempo whatever the transport does, hence the parent-speed division.
