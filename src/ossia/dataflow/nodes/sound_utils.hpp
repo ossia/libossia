@@ -94,8 +94,10 @@ static void read_audio_from_buffer(
     {
       const int64_t read_start = start_offset + start;
 
-      // Absolute best case where we can just copy directly the whole buffer
-      if(read_start + samples_to_write < file_duration)
+      // Absolute best case where we can just copy directly the whole buffer.
+      // read_start can be negative when the transport crosses zero, hence the
+      // lower bound: without it this indexes before the start of the sample.
+      if(read_start >= 0 && read_start + samples_to_write < file_duration)
       {
         for(std::size_t i = 0; i < channels; i++)
         {
@@ -110,7 +112,7 @@ static void read_audio_from_buffer(
       }
       else
       {
-        // Here we must check for the end of file
+        // Here we must check for both ends of the file
         for(std::size_t i = 0; i < channels; i++)
         {
           auto& src = data[i];
@@ -119,7 +121,7 @@ static void read_audio_from_buffer(
           for(int64_t k = 0; k < samples_to_write; k++)
           {
             int64_t pos = read_start + k;
-            if(pos < file_duration)
+            if(pos >= 0 && pos < file_duration)
               dst[k] = src[pos];
             else
               dst[k] = 0;
@@ -137,8 +139,13 @@ static void read_audio_from_buffer(
 
         for(int64_t k = 0; k < samples_to_write; k++)
         {
-          int64_t pos = start_offset + ((start + k) % loop_duration);
-          if(pos < file_duration)
+          // Floor-modulo: the built-in % keeps the sign of the dividend, so a
+          // negative (start + k) would wrap to a negative index.
+          const int64_t raw_pos = start + k;
+          const int64_t wrapped_pos
+              = ((raw_pos % loop_duration) + loop_duration) % loop_duration;
+          const int64_t pos = start_offset + wrapped_pos;
+          if(pos >= 0 && pos < file_duration)
             dst[k] = src[pos];
           else
             dst[k] = 0;
@@ -153,24 +160,33 @@ static void read_audio_from_buffer(
       const auto& src = data[i];
       T* dst = audio_array[i];
 
-      if(file_duration >= start + samples_to_write + start_offset)
+      const int64_t read_start = start + start_offset;
+
+      if(read_start >= 0 && file_duration >= read_start + samples_to_write)
       {
         // Absolute best case where we can copy the whole buffer
-        for(int64_t k = 0, pos = start + start_offset; k < samples_to_write; k++, pos++)
+        for(int64_t k = 0, pos = read_start; k < samples_to_write; k++, pos++)
         {
           dst[k] = src[pos];
         }
       }
       else
       {
-        // This buffer will have the end of the file
-        const int64_t max = ossia::clamp(
-            file_duration - (start + start_offset), (int64_t)0, samples_to_write);
-        for(int64_t k = 0, pos = start + start_offset; k < max; k++, pos++)
+        // This buffer straddles one or both ends of the file: zero-fill the
+        // part before sample 0 (the transport can be before the start when it
+        // crosses zero) and the part past the end.
+        const int64_t lead = ossia::clamp(-read_start, (int64_t)0, samples_to_write);
+        const int64_t max
+            = ossia::clamp(file_duration - read_start, lead, samples_to_write);
+        for(int64_t k = 0; k < lead; k++)
+        {
+          dst[k] = 0;
+        }
+        for(int64_t k = lead, pos = read_start + lead; k < max; k++, pos++)
         {
           dst[k] = src[pos];
         }
-        for(int k = max; k < samples_to_write; k++)
+        for(int64_t k = max; k < samples_to_write; k++)
         {
           dst[k] = 0;
         }

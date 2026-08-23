@@ -700,3 +700,127 @@ TEST_CASE("rubberband_drop_then_paste_sync", "[rubberband][sync]")
   rubberband_stretcher::s_prime_strategy = ps::BareRecipe;
 }
 #endif
+
+// Regression test: read_audio_from_buffer indexed the sample buffer without a
+// lower bound. When the transport crosses zero the computed read position goes
+// negative (the crash report showed start = -10096 with loops = true), and every
+// one of the five read paths would then index before the start of the sample.
+// A negative position must read as silence, never out of bounds.
+#include <ossia/dataflow/nodes/sound_utils.hpp>
+
+TEST_CASE("read_audio_from_buffer_negative_start", "[sound][regression]")
+{
+  using namespace ossia;
+
+  // A short ramp so any out-of-range read is obvious in the output.
+  constexpr int64_t len = 64;
+  std::vector<float> left(len), right(len);
+  for(int64_t i = 0; i < len; i++)
+  {
+    left[i] = 1.f + i;
+    right[i] = 101.f + i;
+  }
+
+  audio_span<float> data;
+  data.push_back(std::span<const float>(left.data(), len));
+  data.push_back(std::span<const float>(right.data(), len));
+
+  constexpr int64_t n = 16;
+  std::vector<float> out_l(n), out_r(n);
+  float* out[2] = {out_l.data(), out_r.data()};
+
+  const auto reset = [&] {
+    std::fill(out_l.begin(), out_l.end(), -1.f);
+    std::fill(out_r.begin(), out_r.end(), -1.f);
+  };
+
+  // Everything before sample 0 must be silence; everything at or after it must
+  // be the sample data, on both channels.
+  const auto check = [&](int64_t start, int64_t start_offset) {
+    for(int64_t k = 0; k < n; k++)
+    {
+      const int64_t pos = start + start_offset + k;
+      if(pos < 0 || pos >= len)
+      {
+        INFO("k=" << k << " pos=" << pos << " expected silence");
+        REQUIRE(out_l[k] == 0.f);
+        REQUIRE(out_r[k] == 0.f);
+      }
+      else
+      {
+        INFO("k=" << k << " pos=" << pos);
+        REQUIRE(out_l[k] == left[pos]);
+        REQUIRE(out_r[k] == right[pos]);
+      }
+    }
+  };
+
+  SECTION("no loop, fully before the start")
+  {
+    reset();
+    read_audio_from_buffer<float>(data, -100, n, 0, len, false, out);
+    check(-100, 0);
+  }
+
+  SECTION("no loop, straddling sample zero")
+  {
+    reset();
+    read_audio_from_buffer<float>(data, -8, n, 0, len, false, out);
+    check(-8, 0);
+  }
+
+  SECTION("no loop, straddling with a start offset")
+  {
+    reset();
+    read_audio_from_buffer<float>(data, -12, n, 4, len, false, out);
+    check(-12, 4);
+  }
+
+  SECTION("loop, fully before the start")
+  {
+    // The reported crash: loops = true and a large negative start took the
+    // "absolute best case" path, which checked only the upper bound.
+    reset();
+    read_audio_from_buffer<float>(data, -10096, n, 0, len, true, out);
+    for(int64_t k = 0; k < n; k++)
+    {
+      REQUIRE(out_l[k] == 0.f);
+      REQUIRE(out_r[k] == 0.f);
+    }
+  }
+
+  SECTION("loop, straddling sample zero")
+  {
+    reset();
+    read_audio_from_buffer<float>(data, -8, n, 0, len, true, out);
+    check(-8, 0);
+  }
+
+  SECTION("loop, negative start wrapping within the buffer")
+  {
+    // start + samples_to_write >= loop_duration takes the wrapping path, where
+    // the built-in % keeps the sign of a negative dividend.
+    reset();
+    const int64_t loop_duration = 8;
+    read_audio_from_buffer<float>(data, -3, n, 0, loop_duration, true, out);
+    for(int64_t k = 0; k < n; k++)
+    {
+      const int64_t raw = -3 + k;
+      const int64_t wrapped = ((raw % loop_duration) + loop_duration) % loop_duration;
+      REQUIRE(wrapped >= 0);
+      REQUIRE(out_l[k] == left[wrapped]);
+      REQUIRE(out_r[k] == right[wrapped]);
+    }
+  }
+
+  SECTION("forward reads are unchanged")
+  {
+    reset();
+    read_audio_from_buffer<float>(data, 4, n, 0, len, false, out);
+    check(4, 0);
+
+    reset();
+    read_audio_from_buffer<float>(data, 4, n, 0, len, true, out);
+    check(4, 0);
+  }
+}
