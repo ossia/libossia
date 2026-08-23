@@ -249,7 +249,7 @@ struct math_expression::impl
   exprtk::expression<double> expr;
   std::string cur_expr_txt;
   std::optional<std::vector<std::string>> variables;
-  std::vector<std::string> missing_variables;
+  std::string last_error;
   bool valid{};
 
   [[no_unique_address]] bit_binop<std::bit_and<>, double> f_bit_and;
@@ -304,20 +304,45 @@ void math_expression::add_constant(const std::string& var, double& value)
   impl->syms.add_constant(var, value);
 }
 
+// An exprtk::vector_view can be re-pointed and resized at will, but only ever
+// *below* the size it was constructed with: set_size() silently refuses to grow
+// past base_size(). Re-registering a bigger view is not an option either, as
+// symbol_table::remove_vector() deletes a holder that the currently compiled
+// expression still points to.
+//
+// So every view is built against this size and then immediately narrowed to the
+// buffer's real size. base_size() is only ever used to bound set_size(): index
+// checks, both at compile time and at evaluation, go against the current size.
+// Buffers longer than this are seen truncated by the expression.
+static constexpr std::size_t max_vector_view_size = 65536;
+
 void math_expression::add_vector(const std::string& var, std::vector<double>& value)
 {
+  if(value.empty())
+    return;
+
   impl->vector_views.reserve(12);
   auto v = std::make_shared<exprtk::vector_view<double>>(
-      exprtk::make_vector_view(value, value.size()));
+      value.data(), max_vector_view_size);
+  v->set_size(std::min(value.size(), max_vector_view_size));
+
   impl->vector_views[var] = v;
   impl->syms.add_vector(var, *v);
 }
 
 void math_expression::rebase_vector(const std::string& var, std::vector<double>& value)
 {
+  if(value.empty())
+    return;
+
   auto it = impl->vector_views.find(var);
-  assert(it != impl->vector_views.end());
-  it->second->set_size(value.size());
+  if(it == impl->vector_views.end())
+  {
+    add_vector(var, value);
+    return;
+  }
+
+  it->second->set_size(std::min(value.size(), max_vector_view_size));
   it->second->rebase(value.data());
 }
 
@@ -342,33 +367,34 @@ bool math_expression::set_expression(const std::string& expr)
   {
     impl->cur_expr_txt = expr;
     recompile();
-    impl->missing_variables.clear();
   }
 
   return impl->valid;
 }
 
+bool math_expression::valid() const noexcept
+{
+  return impl->valid;
+}
+
 bool math_expression::has_variable(std::string_view var) const noexcept
 {
-  if(std::binary_search(
-         impl->missing_variables.begin(), impl->missing_variables.end(), var))
-    return false;
-
+  // Cheap reject: a variable that does not appear as a substring cannot appear
+  // as a symbol either.
   if(impl->cur_expr_txt.find(var) == std::string::npos)
-  {
-    impl->missing_variables.push_back(std::string(var));
     return false;
-  }
 
-  auto b = impl->expr;
+  // exprtk::collect_variables works on the expression *text*, so this answers
+  // for expressions that failed to compile too - which matters, as the nodes
+  // use it to decide which code path (and thus which vector sizes) to set up.
   if(!impl->variables)
   {
-    if(impl->valid)
-    {
-      impl->variables.emplace();
-      exprtk::collect_variables(impl->cur_expr_txt, *impl->variables);
-    }
+    impl->variables.emplace();
+    if(!exprtk::collect_variables(impl->cur_expr_txt, *impl->variables))
+      return false;
   }
+
+  // collect_variables returns its symbols sorted.
   return std::binary_search(impl->variables->begin(), impl->variables->end(), var);
 }
 
@@ -376,10 +402,24 @@ bool math_expression::recompile()
 {
   impl->variables = std::nullopt;
 
+  // An empty expression is not an error worth logging: it is just a node whose
+  // text field has not been filled in yet.
+  if(impl->cur_expr_txt.empty())
+  {
+    impl->valid = false;
+    impl->last_error.clear();
+    return false;
+  }
+
   impl->valid = g_exprtk_parser.compile(impl->cur_expr_txt, impl->expr);
   if(!impl->valid)
   {
-    ossia::logger().error("Error while parsing: {}", g_exprtk_parser.error());
+    impl->last_error = g_exprtk_parser.error();
+    ossia::logger().error("Error while parsing: {}", impl->last_error);
+  }
+  else
+  {
+    impl->last_error.clear();
   }
 
   return impl->valid;
@@ -387,11 +427,15 @@ bool math_expression::recompile()
 
 std::string math_expression::error() const
 {
-  return g_exprtk_parser.error();
+  return impl->last_error;
 }
 
 double math_expression::value()
 {
+  // On a failed compilation exprtk leaves the previously compiled tree in
+  // place: evaluating it would silently give the *old* expression's result.
+  if(!impl->valid)
+    return std::numeric_limits<double>::quiet_NaN();
   return impl->expr.value();
 }
 
@@ -462,11 +506,21 @@ static ossia::value result_to_value(auto& r)
 
 ossia::value math_expression::result()
 {
-  double v = impl->expr.value();
+  if(!impl->valid)
+    return ossia::value{};
+
+  const double v = impl->expr.value();
   if(!ossia::safe_isnan(v))
     return v;
-  else
-    return ossia::value{result_to_value(impl->expr.results())};
+
+  // exprtk signals "the expression ended with `return [...]`" by evaluating to
+  // NaN *and* filling the results context. An expression that merely computed
+  // a NaN (sqrt(-1), 0/0, ...) leaves it empty and is still a scalar result.
+  auto& results = impl->expr.results();
+  if(results.count() == 0)
+    return v;
+
+  return ossia::value{result_to_value(results)};
 }
 
 }

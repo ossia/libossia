@@ -25,7 +25,14 @@ public:
   bool set_expression(const std::string& expr);
   bool recompile();
 
+  //! Whether the current expression compiled successfully.
+  bool valid() const noexcept;
+
+  //! Whether the expression *text* references that variable. This is a lexical
+  //! query: it answers for expressions that did not compile, too.
   bool has_variable(std::string_view var) const noexcept;
+
+  //! The error of the last compilation of this expression; empty if it compiled.
   std::string error() const;
 
   double value();
