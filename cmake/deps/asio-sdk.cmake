@@ -9,6 +9,23 @@ if(EXISTS "${ASIO_SDK_DIR}/common/asio.h" AND WIN32)
   # Must not be built with UNICODE/_UNICODE: asiolist.cpp is ANSI-only and
   # enumerates zero drivers if the TCHAR registry calls resolve to -W.
 
+  # The SDK is written against the unabridged <windows.h>. iasiodrv.h declares
+  # IASIO with the `interface` keyword, which is a macro that <windows.h> only
+  # reaches through <ole2.h>, and WIN32_LEAN_AND_MEAN is precisely the switch
+  # that cuts <ole2.h> out - so every translation unit here stops compiling with
+  # "unknown type name 'interface'" as soon as an embedder defines it globally.
+  # score does, for all C++ (see its ScoreConfiguration.cmake), which is why
+  # this cannot be left to the consumer: libossia's own build never defines it,
+  # so the breakage only appears once libossia is built inside score.
+  #
+  # Undo it for this target alone. CMake emits $DEFINES before $FLAGS, so a -U
+  # in the compile options reliably lands after any inherited -D.
+  if(MSVC)
+    target_compile_options(asio_sdk PRIVATE /UWIN32_LEAN_AND_MEAN)
+  else()
+    target_compile_options(asio_sdk PRIVATE -UWIN32_LEAN_AND_MEAN)
+  endif()
+
   target_include_directories(asio_sdk SYSTEM PUBLIC
     $<BUILD_INTERFACE:${ASIO_SDK_DIR}/common>
     $<BUILD_INTERFACE:${ASIO_SDK_DIR}/host>
