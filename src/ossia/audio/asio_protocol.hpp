@@ -5,6 +5,7 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/thread.hpp>
 
 #if !defined(WIN32_LEAN_AND_MEAN)
@@ -866,10 +867,10 @@ private:
   ASIOCallbacks m_asioCallbacks{};
 
   // Float conversion buffers
-  std::vector<std::vector<float>> m_floatInputs;
-  std::vector<std::vector<float>> m_floatOutputs;
-  std::vector<float*> m_inputPtrs;
-  std::vector<float*> m_outputPtrs;
+  std::vector<ossia::float_vector> m_floatInputs;
+  std::vector<ossia::float_vector> m_floatOutputs;
+  ossia::pod_vector<float*> m_inputPtrs;
+  ossia::pod_vector<float*> m_outputPtrs;
 
   std::string m_driver_name;
 

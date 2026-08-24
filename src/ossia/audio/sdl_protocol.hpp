@@ -6,6 +6,7 @@
 #include <SDL2/SDL_config.h>
 #if !defined(SDL_AUDIO_DISABLED)
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/thread.hpp>
 
 #include <SDL2/SDL.h>
@@ -44,6 +45,11 @@ public:
     this->effective_inputs = 0;
     this->effective_outputs = m_obtained.channels;
 
+    // Preallocate so that the audio thread does not have to: this only ever
+    // gets resized if SDL changes the callback buffer size under our feet.
+    m_channels.resize(m_obtained.channels);
+    m_scratch.resize(std::size_t(m_obtained.samples) * m_obtained.channels);
+
     SDL_PauseAudioDevice(m_deviceId, 0);
     m_activated = true;
   }
@@ -63,7 +69,9 @@ public:
       SDL_CloseAudioDevice(m_deviceId);
       m_activated = false;
     }
-    SDL_Quit();
+    // Not SDL_Quit(): other parts of ossia (joystick, gamecontroller, sensors,
+    // haptics) may be using SDL at the same time.
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
   }
 
 private:
@@ -84,12 +92,19 @@ private:
 
     auto audio_out = reinterpret_cast<float*>(data);
     const int out_chan = self.m_obtained.channels;
-    const int frames = self.m_obtained.samples;
     assert(out_chan > 0);
-    assert(frames > 0);
-    assert(frames * out_chan * sizeof(float) == bytes);
 
-    if(self.stop_processing)
+    // Note: the amount of data asked for here is *not* guaranteed to match the
+    // SDL_AudioSpec we got when opening the device. SDL keeps its own copy of
+    // that spec and backends are free to rewrite it while the stream runs: on
+    // Windows, WASAPI resizes the callback buffer to the device period every
+    // time the device is reset (default device changed, format changed in the
+    // control panel, endpoint invalidated...), see UpdateAudioStream() in
+    // SDL_wasapi.c. Our m_obtained is a stale copy at that point, so the byte
+    // count we are given is the only thing we can trust.
+    const int frames = bytes / int(sizeof(float) * out_chan);
+
+    if(self.stop_processing || frames <= 0)
     {
       self.tick_clear();
       memset(data, 0, bytes);
@@ -97,11 +112,14 @@ private:
     }
 
     {
-      auto float_data = (float*)alloca(sizeof(float) * frames * out_chan);
-      memset(float_data, 0, sizeof(sizeof(float) * frames * out_chan));
+      const std::size_t samples = std::size_t(frames) * out_chan;
+      if(self.m_scratch.size() < samples)
+        self.m_scratch.resize(samples);
 
-      auto float_output = (float**)alloca(sizeof(float*) * out_chan);
+      float* const float_data = self.m_scratch.data();
+      memset(float_data, 0, sizeof(float) * samples);
 
+      float** const float_output = self.m_channels.data();
       for(int c = 0; c < out_chan; c++)
       {
         float_output[c] = float_data + c * frames;
@@ -123,6 +141,12 @@ private:
         for(int c = 0; c < out_chan; c++)
           *audio_out++ = float_output[c][j];
 
+      // Zero the trailing partial frame if SDL asked for a size which is not a
+      // multiple of the frame size
+      const int written = int(sizeof(float) * samples);
+      if(written < bytes)
+        memset(data + written, 0, bytes - written);
+
       self.tick_end();
       self.m_total_frames += frames;
     }
@@ -130,6 +154,8 @@ private:
 
   SDL_AudioDeviceID m_deviceId{};
   SDL_AudioSpec m_desired, m_obtained;
+  ossia::float_vector m_scratch;
+  ossia::pod_vector<float*> m_channels;
   uint64_t m_total_frames{};
   std::optional<std::chrono::steady_clock::time_point> m_start;
   bool m_activated{};

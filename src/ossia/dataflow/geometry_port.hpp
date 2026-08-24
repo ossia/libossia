@@ -757,7 +757,7 @@ struct material_component
   struct {
     float thickness_factor{0.0f};
     texture_ref thickness_texture;
-    float attenuation_distance{std::numeric_limits<float>::infinity()};
+    float attenuation_distance{1e38f};
     float attenuation_color[3]{1.0f, 1.0f, 1.0f};
   } volume{};
 

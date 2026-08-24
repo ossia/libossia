@@ -41,6 +41,7 @@
 #define MA_API OSSIA_EXPORT
 
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/thread.hpp>
 
 #include <miniaudio.h>
@@ -242,10 +243,10 @@ private:
   std::optional<std::chrono::steady_clock::time_point> m_start;
 #endif
 
-  boost::container::vector<float> ins_data;
-  boost::container::vector<float*> ins;
-  boost::container::vector<float> outs_data;
-  boost::container::vector<float*> outs;
+  ossia::float_vector ins_data;
+  ossia::pod_vector<float*> ins;
+  ossia::float_vector outs_data;
+  ossia::pod_vector<float*> outs;
 
   bool m_active{};
 };

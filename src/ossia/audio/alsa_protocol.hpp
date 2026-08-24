@@ -83,19 +83,19 @@ public:
   {
     auto& client = *this->m_client.get();
 
-    std::vector<float> buf_capture;
+    ossia::float_vector buf_capture;
     buf_capture.resize(effective_buffer_size * effective_inputs);
-    std::vector<float> buf_capture_deint;
+    ossia::float_vector buf_capture_deint;
     buf_capture_deint.resize(effective_buffer_size * effective_inputs);
-    std::vector<float*> ptrs_capture;
+    ossia::pod_vector<float*> ptrs_capture;
     for(int i = 0; i < effective_inputs; i++)
       ptrs_capture.push_back(buf_capture_deint.data() + i * effective_buffer_size);
 
-    std::vector<float> buf_playback;
+    ossia::float_vector buf_playback;
     buf_playback.resize(effective_buffer_size * effective_outputs);
-    std::vector<float> buf_playback_deint;
+    ossia::float_vector buf_playback_deint;
     buf_playback_deint.resize(effective_buffer_size * effective_outputs);
-    std::vector<float*> ptrs_playback;
+    ossia::pod_vector<float*> ptrs_playback;
     for(int i = 0; i < effective_outputs; i++)
       ptrs_playback.push_back(buf_playback_deint.data() + i * effective_buffer_size);
 
