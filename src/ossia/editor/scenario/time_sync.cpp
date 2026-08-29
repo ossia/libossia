@@ -66,6 +66,12 @@ const expression& time_sync::get_expression() const noexcept
 time_sync& time_sync::set_expression(expression_ptr exp) noexcept
 {
   assert(exp);
+  if(m_callback)
+  {
+    expressions::remove_callback(*m_expression, *m_callback);
+    m_callback = std::nullopt;
+  }
+  m_observe = false;
   m_expression = std::move(exp);
   return *this;
 }
@@ -171,7 +177,14 @@ void time_sync::observe_expression_impl(
 void time_sync::reset()
 {
   if(m_expression)
+  {
+    if(m_callback)
+    {
+      expressions::remove_callback(*m_expression, *m_callback);
+      m_callback = std::nullopt;
+    }
     expressions::reset(*m_expression);
+  }
 
   for(auto& timeEvent : m_timeEvents)
   {
