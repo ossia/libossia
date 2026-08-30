@@ -58,31 +58,25 @@ constexpr int16_t float_to_sample<int16_t, 16>(ossia::audio_sample sample) noexc
 
 // ALSA S24_LE: https://stackoverflow.com/a/40301874/1495627
 template <>
-constexpr int32_t float_to_sample<int32_t, 24>(ossia::audio_sample sample) noexcept
+constexpr int32_t float_to_sample<int32_t, 24>(ossia::audio_sample x) noexcept
 {
-  const constexpr ossia::audio_sample int24_max
-      = std::numeric_limits<int32_t>::max() / 256.;
-  return int32_t(sample * int24_max);
-}
-
-/*
-template <>
-constexpr int32_t float_to_sample<int32_t, 24>(audio_sample x) noexcept
-{
-  // TODO division -> multiplication
   if constexpr(std::is_same_v<ossia::audio_sample, float>)
   {
     return (x * (0x7FFFFF + 0.5f)) - 0.5f;
   }
   else
+  {
     return (x * (0x7FFFFF + 0.5)) - 0.5;
+  }
 }
-*/
 
 template <>
 constexpr int32_t float_to_sample<int32_t, 32>(audio_sample x) noexcept
 {
-  return x * (audio_sample)std::numeric_limits<int32_t>::max();
+  // In double even when the samples are float: 0x7FFFFFFF + 0.5 is not
+  // representable as a float and rounds to 2^31, which +1.0 then converts out
+  // of int32_t's range.
+  return (double(x) * (0x7FFFFFFF + 0.5)) - 0.5;
 }
 
 template <>
