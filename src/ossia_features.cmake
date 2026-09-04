@@ -209,6 +209,13 @@ if(OSSIA_QT)
       target_link_libraries(ossia PUBLIC "${QT_PREFIX}::NetworkAuth")
     endif()
 
+    if(TARGET "${QT_PREFIX}::Bluetooth")
+      target_link_libraries(ossia PUBLIC "${QT_PREFIX}::Bluetooth")
+    endif()
+    if(TARGET "${QT_PREFIX}::Nfc")
+      target_link_libraries(ossia PUBLIC "${QT_PREFIX}::Nfc")
+    endif()
+
     add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
     if(OSSIA_DISABLE_QT_PLUGIN)
       target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)
