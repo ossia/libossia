@@ -3,6 +3,8 @@
 #if __has_include(<QBluetoothDeviceDiscoveryAgent>)
 #define OSSIA_HAS_BLUETOOTH 1
 
+#include <ossia/detail/logger.hpp>
+
 #include <ossia-qt/protocols/utils.hpp>
 
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -389,25 +391,30 @@ public:
   void readCharacteristic(QString uuid)
   {
     auto c = m_service->characteristic(bleUuidFromString(uuid));
-    if(c.isValid())
-      m_service->readCharacteristic(c);
+    if(!c.isValid())
+      return report(QStringLiteral("no such characteristic: %1").arg(uuid));
+    m_service->readCharacteristic(c);
   }
   W_SLOT(readCharacteristic)
 
   void writeCharacteristic(QString uuid, QByteArray value)
   {
     auto c = m_service->characteristic(bleUuidFromString(uuid));
-    if(c.isValid())
-      m_service->writeCharacteristic(c, value);
+    if(!c.isValid())
+      return report(QStringLiteral("no such characteristic: %1").arg(uuid));
+    m_service->writeCharacteristic(c, value);
   }
   W_SLOT(writeCharacteristic)
 
   void writeCharacteristicNoResponse(QString uuid, QByteArray value)
   {
     auto c = m_service->characteristic(bleUuidFromString(uuid));
-    if(c.isValid())
-      m_service->writeCharacteristic(
-          c, value, QLowEnergyService::WriteWithoutResponse);
+    if(!c.isValid())
+      return report(QStringLiteral("no such characteristic: %1").arg(uuid));
+    if(!c.properties().testFlag(QLowEnergyCharacteristic::WriteNoResponse))
+      report(QStringLiteral("%1 does not advertise WriteNoResponse").arg(uuid));
+    m_service->writeCharacteristic(
+        c, value, QLowEnergyService::WriteWithoutResponse);
   }
   W_SLOT(writeCharacteristicNoResponse)
 
@@ -415,10 +422,13 @@ public:
   {
     auto c = m_service->characteristic(bleUuidFromString(uuid));
     if(!c.isValid())
-      return;
+      return report(QStringLiteral("no such characteristic: %1").arg(uuid));
     auto cccd = c.clientCharacteristicConfiguration();
     if(!cccd.isValid())
-      return;
+      return report(QStringLiteral(
+                        "%1 has no CCCD descriptor; discoverDetails() must "
+                        "have completed before subscribing")
+                        .arg(uuid));
 
     if(c.properties().testFlag(QLowEnergyCharacteristic::Indicate))
       m_service->writeDescriptor(
@@ -433,7 +443,7 @@ public:
   {
     auto c = m_service->characteristic(bleUuidFromString(uuid));
     if(!c.isValid())
-      return;
+      return report(QStringLiteral("no such characteristic: %1").arg(uuid));
     auto cccd = c.clientCharacteristicConfiguration();
     if(cccd.isValid())
       m_service->writeDescriptor(cccd, QLowEnergyCharacteristic::CCCDDisable);
@@ -446,7 +456,20 @@ public:
   QJSValue onCharacteristicChanged;
   QJSValue onError;
 
+  W_PROPERTY(QJSValue, onDetailsDiscovered MEMBER onDetailsDiscovered)
+  W_PROPERTY(QJSValue, onCharacteristicRead MEMBER onCharacteristicRead)
+  W_PROPERTY(QJSValue, onCharacteristicWritten MEMBER onCharacteristicWritten)
+  W_PROPERTY(QJSValue, onCharacteristicChanged MEMBER onCharacteristicChanged)
+  W_PROPERTY(QJSValue, onError MEMBER onError)
+
 private:
+  void report(const QString& msg)
+  {
+    ossia::logger().error("BLE service: {}", msg.toStdString());
+    if(onError.isCallable())
+      onError.call({msg});
+  }
+
   QLowEnergyService* m_service{};
 };
 
