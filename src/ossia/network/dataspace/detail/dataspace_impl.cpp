@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/math.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 
 namespace ossia
@@ -185,9 +186,12 @@ euler_u::value_type euler_u::from_neutral(strong_value<euler_u::neutral_unit> se
   const auto z = self.dataspace_value[2];
   const auto w = self.dataspace_value[3];
 
+  // Not necessarily a unit quaternion: asin() outside [-1; 1] is a NaN.
+  const auto pitch = ossia::clamp(2. * (w * x + y * z), -1., 1.);
+
   return {
       (float)(rad_to_deg * std::atan2(-2. * (z * w - x * y), w * w - x * x + y * y - z * z)),
-      (float)(rad_to_deg * std::asin(2. * (w * x + y * z))),
+      (float)(rad_to_deg * std::asin(pitch)),
       (float)(rad_to_deg * std::atan2(2. * (w * y + x * z), w * w - x * x - y * y + z * z))};
 }
 
@@ -224,7 +228,8 @@ axis_u::value_type axis_u::from_neutral(strong_value<axis_u::neutral_unit> self)
   const auto z = self.dataspace_value[2];
   const auto w = self.dataspace_value[3];
 
-  const auto sin_a = std::sqrt(1.0 - w * w);
+  // Same as euler_u: a non-unit quaternion would take a negative square root.
+  const auto sin_a = std::sqrt(ossia::clamp(1.0 - w * w, 0., 1.));
 
   const auto sin_a2 = std::fabs(sin_a) < 0.0005 ? 1.0 : 1.0 / sin_a;
 

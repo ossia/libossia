@@ -9,6 +9,7 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/common/value_mapping.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/protocols/midi/midi_device.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
@@ -77,54 +78,53 @@ void local_state_execution_policy::commit_common()
 // Note: this should be combined with the code in the commit_ methods
 // in order to handle both domain and unit conversion in a single place...
 
+// Whether the port's unit and the parameter's are of the same dataspace, in
+// which case the value is pushed as the quantity it is and the domains do not
+// rescale it. A unit the parameter cannot read is dropped from the message so
+// that the value goes through as it is.
+static bool resolve_type(
+    const ossia::net::parameter_base& param, const ossia::value_port& val,
+    ossia::complex_type& type)
+{
+  type = val.effective_type();
+  const ossia::unit_t* u = val.effective_unit();
+  if(!u || !*u)
+    return false;
+  const ossia::unit_t& pu = param.get_unit();
+  if(!pu)
+    return false;
+  if(ossia::check_units_convertible(*u, pu))
+    return true;
+  type = {};
+  return false;
+}
+
 static void map_value_to_param(
     const ossia::net::parameter_base& param, const ossia::timed_value& v,
     const ossia::value_port& val, int idx,
     value_vector<std::pair<typed_value, int>>& out, ossia_audio_lock_t& lck)
 {
   auto& tgt_domain = param.get_domain();
-  if(!val.index.empty())
+
+  // The unit and index have to reach the message: commit() is where
+  // ossia::message::launch() converts.
+  ossia::complex_type type;
+  const bool governed = resolve_type(param, val, type);
+  const bool map_domain
+      = val.index.empty() && !governed && bool(tgt_domain) && bool(val.domain);
+
+  lck.lock();
+  auto& ret = out.emplace_back(
+                     std::piecewise_construct,
+                     std::forward_as_tuple(v, val.index, type),
+                     std::forward_as_tuple(idx))
+                  .first;
+
+  // FIXME won't work in the merge case for same timestamps, both can write at the same time
+  lck.unlock();
+
+  if(map_domain)
   {
-    if(val.type.target<ossia::unit_t>())
-    {
-      lck.lock();
-      out.emplace_back(
-          std::piecewise_construct, std::forward_as_tuple(v, val.index),
-          std::forward_as_tuple(idx));
-      lck.unlock();
-    }
-    else
-    {
-      lck.lock();
-      out.emplace_back(
-          std::piecewise_construct, std::forward_as_tuple(v, val.index, val.type),
-          std::forward_as_tuple(idx));
-      lck.unlock();
-    }
-
-    return;
-  }
-
-  if(val.type.target<ossia::unit_t>() || !tgt_domain || !val.domain)
-  {
-    lck.lock();
-    out.emplace_back(
-        std::piecewise_construct, std::forward_as_tuple(v), std::forward_as_tuple(idx));
-    lck.unlock();
-    return;
-  }
-
-  {
-
-    lck.lock();
-    auto& ret = out.emplace_back(
-                       std::piecewise_construct, std::forward_as_tuple(v, val.type),
-                       std::forward_as_tuple(idx))
-                    .first;
-
-    // FIXME won't work in the merge case for same timestamps, both can write at the same time
-    lck.unlock();
-
     // Map to the target domain
     map_value(ret.value, ossia::destination_index{}, val.domain, tgt_domain);
 
@@ -137,7 +137,9 @@ static ossia::typed_value map_value_to_param(
     const ossia::net::parameter_base& param, const ossia::timed_value& v,
     const ossia::value_port& val)
 {
-  ossia::typed_value ret{v, val.index, val.type};
+  ossia::complex_type type;
+  const bool governed = resolve_type(param, val, type);
+  ossia::typed_value ret{v, val.index, type};
   auto& tgt_domain = param.get_domain();
   if(!val.index.empty())
     goto def_case;
@@ -148,7 +150,7 @@ static ossia::typed_value map_value_to_param(
   if(!val.domain)
     goto def_case;
 
-  if(val.type.target<ossia::unit_t>())
+  if(governed)
     goto def_case;
 
   {
@@ -167,6 +169,8 @@ static ossia::typed_value map_value_to_param(
     const ossia::net::parameter_base& param, ossia::timed_value&& v,
     const ossia::value_port& val)
 {
+  ossia::complex_type type;
+  const bool governed = resolve_type(param, val, type);
   auto& tgt_domain = param.get_domain();
   if(!val.index.empty())
     goto def_case;
@@ -177,7 +181,7 @@ static ossia::typed_value map_value_to_param(
   if(!val.domain)
     goto def_case;
 
-  if(val.type.target<ossia::unit_t>())
+  if(governed)
     goto def_case;
 
   {
@@ -187,11 +191,11 @@ static ossia::typed_value map_value_to_param(
     // Convert to the parameter type
     auto vv = ossia::convert(std::move(v.value), param.get_value_type());
 
-    return ossia::typed_value{std::move(vv), val.index, val.type};
+    return ossia::typed_value{std::move(vv), val.index, type};
   }
 
 def_case:
-  return ossia::typed_value{std::move(v), val.index, val.type};
+  return ossia::typed_value{std::move(v), val.index, type};
 }
 
 void local_state_execution_policy::insert(

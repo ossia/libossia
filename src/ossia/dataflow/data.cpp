@@ -6,6 +6,7 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/common/value_mapping.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/format_value.hpp>
 
 namespace ossia
@@ -19,6 +20,26 @@ get_complex_type(const ossia::net::parameter_base& other) noexcept
   if(const auto u = other.get_unit())
     return u;
   return other.get_value_type();
+}
+
+//! Whether both sides declare a unit of the same dataspace, in which case the
+//! conversion decides what the numbers are and the callers bound instead of
+//! rescaling. Units of different dataspaces say nothing about each other.
+bool units_govern(
+    const ossia::complex_type& source_type, const ossia::complex_type& sink_type) noexcept
+{
+  auto src_unit = source_type.target<ossia::unit_t>();
+  auto tgt_unit = sink_type.target<ossia::unit_t>();
+  return src_unit && tgt_unit && bool(*src_unit) && bool(*tgt_unit)
+         && ossia::check_units_convertible(*src_unit, *tgt_unit);
+}
+
+void clip_value(ossia::value& v, const ossia::domain& sink_domain)
+{
+  if(auto bounded
+     = ossia::bound_value(sink_domain, std::move(v), ossia::bounding_mode::CLIP);
+     bounded.valid())
+    v = std::move(bounded);
 }
 
 // TODO we should take a visitor that takes (value, source_domain, sink_domain)
@@ -78,7 +99,8 @@ struct process_float_control_visitor
 bool should_process_control(
     const value_port& source_port, const value_port& sink_port) noexcept
 {
-  return (source_port.domain && sink_port.domain) || (source_port.type && sink_port.type)
+  return (source_port.domain && sink_port.domain)
+         || (source_port.has_effective_type() && sink_port.has_effective_type())
       // FIXME   || source_port.tween_date
       ;
 }
@@ -94,14 +116,24 @@ void process_float_control(
   v.apply(process_float_control_visitor{src_min, dst_min, ratio});
 }
 
+// The effective types are computed once by the caller: copying one per value can
+// allocate.
 void process_control_value(
-    ossia::value& v, const value_port& source_port, const value_port& sink_port) noexcept
+    ossia::value& v, const value_port& source_port, const value_port& sink_port,
+    const ossia::complex_type& source_type, const ossia::complex_type& sink_type) noexcept
 {
-  if(source_port.domain && sink_port.domain && source_port.type && sink_port.type)
+  // Same rule as adapt_value(), which is what the address path uses.
+  if(units_govern(source_type, sink_type))
+  {
+    process_control_value(v, source_type, sink_type);
+    if(sink_port.domain)
+      clip_value(v, sink_port.domain);
+  }
+  else if(source_port.domain && sink_port.domain && source_type && sink_type)
     process_control_value(
-        v, source_port.domain, sink_port.domain, source_port.type, sink_port.type);
-  else if(source_port.type && sink_port.type)
-    process_control_value(v, source_port.type, sink_port.type);
+        v, source_port.domain, sink_port.domain, source_type, sink_type);
+  else if(source_type && sink_type)
+    process_control_value(v, source_type, sink_type);
   else if(source_port.domain && sink_port.domain)
     process_control_value(v, source_port.domain, sink_port.domain);
   // FIXME  if(source_port.tween_date)
@@ -109,6 +141,64 @@ void process_control_value(
   // FIXME    // TODO
   // FIXME  }
 }
+}
+
+static bool filter_value(
+    value& source, const ossia::destination_index& /* source_index */,
+    const ossia::destination_index& res_index, const ossia::complex_type& source_type,
+    const ossia::complex_type& res_type)
+{
+  // 1. Convert from source unit to destination unit.
+  // Different dataspaces have nothing to convert between: pass the value through.
+  auto src_unit = source_type.target<ossia::unit_t>();
+  auto tgt_unit = res_type.target<ossia::unit_t>();
+  if(src_unit && tgt_unit && *src_unit != *tgt_unit
+     && ossia::check_units_convertible(*src_unit, *tgt_unit))
+  {
+    // A value whose shape does not fit its unit converts to nothing at all.
+    if(auto converted = ossia::convert(source, *src_unit, *tgt_unit); converted.valid())
+      source = std::move(converted);
+  }
+  else
+  {
+    auto src_type = source_type.target<ossia::val_type>();
+    auto tgt_type = res_type.target<ossia::val_type>();
+    if(src_type && tgt_type && *src_type != *tgt_type && res_index.empty())
+    {
+      ossia::convert_inplace(source, *tgt_type);
+    }
+  }
+
+  if(source.valid() && !res_index.empty())
+  {
+    source = get_value_at_index(source, res_index);
+  }
+
+  return units_govern(source_type, res_type);
+}
+
+//! Convert a value into the sink's unit, then either bound it or rescale it.
+//!
+//! Converting preserves the quantity; mapping between two domains rescales it.
+//! Doing both would rescale with bounds expressed in the unit the value just
+//! left, so when units decide, the sink's domain only bounds, and it bounds
+//! whether or not the source has a domain of its own.
+static void adapt_value(
+    ossia::value& v, const ossia::destination_index& idx,
+    const ossia::complex_type& source_type, const ossia::complex_type& sink_type,
+    const ossia::domain& source_domain, const ossia::domain& sink_domain)
+{
+  const bool governed = filter_value(v, {}, idx, source_type, sink_type);
+
+  if(governed)
+  {
+    if(sink_domain)
+      clip_value(v, sink_domain);
+  }
+  else if(source_domain && sink_domain)
+  {
+    map_value(v, idx, source_domain, sink_domain);
+  }
 }
 
 void process_control_value(
@@ -128,7 +218,14 @@ void process_control_value(
     ossia::value& v, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept
 {
-  v = convert(v, source_type, sink_type);
+  // Same guards as filter_value().
+  auto src_unit = source_type.target<ossia::unit_t>();
+  auto tgt_unit = sink_type.target<ossia::unit_t>();
+  if(src_unit && tgt_unit && !ossia::check_units_convertible(*src_unit, *tgt_unit))
+    return;
+
+  if(auto converted = convert(v, source_type, sink_type); converted.valid())
+    v = std::move(converted);
 }
 
 void process_control_value(
@@ -136,12 +233,18 @@ void process_control_value(
     const ossia::domain& sink_domain, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept
 {
-  // FIXME check that it works:
-  // with an int source (e.g. a MIDI address)
-  // with an int sink (e.g. an IntSlider port)
-  // with both int source and sink
-  process_control_value(v, source_domain, sink_domain); // TODO does that make sense
-  process_control_value(v, source_type, sink_type);
+  // Same rule as adapt_value(), which is what the address path uses.
+  if(units_govern(source_type, sink_type))
+  {
+    process_control_value(v, source_type, sink_type);
+    if(sink_domain)
+      clip_value(v, sink_domain);
+  }
+  else
+  {
+    process_control_value(v, source_domain, sink_domain);
+    process_control_value(v, source_type, sink_type);
+  }
 }
 
 void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)
@@ -296,94 +399,47 @@ void value_port::write_value(value&& v, int64_t timestamp)
   }
 }
 
-static void filter_value(
-    value& source, const ossia::destination_index& /* source_index */,
-    const ossia::destination_index& res_index, const ossia::complex_type& source_type,
-    const ossia::complex_type& res_type)
-{
-  // 1. Convert from source unit to destination unit
-  auto src_unit = source_type.target<ossia::unit_t>();
-  auto tgt_unit = source_type.target<ossia::unit_t>();
-  if(src_unit && tgt_unit && *src_unit != *tgt_unit)
-  {
-    source = ossia::convert(source, *src_unit, *tgt_unit);
-  }
-  else
-  {
-    auto src_type = source_type.target<ossia::val_type>();
-    auto tgt_type = res_type.target<ossia::val_type>();
-    if(src_type && tgt_type && *src_type != *tgt_type && res_index.empty())
-    {
-      ossia::convert_inplace(source, *tgt_type);
-    }
-  }
-
-  if(source.valid() && !res_index.empty())
-  {
-    source = get_value_at_index(source, res_index);
-  }
-}
 
 void value_port::add_local_value(const ossia::typed_value& other)
 {
   // These values come from the local environment
   // Convert to the correct type / index
-  if(other.index == index && other.type == type)
+  const ossia::complex_type sink_type = effective_type();
+  if(other.index == index && other.type == sink_type)
   {
     write_value(other.value, other.timestamp);
+    return;
   }
+
+  auto v = other.value;
+  // The same component on both sides is already extracted: only the unit or
+  // the type can differ.
+  if(other.index == index)
+    filter_value(v, {}, {}, other.type, sink_type);
   else
-  {
-    auto v = other.value;
-    filter_value(v, other.index, index, other.type, type);
-    write_value(v, other.timestamp);
-  }
+    filter_value(v, other.index, index, other.type, sink_type);
+  write_value(v, other.timestamp);
 }
 
 void value_port::add_global_values(
     const net::parameter_base& other, const value_vector<ossia::value>& vec)
 {
   const ossia::complex_type source_type = get_complex_type(other);
+  const ossia::complex_type sink_type = effective_type();
+  const auto& other_domain = other.get_domain();
 
-  if(index.empty() && (source_type == type || !source_type))
+  // Nothing to adapt to
+  if(index.empty() && !this->domain && (source_type == sink_type || !source_type))
   {
-    const auto& other_domain = other.get_domain();
-    if(other_domain && this->domain)
-    {
-      for(ossia::value v : vec)
-      {
-        map_value(v, index, other_domain, this->domain);
-        write_value(std::move(v), 0); // TODO put correct timestamps here
-      }
-    }
-    else
-    {
-      for(const ossia::value& v : vec)
-      {
-        write_value(v, 0);
-      }
-    }
+    for(const ossia::value& v : vec)
+      write_value(v, 0);
+    return;
   }
-  else
+
+  for(ossia::value v : vec)
   {
-    const auto& other_domain = other.get_domain();
-    if(other_domain && this->domain)
-    {
-      for(ossia::value v : vec)
-      {
-        filter_value(v, {}, index, source_type, type);
-        map_value(v, index, other_domain, this->domain);
-        write_value(std::move(v), 0);
-      }
-    }
-    else
-    {
-      for(ossia::value v : vec)
-      {
-        filter_value(v, {}, index, source_type, type);
-        write_value(v, 0);
-      }
-    }
+    adapt_value(v, index, source_type, sink_type, other_domain, this->domain);
+    write_value(std::move(v), 0); // TODO put correct timestamps here
   }
 }
 
@@ -392,16 +448,9 @@ void value_port::add_global_value(
 {
   const ossia::complex_type source_type = get_complex_type(other);
 
-  // Convert to the correct unit
-  filter_value(val, {}, index, source_type, type);
+  adapt_value(
+      val, index, source_type, effective_type(), other.get_domain(), this->domain);
 
-  // Map the value
-  if(other.get_domain() && this->domain)
-  {
-    map_value(val, index, other.get_domain(), this->domain);
-  }
-
-  // Write the value
   write_value(std::move(val), 0);
 }
 
@@ -410,6 +459,9 @@ void value_port::add_port_values(const value_port& other)
   // These values come from another node: we just copy them blindly
   if(should_process_control(other, *this))
   {
+    // Once, not per value: building an effective type copies it.
+    const ossia::complex_type source_type = other.effective_type();
+    const ossia::complex_type sink_type = effective_type();
     switch(mix_method)
     {
       case data_mix_method::mix_replace: {
@@ -421,12 +473,12 @@ void value_port::add_port_values(const value_port& other)
           if(it != data.end())
           {
             it->value = v.value;
-            process_control_value(it->value, other, *this);
+            process_control_value(it->value, other, *this, source_type, sink_type);
           }
           else
           {
             data.emplace_back(v);
-            process_control_value(data.back().value, other, *this);
+            process_control_value(data.back().value, other, *this, source_type, sink_type);
           }
         }
         break;
@@ -435,7 +487,7 @@ void value_port::add_port_values(const value_port& other)
         auto it = data.insert(data.end(), other.data.begin(), other.data.end());
         for(const auto end = data.end(); it != end; ++it)
         {
-          process_control_value(it->value, other, *this);
+          process_control_value(it->value, other, *this, source_type, sink_type);
         }
         break;
       }

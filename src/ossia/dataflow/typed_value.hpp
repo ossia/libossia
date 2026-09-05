@@ -42,11 +42,13 @@ struct typed_value
   }
   typed_value(const ossia::timed_value& v, const ossia::complex_type& u)
       : value{v.value}
+      , timestamp{v.timestamp}
       , type{u}
   {
   }
   typed_value(ossia::timed_value&& v, const ossia::complex_type& u)
       : value{std::move(v.value)}
+      , timestamp{v.timestamp}
       , type{u}
   {
   }
