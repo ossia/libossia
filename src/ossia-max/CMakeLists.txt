@@ -106,7 +106,6 @@ ossia_set_visibility(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia
   $<LINK_ONLY:$<$<BOOL:${WIN32}>:${MAXSDK_API_LIBRARY}>>
   $<LINK_ONLY:re2::re2>
-  $<LINK_ONLY:websocketpp::websocketpp>
 )
 
 generate_export_header(${PROJECT_NAME})

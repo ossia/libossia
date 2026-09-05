@@ -46,7 +46,7 @@ public:
   bool ws_connected() const noexcept { return m_hasWS; }
   bool osc_connected() const noexcept { return bool(m_oscSender); }
   osc_sender_impl& osc_sender() const noexcept { return *m_oscSender; }
-  ossia::net::websocket_client& ws_client() const noexcept { return *m_websocketClient; }
+  ossia::net::websocket_client_interface& ws_client() const noexcept { return *m_websocketClient; }
 
   /**
    * @brief Request a new node from the server
@@ -135,7 +135,7 @@ private:
   std::unique_ptr<osc_sender_impl> m_oscSender;
   std::unique_ptr<osc_receiver_impl> m_oscServer;
 
-  std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
+  std::unique_ptr<ossia::net::websocket_client_interface> m_websocketClient;
   std::shared_ptr<async_state> m_async_state;
   std::atomic_bool m_hasWS{};
 

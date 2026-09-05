@@ -1,10 +1,10 @@
+#include <ossia/detail/base64.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
-#include <websocketpp/base64/base64.hpp>
 
 int main(int, char**)
 {
@@ -37,7 +37,7 @@ int main(int, char**)
       if(cv::imencode(".jpg", small, jpeg_buf, compression_params))
       {
         std::string encoded
-            = websocketpp::base64_encode(jpeg_buf.data(), jpeg_buf.size());
+            = ossia::base64_encode(jpeg_buf.data(), jpeg_buf.size());
         param->push_value(encoded);
       }
       using namespace std::chrono_literals;
