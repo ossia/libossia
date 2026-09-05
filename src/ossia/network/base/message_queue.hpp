@@ -58,7 +58,7 @@ public:
       auto it = p.add_callback([this, ptr](const ossia::value& val) {
         m_queue.enqueue({ptr, val});
       });
-      m_reg.insert({&p, {0, it}});
+      m_reg.insert({&p, {1, it}});
     }
     else
     {
