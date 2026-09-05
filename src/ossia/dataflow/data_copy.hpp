@@ -119,7 +119,7 @@ struct copy_data
     vec.reserve(out.get_data().size());
     for(const ossia::timed_value& val : out.get_data())
     {
-      vec.emplace_back(val, out.index, out.type);
+      vec.emplace_back(val, out.index, out.effective_type());
     }
     in.data.push_back(std::move(vec));
 #endif

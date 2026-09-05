@@ -45,7 +45,36 @@ struct OSSIA_EXPORT value_port
   value_vector<ossia::timed_value>& get_data() noexcept { return data; }
 
   ossia::domain domain;
+
+  //! What the node declares its values are. Set when the node is built.
   ossia::complex_type type;
+
+  //! The @[unit] of the port's address. Overrides `type`, and goes away with the
+  //! address.
+  ossia::unit_t address_unit;
+
+  //! What values on this port are actually expressed in.
+  [[nodiscard]] ossia::complex_type effective_type() const noexcept
+  {
+    if(address_unit)
+      return address_unit;
+    return type;
+  }
+
+  //! Cheaper than building the effective type just to test it.
+  [[nodiscard]] bool has_effective_type() const noexcept
+  {
+    return bool(address_unit) || bool(type);
+  }
+
+  //! Same, for the callers that only need the unit.
+  [[nodiscard]] const ossia::unit_t* effective_unit() const noexcept
+  {
+    if(address_unit)
+      return &address_unit;
+    return type.target<ossia::unit_t>();
+  }
+
   ossia::destination_index index;
   // std::optional<ossia::time_value> tween_date;
 
