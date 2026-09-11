@@ -606,6 +606,7 @@ struct OSSIA_EXPORT graph_util
   static void exec_node(graph_node& first_node, execution_state& e)
   {
     init_node(first_node, e);
+    first_node.begin_execution();
 
 #if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
     check_inputs(first_node, e);
@@ -642,6 +643,7 @@ struct OSSIA_EXPORT graph_util
   exec_node(graph_node& first_node, execution_state& e, ossia::logger_type& logger)
   {
     init_node(first_node, e);
+    first_node.begin_execution();
 
 #if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
     check_inputs(first_node, e);

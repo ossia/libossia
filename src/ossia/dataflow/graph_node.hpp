@@ -121,6 +121,8 @@ public:
   void set_end_discontinuous(bool b) noexcept { m_end_discontinuous = b; }
 
   virtual void prepare(const execution_state& st) noexcept;
+  // Called once after port init, before all token slices of one graph execution.
+  virtual void begin_execution() noexcept { }
   [[nodiscard]] virtual bool consumes(const execution_state&) const noexcept;
   virtual void run(const token_request&, exec_state_facade) noexcept;
   [[nodiscard]] virtual std::string label() const noexcept = 0;
