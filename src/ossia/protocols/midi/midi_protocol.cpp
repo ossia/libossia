@@ -832,6 +832,9 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
   libremidi::observer_configuration conf{};
   conf.track_hardware = true;
   conf.track_virtual = true;
+  // A scan reports everything openable, and a MIDI-over-IP port -- a CoreMIDI
+  // network session, an RTP-MIDI peer -- is as openable as any other.
+  conf.track_network = true;
 
   libremidi::observer in{conf, libremidi::observer_configuration_for(api)};
 
