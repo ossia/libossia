@@ -101,14 +101,12 @@ struct global_pull_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
-#if !defined(NDEBUG)
-    // TODO how to do without that dynamic_cast ?
-    // Can we *ensure* that the address of the midi_port is a midi one ?
+    // Any address can be given to a port, including one whose device speaks no
+    // MIDI: register_port() checks before registering, so this has to check
+    // before looking up what it registered.
     auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
-    assert(midi);
-#else
-    auto midi = static_cast<ossia::net::midi::midi_protocol*>(&proto);
-#endif
+    if(!midi)
+      return;
 
     auto it = state.m_receivedMidi.find(midi);
     if(it != state.m_receivedMidi.end())
@@ -145,21 +143,13 @@ struct global_pull_node_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
-#if !defined(NDEBUG)
-    // TODO how to do without that dynamic_cast ?
-    // Can we *ensure* that the address of the midi_port is a midi one ?
     auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
-    assert(midi);
-#else
-    auto midi = static_cast<ossia::net::midi::midi_protocol*>(&proto);
-#endif
+    if(!midi)
+      return;
 
     int channel = -1;
-    if(node.get_parent() == &dev.get_root_node())
-    {
-      // the node is a MIDI channel node
-      channel = static_cast<const ossia::net::midi::channel_node&>(node).channel;
-    }
+    if(auto chan = dynamic_cast<const ossia::net::midi::channel_node*>(&node))
+      channel = chan->channel;
 
     auto it = state.m_receivedMidi.find(midi);
     if(it != state.m_receivedMidi.end())

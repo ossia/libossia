@@ -124,3 +124,34 @@ TEST_CASE("A port rebound to another parameter", "[dataflow][port][registration]
   st.unregister_device(&dev.device);
   st.apply_device_changes();
 }
+
+// A MIDI port takes whatever address it is given, including one whose device
+// speaks no MIDI: a value address dropped on a MIDI inlet, which the editor
+// has no reason to refuse. register_port() looks before it registers, and the
+// pull has to look before it reads back what was registered.
+TEST_CASE("A MIDI port bound to a device that is not MIDI reads nothing",
+          "[dataflow][port][registration][midi]")
+{
+  TestDevice dev;
+
+  ossia::execution_state st;
+  st.register_device(&dev.device);
+  st.apply_device_changes();
+
+  auto in = std::make_unique<ossia::midi_inlet>();
+  in->address = dev.float_addr;
+
+  st.register_port(*in);
+  st.begin_tick();
+
+  st.copy_from_global(*dev.float_addr, *in);
+  CHECK(in->target<ossia::midi_port>()->messages.empty());
+
+  // The same through the node, which is the form a whole device or one of its
+  // levels takes.
+  in->target<ossia::midi_port>()->messages.clear();
+  st.copy_from_global_node(dev.float_addr->get_node(), *in);
+  CHECK(in->target<ossia::midi_port>()->messages.empty());
+
+  st.unregister_port(*in);
+}
