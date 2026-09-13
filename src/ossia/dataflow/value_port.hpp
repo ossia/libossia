@@ -49,16 +49,26 @@ struct OSSIA_EXPORT value_port
   //! What the node declares its values are. Set when the node is built.
   ossia::complex_type type;
 
-  //! The @[unit] of the port's address. Overrides `type`, and goes away with the
-  //! address.
+  //! The @[unit] of the port's address, and what the parameter at the other end
+  //! speaks. Goes away with the address.
   ossia::unit_t address_unit;
 
   //! What values on this port are actually expressed in.
+  //!
+  //! A port that says what it is comes first. `type` is what its owner reads --
+  //! a colour control that works in rgba, a slider in decibels -- and a value
+  //! reaching it is converted into that. The address only says what is spoken at
+  //! the far end, which is where a value is converted *from*; letting it decide
+  //! here left the value in the remote unit while everything reading the port
+  //! went on believing the declared one, so an argb colour arrived through a
+  //! port that meant rgba and came out with its channels one place along. It
+  //! answers for ports that declare nothing of their own, which is what it is
+  //! for.
   [[nodiscard]] ossia::complex_type effective_type() const noexcept
   {
-    if(address_unit)
-      return address_unit;
-    return type;
+    if(type)
+      return type;
+    return address_unit;
   }
 
   //! Cheaper than building the effective type just to test it.
@@ -70,6 +80,8 @@ struct OSSIA_EXPORT value_port
   //! Same, for the callers that only need the unit.
   [[nodiscard]] const ossia::unit_t* effective_unit() const noexcept
   {
+    if(auto u = type.target<ossia::unit_t>(); u && bool(*u))
+      return u;
     if(address_unit)
       return &address_unit;
     return type.target<ossia::unit_t>();
