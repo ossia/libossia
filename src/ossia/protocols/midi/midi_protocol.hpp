@@ -8,6 +8,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/protocols/midi/detail/channel.hpp>
+#include <ossia/protocols/midi/midi_stream.hpp>
 
 #include <libremidi/api.hpp>
 #include <libremidi/configurations.hpp>
@@ -73,6 +74,7 @@ struct midi_protocol_configuration
 class OSSIA_EXPORT midi_protocol final
     : public ossia::net::protocol_base
     , public Nano::Observer
+    , public midi_stream
 {
 public:
   explicit midi_protocol(
@@ -97,16 +99,18 @@ public:
   static std::vector<midi_info> scan(libremidi::API = libremidi::API::UNSPECIFIED);
 
   void push_value(const libremidi::message&);
-  void push_value(const libremidi::ump&);
+  void push_value(const libremidi::ump&) override;
 
-  void enable_registration();
+  void enable_registration() override;
 
   bool learning() const;
   void set_learning(bool);
 
-  libremidi::midi_in* midi_in() const noexcept { return m_input.get(); }
+  libremidi::midi_in* midi_in() const noexcept override { return m_input.get(); }
 
-  ossia::spsc_queue<libremidi::ump> messages;
+  //! A channel node stands for its channel; everything else for the whole
+  //! stream.
+  std::optional<int> stream_channel(const node_base& n) const noexcept override;
 
 private:
   ossia::net::network_context_ptr m_context;

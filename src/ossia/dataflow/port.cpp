@@ -53,7 +53,19 @@ struct push_data_to_node
     }
   }
 
-  void operator()(const midi_port& p) const { }
+  //! A whole device, or one of its channels: what is written to the port goes
+  //! out of the port the device is on.
+  void operator()(const midi_port& p) const
+  {
+#if defined(OSSIA_PROTOCOL_MIDI)
+    auto& proto = dest.get_device().get_protocol();
+    if(auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto))
+    {
+      for(auto& val : p.messages)
+        midi->push_value(val);
+    }
+#endif
+  }
 
   void operator()(const audio_port& p) const { }
 
@@ -74,7 +86,7 @@ struct push_data
   {
 #if defined(OSSIA_PROTOCOL_MIDI)
     auto& proto = dest.get_node().get_device().get_protocol();
-    if(auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
+    if(auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto))
     {
       for(auto& val : p.messages)
         midi->push_value(val);

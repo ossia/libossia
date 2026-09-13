@@ -471,6 +471,7 @@ set(OSSIA_MIDI_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_stream.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/channel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/midi_impl.hpp"
     )
@@ -479,7 +480,8 @@ set(OSSIA_MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_stream.cpp")
 
 set(OSSIA_OSCQUERY_HEADERS
 

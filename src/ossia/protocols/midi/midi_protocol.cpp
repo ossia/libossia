@@ -856,6 +856,13 @@ void midi_protocol::push_value(const libremidi::ump& m)
   m_output->send_ump(m);
 }
 
+std::optional<int> midi_protocol::stream_channel(const node_base& n) const noexcept
+{
+  if(auto chan = dynamic_cast<const channel_node*>(&n))
+    return chan->channel;
+  return std::nullopt;
+}
+
 void midi_protocol::enable_registration()
 {
   m_registers = true;

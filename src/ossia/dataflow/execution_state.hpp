@@ -18,6 +18,7 @@ namespace ossia
 namespace net::midi
 {
 class midi_protocol;
+class midi_stream;
 class midi_parameter;
 }
 class state;
@@ -114,8 +115,8 @@ private:
 
   void register_parameter(ossia::net::parameter_base& p);
   void unregister_parameter(ossia::net::parameter_base& p);
-  void register_midi_parameter(net::midi::midi_protocol& p);
-  void unregister_midi_parameter(net::midi::midi_protocol& p);
+  void register_midi_parameter(net::midi::midi_stream& p);
+  void unregister_midi_parameter(net::midi::midi_stream& p);
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_edit;
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_exec;
   struct device_operation
@@ -142,7 +143,7 @@ private:
     int count{};
   };
 
-  ossia::ptr_map<ossia::net::midi::midi_protocol*, received_midi_state> m_receivedMidi;
+  ossia::ptr_map<ossia::net::midi::midi_stream*, received_midi_state> m_receivedMidi;
 
   friend struct local_pull_visitor;
   friend struct global_pull_visitor;

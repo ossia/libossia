@@ -104,7 +104,7 @@ struct global_pull_visitor
     // Any address can be given to a port, including one whose device speaks no
     // MIDI: register_port() checks before registering, so this has to check
     // before looking up what it registered.
-    auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
+    auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto);
     if(!midi)
       return;
 
@@ -143,13 +143,11 @@ struct global_pull_node_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
-    auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
+    auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto);
     if(!midi)
       return;
 
-    int channel = -1;
-    if(auto chan = dynamic_cast<const ossia::net::midi::channel_node*>(&node))
-      channel = chan->channel;
+    const int channel = midi->stream_channel(node).value_or(-1);
 
     auto it = state.m_receivedMidi.find(midi);
     if(it != state.m_receivedMidi.end())
