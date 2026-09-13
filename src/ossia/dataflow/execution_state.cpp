@@ -105,7 +105,7 @@ void execution_state::unregister_parameter(net::parameter_base& p)
   }
 }
 
-void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
+void execution_state::register_midi_parameter(net::midi::midi_stream& p)
 {
 #if defined(OSSIA_PROTOCOL_MIDI)
   p.enable_registration();
@@ -121,7 +121,7 @@ void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
 #endif
 }
 
-void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
+void execution_state::unregister_midi_parameter(net::midi::midi_stream& p)
 {
 #if defined(OSSIA_PROTOCOL_MIDI)
   auto it = m_receivedMidi.find(&p);
@@ -158,6 +158,12 @@ void execution_state::get_new_values()
     auto& port = state.messages;
     libremidi::ump msg;
     port.clear();
+
+    // A port that only sends has nothing to read back, and no clock to time it
+    // against. init_midi_timings() skips it for the same reason.
+    if(!midi)
+      continue;
+
     port.reserve(input_messages.size_approx());
     if(midi->get_current_api() == libremidi::API::JACK_MIDI)
     {
@@ -218,7 +224,7 @@ void execution_state::register_port(const inlet& port)
   {
     if(auto addr = port.address.target<ossia::net::node_base*>())
     {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_device().get_protocol()))
       {
         register_midi_parameter(*midi_addr);
@@ -226,7 +232,7 @@ void execution_state::register_port(const inlet& port)
     }
     else if(auto addr = port.address.target<ossia::net::parameter_base*>())
     {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_node().get_device().get_protocol()))
       {
         register_midi_parameter(*midi_addr);
@@ -270,7 +276,7 @@ void execution_state::unregister_port(const inlet& port)
   {
     if(auto addr = port.address.target<ossia::net::node_base*>())
     {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_device().get_protocol()))
       {
         unregister_midi_parameter(*midi_addr);
@@ -278,7 +284,7 @@ void execution_state::unregister_port(const inlet& port)
     }
     else if(auto addr = port.address.target<ossia::net::parameter_base*>())
     {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_node().get_device().get_protocol()))
       {
         unregister_midi_parameter(*midi_addr);
