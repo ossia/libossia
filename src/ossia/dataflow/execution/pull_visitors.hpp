@@ -101,9 +101,8 @@ struct global_pull_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
-    // Any address can be given to a port, including one whose device speaks no
-    // MIDI: register_port() checks before registering, so this has to check
-    // before looking up what it registered.
+    // An address whose device speaks no MIDI can still be bound to a port;
+    // register_port() leaves it unregistered.
     auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto);
     if(!midi)
       return;
