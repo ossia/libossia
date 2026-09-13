@@ -98,7 +98,7 @@ public:
 
   static std::vector<midi_info> scan(libremidi::API = libremidi::API::UNSPECIFIED);
 
-  void push_value(const libremidi::message&);
+  void push_value(const libremidi::message&) override;
   void push_value(const libremidi::ump&) override;
 
   void enable_registration() override;

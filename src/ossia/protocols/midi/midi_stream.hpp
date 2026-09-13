@@ -3,6 +3,7 @@
 
 #include <ossia/detail/lockfree_queue.hpp>
 
+#include <libremidi/message.hpp>
 #include <libremidi/ump.hpp>
 
 #include <optional>
@@ -31,6 +32,9 @@ namespace ossia::net::midi
 class OSSIA_EXPORT midi_stream
 {
 public:
+  //! A tick's worth of messages many times over, and a ceiling all the same.
+  static constexpr std::size_t queue_capacity = 2048;
+
   virtual ~midi_stream();
 
   /**
@@ -39,8 +43,21 @@ public:
    *
    * Single producer, single consumer: the backend's callback thread and the
    * execution thread.
+   *
+   * Written through @ref receive_ump, never enqueued directly: the queue grows by
+   * allocating, and the callback thread is the one feeding the audio graph.
    */
-  ossia::spsc_queue<libremidi::ump> messages;
+  ossia::spsc_queue<libremidi::ump> messages{queue_capacity};
+
+  /**
+   * Hold @p m for the next tick, or drop it if nothing is draining.
+   *
+   * A protocol keeps streaming for as long as it is open, and a graph that
+   * stopped reading -- execution ended, the process was deleted -- would
+   * otherwise make it allocate on every message for as long as the device
+   * stays plugged in.
+   */
+  bool receive_ump(const libremidi::ump& m) noexcept { return messages.try_enqueue(m); }
 
   /**
    * The port messages are timed against, or nullptr when nothing is open for
@@ -54,6 +71,9 @@ public:
 
   //! Send, for a MIDI port written to.
   virtual void push_value(const libremidi::ump&) = 0;
+
+  //! Likewise, for what is authored as MIDI 1 bytes.
+  virtual void push_value(const libremidi::message&) = 0;
 
   /**
    * The channel @p n stands for, so that a port bound to it hears that channel
