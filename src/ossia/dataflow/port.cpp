@@ -53,16 +53,46 @@ struct push_data_to_node
     }
   }
 
-  //! A whole device, or one of its channels: what is written to the port goes
-  //! out of the port the device is on.
+  /**
+   * A whole device, or one of its channels: what is written to the port goes
+   * out of the port the device is on.
+   *
+   * A port bound to a channel sends on that channel, whatever channel the
+   * process authored, so that an inlet and an outlet on the same node are a
+   * round trip -- the read side filters by the same number.
+   */
   void operator()(const midi_port& p) const
   {
 #if defined(OSSIA_PROTOCOL_MIDI)
     auto& proto = dest.get_device().get_protocol();
-    if(auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto))
+    auto midi = dynamic_cast<ossia::net::midi::midi_stream*>(&proto);
+    if(!midi)
+      return;
+
+    const auto chan = midi->stream_channel(dest);
+    for(auto& val : p.messages)
     {
-      for(auto& val : p.messages)
+      if(!chan)
+      {
         midi->push_value(val);
+        continue;
+      }
+
+      switch(val.get_type())
+      {
+        using enum libremidi::midi2::message_type;
+        case MIDI_1_CHANNEL:
+        case MIDI_2_CHANNEL: {
+          libremidi::ump m = val;
+          m.data[0] = (m.data[0] & ~uint32_t(0x000F0000))
+                      | (uint32_t((*chan - 1) & 0x0F) << 16);
+          midi->push_value(m);
+          break;
+        }
+        default:
+          midi->push_value(val);
+          break;
+      }
     }
 #endif
   }
@@ -219,7 +249,12 @@ void outlet::write(execution_state& e)
       }
     }
       },
-      [&](ossia::net::node_base* node, bool) { visit(push_data_to_node{*node}); });
+      [&](ossia::net::node_base* node, bool) {
+    // A node has no parameter to stage the write in, so there is no local
+    // branch to take: either it goes out or the port propagates nothing.
+    if(scope & (port::scope_t::local | port::scope_t::global))
+      visit(push_data_to_node{*node});
+      });
 }
 
 value_inlet::~value_inlet() = default;

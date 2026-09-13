@@ -848,12 +848,14 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
 
 void midi_protocol::push_value(const libremidi::message& m)
 {
-  m_output->send_message(m);
+  if(m_output)
+    m_output->send_message(m);
 }
 
 void midi_protocol::push_value(const libremidi::ump& m)
 {
-  m_output->send_ump(m);
+  if(m_output)
+    m_output->send_ump(m);
 }
 
 std::optional<int> midi_protocol::stream_channel(const node_base& n) const noexcept
