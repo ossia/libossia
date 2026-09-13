@@ -639,7 +639,7 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       std::copy_n(ump, std::min(count, 4), u.data);
       u.timestamp = ts;
 
-      messages.enqueue(u);
+      receive_ump(u);
 
       return stdx::error{};
     });
