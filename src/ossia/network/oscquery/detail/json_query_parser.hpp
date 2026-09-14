@@ -4,6 +4,9 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <algorithm>
+#include <mutex>
 namespace ossia::oscquery
 {
 
@@ -90,10 +93,18 @@ struct json_query_answerer
       Protocol& proto, const typename Protocol::connection_handler& hdl, int port,
       int remotePort)
   {
-    // First we find for a corresponding client
-    auto clt = proto.find_client(hdl);
+    // The client's OSC sender is part of the m_clients set, which is guarded
+    // by m_clientsMutex (push() reads client.sender under that lock). Set it up
+    // while holding the same lock so we don't race the producer thread, and so
+    // the client cannot be removed between lookup and use (find_client alone
+    // releases the lock before returning a raw pointer).
+    std::lock_guard lock{proto.m_clientsMutex};
 
-    if(!clt)
+    auto it = std::find_if(
+        proto.m_clients.begin(), proto.m_clients.end(),
+        [&](const auto& clt) { return *clt == hdl; });
+
+    if(it == proto.m_clients.end())
     {
       // It's an http-connecting client - we can't open a streaming connection
       // to it
@@ -103,10 +114,10 @@ struct json_query_answerer
     if(port != 0)
     {
       // Then we set-up the sender
-      clt->open_osc_sender(proto, port);
+      (*it)->open_osc_sender(proto, port);
       if(remotePort != 0)
       {
-        clt->remote_sender_port = remotePort;
+        (*it)->remote_sender_port = remotePort;
       }
     }
 

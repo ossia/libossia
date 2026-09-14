@@ -206,12 +206,6 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/fmt/include/fmt"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp"
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER
-        ${3RDPARTY_INSTALL_PATTERN}
-)
 
 install(FILES "${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.hpp"
         DESTINATION include/

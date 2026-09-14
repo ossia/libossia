@@ -26,7 +26,7 @@ namespace ossia
 namespace net
 {
 struct parameter_data;
-class websocket_client;
+class websocket_client_interface;
 }
 namespace oscquery
 {
@@ -154,7 +154,7 @@ private:
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
-  std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
+  std::unique_ptr<ossia::net::websocket_client_interface> m_websocketClient;
   std::atomic_bool m_hasWS{};
 
   // Listening status of the local software

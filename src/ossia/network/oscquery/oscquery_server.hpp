@@ -27,7 +27,7 @@ namespace ossia
 {
 namespace net
 {
-class websocket_server;
+class websocket_server_interface;
 }
 namespace oscquery
 {
@@ -119,7 +119,7 @@ private:
   on_BinaryWSrequest(const connection_handler& hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
-  std::unique_ptr<ossia::net::websocket_server> m_websocketServer;
+  std::unique_ptr<ossia::net::websocket_server_interface> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServerWS;
   net::zeroconf_server m_zeroconfServerOSC;

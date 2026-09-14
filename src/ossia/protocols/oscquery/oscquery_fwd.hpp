@@ -25,7 +25,7 @@ class IpEndpointName;
 namespace ossia::net
 {
 
-class websocket_client;
+class websocket_client_interface;
 struct parameter_data;
 struct network_context;
 using network_context_ptr = std::shared_ptr<network_context>;

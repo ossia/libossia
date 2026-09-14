@@ -1,28 +1,35 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/logger.hpp>
-#include <ossia/detail/parse_relax.hpp>
 
-#include <boost/asio.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 
+#include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 namespace ossia::net
 {
-using tcp = boost::asio::ip::tcp;
 
-// Full HTTP client supporting all methods, custom headers, request body.
-// Success callback receives (request, status_code, response_body).
-// Error callback receives (request, error_message).
+/// Full HTTP/1.1 client supporting all methods, custom headers and a
+/// request body. Used by the QML protocols layer.
+///
+/// Compared to ossia::net::http_get_request, the success callback receives
+/// the HTTP status code and the body:
+///   Fun(*this, status_code, body)
+///   Err(*this, error_message)
 template <typename Fun, typename Err>
 class http_client_request
     : public std::enable_shared_from_this<http_client_request<Fun, Err>>
 {
-  fmt::memory_buffer m_request;
-
 public:
   using std::enable_shared_from_this<http_client_request<Fun, Err>>::shared_from_this;
 
@@ -31,68 +38,60 @@ public:
       std::string_view host, std::string_view path,
       const std::vector<std::pair<std::string, std::string>>& headers = {},
       std::string_view body = {})
-      : m_resolver(ctx)
-      , m_socket(ctx)
+      : m_resolver{boost::asio::make_strand(ctx)}
+      , m_stream{boost::asio::make_strand(ctx)}
+      , m_host{host}
       , m_fun{std::move(f)}
       , m_err{std::move(err)}
   {
-    m_request.reserve(256 + host.size() + path.size() + body.size());
-    m_response.prepare(Fun::reserve_expect);
+    namespace http = boost::beast::http;
 
-    // Request line: VERB /path HTTP/1.1
-    fmt::format_to(fmt::appender(m_request), "{} ", verb);
-    for(auto c : path)
-    {
-      if(c != ' ')
-        fmt::format_to(fmt::appender(m_request), "{}", c);
-      else
-        fmt::format_to(fmt::appender(m_request), "%20");
-    }
-    fmt::format_to(fmt::appender(m_request), " HTTP/1.1\r\n");
+    auto v = http::string_to_verb(std::string{verb});
+    if(v == http::verb::unknown)
+      v = http::verb::get;
 
-    // Host header (always required)
-    fmt::format_to(fmt::appender(m_request), "Host: {}\r\n", host);
+    m_req.method(v);
+    m_req.version(11);
 
-    // Track which default headers the user already provided
-    bool hasAccept = false;
-    bool hasConnection = false;
-    bool hasContentLength = false;
-    bool hasContentType = false;
+    // A response to a HEAD request never has a message body, even when it
+    // advertises a Content-Length. Tell the parser to stop after the headers,
+    // otherwise it waits for a body that never arrives and fails with
+    // "partial message" when the connection closes.
+    if(v == http::verb::head)
+      m_parser.skip(true);
 
-    // User-supplied headers
+    m_req.target(percent_encode_spaces(path));
+    m_req.set(http::field::host, std::string{host});
+
+    // Track which default headers the user already provided so we don't
+    // override them.
+    bool has_accept = false;
+    bool has_connection = false;
+    bool has_content_type = false;
+
     for(const auto& [key, value] : headers)
     {
-      fmt::format_to(fmt::appender(m_request), "{}: {}\r\n", key, value);
+      m_req.set(key, value);
       if(key == "Accept")
-        hasAccept = true;
+        has_accept = true;
       else if(key == "Connection")
-        hasConnection = true;
-      else if(key == "Content-Length")
-        hasContentLength = true;
+        has_connection = true;
       else if(key == "Content-Type")
-        hasContentType = true;
+        has_content_type = true;
     }
 
-    // Fill in defaults for headers the user didn't set
-    if(!hasAccept)
-      fmt::format_to(fmt::appender(m_request), "Accept: */*\r\n");
-    if(!hasConnection)
-      fmt::format_to(fmt::appender(m_request), "Connection: close\r\n");
+    if(!has_accept)
+      m_req.set(http::field::accept, "*/*");
+    if(!has_connection)
+      m_req.set(http::field::connection, "close");
 
     if(!body.empty())
     {
-      if(!hasContentLength)
-        fmt::format_to(
-            fmt::appender(m_request), "Content-Length: {}\r\n", body.size());
-      if(!hasContentType)
-        fmt::format_to(
-            fmt::appender(m_request), "Content-Type: application/octet-stream\r\n");
+      if(!has_content_type)
+        m_req.set(http::field::content_type, "application/octet-stream");
+      m_req.body().assign(body.data(), body.size());
+      m_req.prepare_payload();
     }
-
-    // End of headers + body
-    fmt::format_to(fmt::appender(m_request), "\r\n");
-    if(!body.empty())
-      fmt::format_to(fmt::appender(m_request), "{}", body);
   }
 
   void resolve(const std::string& server, const std::string& port)
@@ -100,192 +99,114 @@ public:
     m_resolver.async_resolve(
         server, port,
         [self = this->shared_from_this()](
-            const boost::system::error_code& err,
-            const tcp::resolver::results_type& endpoints) {
-      self->handle_resolve(err, endpoints);
+            const boost::beast::error_code& ec,
+            const boost::asio::ip::tcp::resolver::results_type& results) {
+      self->on_resolve(ec, results);
     });
   }
 
-  void close() { m_socket.close(); }
+  void close()
+  {
+    boost::beast::error_code ec;
+    m_stream.socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    m_stream.socket().close(ec);
+  }
 
 private:
-  void handle_resolve(
-      const boost::system::error_code& err,
-      const tcp::resolver::results_type& endpoints)
+  static std::string percent_encode_spaces(std::string_view path)
   {
-    if(!err)
+    std::string out;
+    out.reserve(path.size());
+    for(char c : path)
     {
-      boost::asio::async_connect(
-          m_socket, endpoints,
-          [self = this->shared_from_this()](
-              const boost::system::error_code& err, auto&&...) {
-        self->handle_connect(err);
-      });
-    }
-    else
-    {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
-    }
-  }
-
-  void handle_connect(const boost::system::error_code& err)
-  {
-    if(!err)
-    {
-      boost::asio::const_buffer request(m_request.data(), m_request.size());
-      boost::asio::async_write(
-          m_socket, request,
-          [self = this->shared_from_this()](
-              const boost::system::error_code& err, std::size_t size) {
-        self->handle_write_request(err, size);
-      });
-    }
-    else
-    {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
-    }
-  }
-
-  void handle_write_request(const boost::system::error_code& err, std::size_t size)
-  {
-    if(!err)
-    {
-      boost::asio::async_read_until(
-          m_socket, m_response, "\r\n",
-          [self = this->shared_from_this()](
-              const boost::system::error_code& err, std::size_t size) {
-        self->handle_read_status_line(err, size);
-      });
-    }
-    else
-    {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
-    }
-  }
-
-  void handle_read_status_line(const boost::system::error_code& err, std::size_t size)
-  {
-    if(!err || err == boost::asio::error::eof)
-    {
-      std::istream response_stream(&m_response);
-      std::string http_version;
-      response_stream >> http_version;
-      response_stream >> m_statusCode;
-      std::string status_message;
-      std::getline(response_stream, status_message);
-
-      if(!response_stream || http_version.substr(0, 5) != "HTTP/")
-      {
-        ossia::logger().error("HTTP Error: Invalid response");
-        m_err(*this, "Invalid HTTP response");
-        return;
-      }
-
-      // Read headers (terminated by blank line)
-      boost::asio::async_read_until(
-          m_socket, m_response, "\r\n\r\n",
-          [self = this->shared_from_this()](
-              const boost::system::error_code& err, std::size_t size) {
-        self->handle_read_headers(err, size);
-      });
-    }
-    else
-    {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
-    }
-  }
-
-  void handle_read_headers(const boost::system::error_code& err, std::size_t size)
-  {
-    if(!err || err == boost::asio::error::eof)
-    {
-      std::istream response_stream(&m_response);
-      std::string header;
-      while(std::getline(response_stream, header) && header != "\r")
-      {
-        if(header.starts_with("Content-Length: "))
-        {
-          std::string_view sz(
-              header.begin() + strlen("Content-Length: "), header.end());
-          if(auto num = ossia::parse_relax<int>(sz))
-            m_contentLength = *num;
-        }
-      }
-
-      if(m_contentLength == 0)
-      {
-        // Empty body (e.g. 204 No Content)
-        finish_read(boost::asio::error::eof, 0);
-      }
-      else if(m_contentLength > 0)
-      {
-        if(m_contentLength == (int)m_response.size())
-        {
-          finish_read(boost::asio::error::eof, size);
-        }
-        else
-        {
-          boost::asio::async_read(
-              m_socket, m_response,
-              boost::asio::transfer_exactly(m_contentLength - m_response.size()),
-              [self = this->shared_from_this()](
-                  const boost::system::error_code& err, std::size_t size) {
-            self->handle_read_content(err, size);
-          });
-        }
-      }
+      if(c == ' ')
+        out += "%20";
       else
-      {
-        // No Content-Length — read until EOF
-        boost::asio::async_read(
-            m_socket, m_response, boost::asio::transfer_all(),
-            [self = this->shared_from_this()](
-                const boost::system::error_code& err, std::size_t size) {
-          self->handle_read_content(err, size);
-        });
-      }
+        out.push_back(c);
     }
-    else
-    {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
-    }
+    return out;
   }
 
-  void handle_read_content(const boost::system::error_code& err, std::size_t size)
+  void on_resolve(
+      const boost::beast::error_code& ec,
+      const boost::asio::ip::tcp::resolver::results_type& results)
   {
-    if(!err || err == boost::asio::error::eof)
-      finish_read(err, size);
-    else
+    if(ec)
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(*this, err.message());
+      ossia::logger().error("HTTP Error: {}", ec.message());
+      m_err(*this, ec.message());
+      return;
     }
+    m_stream.expires_after(std::chrono::seconds(30));
+    m_stream.async_connect(
+        results,
+        [self = this->shared_from_this()](
+            const boost::beast::error_code& ec,
+            const boost::asio::ip::tcp::resolver::results_type::endpoint_type&) {
+      self->on_connect(ec);
+    });
   }
 
-  void finish_read(const boost::system::error_code& err, std::size_t size)
+  void on_connect(const boost::beast::error_code& ec)
   {
-    const auto& dat = m_response.data();
-    auto begin = boost::asio::buffers_begin(dat);
-    auto end = boost::asio::buffers_end(dat);
-    auto sz = end - begin;
-    std::string str;
-    str.reserve(sz + 16);
-    str.assign(begin, end);
-    m_fun(*this, m_statusCode, str);
+    if(ec)
+    {
+      ossia::logger().error("HTTP Error: {}", ec.message());
+      m_err(*this, ec.message());
+      return;
+    }
+    m_stream.expires_after(std::chrono::seconds(30));
+    boost::beast::http::async_write(
+        m_stream, m_req,
+        [self = this->shared_from_this()](
+            const boost::beast::error_code& ec, std::size_t bytes) {
+      self->on_write(ec, bytes);
+    });
+  }
+
+  void on_write(const boost::beast::error_code& ec, std::size_t)
+  {
+    if(ec)
+    {
+      ossia::logger().error("HTTP Error: {}", ec.message());
+      m_err(*this, ec.message());
+      return;
+    }
+    m_stream.expires_after(std::chrono::seconds(30));
+    m_parser.body_limit(256u * 1024u * 1024u);
+    boost::beast::http::async_read(
+        m_stream, m_buffer, m_parser,
+        [self = this->shared_from_this()](
+            const boost::beast::error_code& ec, std::size_t bytes) {
+      self->on_read(ec, bytes);
+    });
+  }
+
+  void on_read(const boost::beast::error_code& ec, std::size_t)
+  {
+    if(ec && ec != boost::beast::http::error::end_of_stream
+       && ec != boost::asio::error::eof)
+    {
+      ossia::logger().error("HTTP Error: {}", ec.message());
+      m_err(*this, ec.message());
+      return;
+    }
+
+    auto& res = m_parser.get();
+    int status = (int)res.result_int();
+    const auto& body = res.body();
+    m_fun(*this, status, std::string_view{body.data(), body.size()});
     close();
   }
 
-  tcp::resolver m_resolver;
-  tcp::socket m_socket;
-  boost::asio::streambuf m_response;
-  int m_contentLength{-1};
-  int m_statusCode{0};
+  boost::asio::ip::tcp::resolver m_resolver;
+  boost::beast::tcp_stream m_stream;
+  boost::beast::flat_buffer m_buffer;
+  boost::beast::http::request<boost::beast::http::string_body> m_req;
+  boost::beast::http::response_parser<boost::beast::http::string_body> m_parser;
+  std::string m_host;
   Fun m_fun;
   Err m_err;
 };
+
 }

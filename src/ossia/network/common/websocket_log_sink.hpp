@@ -2,7 +2,7 @@
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/nullable_variant.hpp>
-#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/sockets/websocket_client_beast.hpp>
 
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
@@ -16,7 +16,7 @@ namespace ossia
 struct websocket_threaded_connection
 {
   websocket_threaded_connection(const std::string& ip)
-      : socket([](auto&&...) {})
+      : socket(ossia::net::ws_client_message_handler{[](auto&&...) {}})
   {
     running = true;
     thread = std::thread([this, ip] {
@@ -37,10 +37,6 @@ struct websocket_threaded_connection
         }
         log->critical("Logger stopping.");
       }
-      catch(const websocketpp::exception& e)
-      {
-        log->critical("Logger error: ", e.what());
-      }
       catch(const std::exception& e)
       {
         log->critical("Logger error: ", e.what());
@@ -55,14 +51,13 @@ struct websocket_threaded_connection
   ~websocket_threaded_connection()
   {
     running = false;
-    if(!socket.after_connect())
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     socket.stop();
     if(thread.joinable())
       thread.join();
   }
 
-  ossia::net::websocket_client socket;
+  ossia::net::websocket_client_beast socket;
   std::atomic_bool running{};
   std::thread thread;
 };
