@@ -537,9 +537,9 @@ TEST_CASE("test_port_unit_conversion", "test_port_unit_conversion")
 
     WHEN("A value comes in")
     {
-      THEN("The address's unit is the one that counts")
+      THEN("The unit the port declares is the one that counts")
       {
-        REQUIRE(p.effective_type() == ossia::complex_type{ossia::millimeter_u{}});
+        REQUIRE(p.effective_type() == ossia::complex_type{ossia::meter_u{}});
       }
     }
 
