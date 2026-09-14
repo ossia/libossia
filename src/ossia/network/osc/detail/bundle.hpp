@@ -22,7 +22,7 @@ struct bundle_common_policy
   void
   operator()(oscpack::OutboundPacketStream& str, ossia::value& val, const Addr_T& addr)
   {
-    if(val = bound_value(addr, val); val.valid())
+    if(val = bound_value(addr, std::move(val)); val.valid())
     {
       str << oscpack::BeginMessageN(osc_address(addr));
       val.apply(typename OscPolicy::dynamic_policy{{str, addr.get_unit()}});
@@ -111,13 +111,18 @@ try
     oscpack::OutboundPacketStream str(ret.data.data(), max_osc_message_size);
     str << oscpack::BeginBundleImmediate();
 
-    ossia::value val;
+    static thread_local ossia::value val;
     for(const auto& a : addresses)
     {
       auto& param = access_parameter(a);
       ret.critical |= param.get_critical();
-      val = param.value();
-      add_element_to_bundle(str, val, param);
+
+      if constexpr(requires {
+                     { a.value } -> std::same_as<ossia::value>;
+                   })
+        add_element_to_bundle(str, val = a.value, param);
+      else
+        add_element_to_bundle(str, val = param.value(), param);
     }
     str << oscpack::EndBundle();
     ret.data.resize(str.Size());
@@ -150,13 +155,13 @@ std::optional<bundle> make_bundle(
     NetworkPolicy add_element_to_bundle, const ossia::net::full_parameter_data& param)
 try
 {
+  static thread_local ossia::value val;
   bundle ret{
       ossia::buffer_pool::instance().acquire(max_osc_message_size), param.critical};
   {
     oscpack::OutboundPacketStream str(ret.data.data(), max_osc_message_size);
     str << oscpack::BeginBundleImmediate();
-    auto val = param.value();
-    add_element_to_bundle(str, val, param);
+    add_element_to_bundle(str, val = param.value(), param);
     str << oscpack::EndBundle();
     ret.data.resize(str.Size());
 
