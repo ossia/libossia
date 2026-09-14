@@ -16,57 +16,71 @@ namespace ossia::qt
 
 qml_engine_functions::~qml_engine_functions() { }
 
-const ossia::destination_t& qml_engine_functions::find_address(const QString& str)
+qml_engine_functions::resolved_address
+qml_engine_functions::find_address(const QString& str)
 {
   // OPTIMIZEME this function can be optimized a lot
   // c.f. MapperDevice.cpp:find_parameter
-  auto it = m_address_cache.find(str);
-  if(it != m_address_cache.end())
+  const auto d = str.indexOf(':');
+
+  // An address without a ':' cannot name a device, so it names a node of the
+  // device this script belongs to - and only of that one. Scripts with no own
+  // device search the whole document instead: nothing else is available to
+  // them. This is also the scope a pattern address gets expanded against.
+  const bool own_scope = m_own_device && d == -1;
+  const device_span scope = own_scope
+                                ? device_span{&m_own_device, 1}
+                                : device_span{m_devices.data(), m_devices.size()};
+
+  if(auto it = m_address_cache.find(str); it != m_address_cache.end())
   {
-    return it->second;
+    return {it->second, scope};
   }
 
-  auto d = str.indexOf(':');
   if(d == -1)
   {
     // Address looks like '/foo/bar'
-    // Try to find automatically in all devices
-    auto node = find_node(devices, str.toStdString());
+    auto node = own_scope ? ossia::net::find_node(
+                                m_own_device->get_root_node(), str.toStdString())
+                          : find_node(m_devices, str.toStdString());
     if(node)
     {
       if(auto addr = node->get_parameter())
       {
         auto [it, b] = m_address_cache.insert({str, addr});
-        return it->second;
+        return {it->second, scope};
       }
     }
   }
-
-  // Split in devices
-  auto dev = ossia::find_if(
-      devices, [devname = str.mid(0, d).toStdString()](const auto& dev) {
-    return dev->get_name() == devname;
-  });
-
-  if(dev != devices.end())
+  else
   {
-    if(d == str.size() - 1)
-    {
-      if(auto addr = (*dev)->get_root_node().get_parameter())
-      {
-        auto [it, b] = m_address_cache.insert({str, addr});
-        return it->second;
-      }
-    }
+    // Address looks like 'devname:/foo/bar': any device of the list may be
+    // named, including this script's own one.
+    auto dev = ossia::find_if(
+        m_devices, [devname = str.mid(0, d).toStdString()](const auto& dev) {
+      return dev->get_name() == devname;
+    });
 
-    auto node
-        = ossia::net::find_node((*dev)->get_root_node(), str.mid(d + 1).toStdString());
-    if(node)
+    if(dev != m_devices.end())
     {
-      if(auto addr = node->get_parameter())
+      if(d == str.size() - 1)
       {
-        auto [it, b] = m_address_cache.insert({str, addr});
-        return it->second;
+        if(auto addr = (*dev)->get_root_node().get_parameter())
+        {
+          auto [it, b] = m_address_cache.insert({str, addr});
+          return {it->second, scope};
+        }
+      }
+
+      auto node
+          = ossia::net::find_node((*dev)->get_root_node(), str.mid(d + 1).toStdString());
+      if(node)
+      {
+        if(auto addr = node->get_parameter())
+        {
+          auto [it, b] = m_address_cache.insert({str, addr});
+          return {it->second, scope};
+        }
       }
     }
   }
@@ -74,22 +88,93 @@ const ossia::destination_t& qml_engine_functions::find_address(const QString& st
   if(auto p = ossia::traversal::make_path(str.toStdString()))
   {
     auto [it, b] = m_address_cache.insert({str, *p});
-    return it->second;
+    return {it->second, scope};
   }
 
   static const ossia::destination_t bad_dest;
-  return bad_dest;
+  return {bad_dest, scope};
+}
+
+void qml_engine_functions::setDevices(qml_device_cache devices)
+{
+  std::lock_guard g{m_mutex};
+  if(!m_enabled)
+    return;
+  m_devices = std::move(devices);
+  m_address_cache.clear();
+}
+
+void qml_engine_functions::addDevice(ossia::net::device_base* device)
+{
+  std::lock_guard g{m_mutex};
+  if(!m_enabled || !device)
+    return;
+  m_devices.push_back(device);
+  ossia::remove_duplicates(m_devices);
+  m_address_cache.clear();
+}
+
+void qml_engine_functions::removeDevice(ossia::net::device_base* device)
+{
+  std::lock_guard g{m_mutex};
+  ossia::remove_erase(m_devices, device);
+  if(m_own_device == device)
+    m_own_device = nullptr;
+  // The cache stores raw parameter pointers: every one of them may have
+  // belonged to that device.
+  m_address_cache.clear();
+}
+
+void qml_engine_functions::setDevice(ossia::net::device_base* device)
+{
+  {
+    std::lock_guard g{m_mutex};
+    if(!m_enabled)
+      return;
+    m_own_device = device;
+    m_address_cache.clear();
+  }
+  // A script also reaches its own device by name: it has to be in the list.
+  addDevice(device);
+}
+
+void qml_engine_functions::disable()
+{
+  std::lock_guard g{m_mutex};
+  m_enabled = false;
+  m_devices.clear();
+  m_own_device = nullptr;
+  m_address_cache.clear();
+}
+
+ossia::net::node_base* qml_engine_functions::find(const QString& address)
+{
+  std::lock_guard g{m_mutex};
+  if(!m_enabled)
+    return nullptr;
+
+  const auto& res = find_address(address).destination;
+  if(auto p = res.target<ossia::net::parameter_base*>())
+    return *p ? &(*p)->get_node() : nullptr;
+  else if(auto n = res.target<ossia::net::node_base*>())
+    return *n;
+  return nullptr;
 }
 
 QVariant qml_engine_functions::read(const QString& address)
 {
-  if(auto addr = find_address(address))
+  std::lock_guard g{m_mutex};
+  if(!m_enabled)
+    return {};
+
+  const auto res = find_address(address);
+  if(res.destination)
   {
     QVariant var;
     QVariantMap mv;
 
     bool unique = ossia::apply_to_destination(
-        addr, devices, [&](ossia::net::parameter_base* addr, bool unique) {
+        res.destination, res.scope, [&](ossia::net::parameter_base* addr, bool unique) {
       if(unique)
       {
         var = addr->value().apply(ossia::qt::ossia_to_qvariant{});
@@ -114,7 +199,12 @@ QVariant qml_engine_functions::read(const QString& address)
 
 void qml_engine_functions::write(const QString& address, const QVariant& value)
 {
-  if(const auto& addr = find_address(address))
+  std::lock_guard g{m_mutex};
+  if(!m_enabled)
+    return;
+
+  const auto res = find_address(address);
+  if(res.destination)
   {
     auto& cache = m_port_cache.get_data();
     cache.clear();
@@ -122,7 +212,7 @@ void qml_engine_functions::write(const QString& address, const QVariant& value)
     cache.emplace_back(converter(value));
 
     ossia::apply_to_destination(
-        addr, devices, [&](ossia::net::parameter_base* addr, bool unique) {
+        res.destination, res.scope, [&](ossia::net::parameter_base* addr, bool unique) {
       if(addr)
         on_push(*addr, m_port_cache);
     }, ossia::do_nothing_for_nodes{});
@@ -324,28 +414,23 @@ QVariant qml_engine_functions::asArray(QVariant v) const noexcept
 qml_device_engine_functions::~qml_device_engine_functions() = default;
 void qml_device_engine_functions::addNode(QString address, QString type)
 {
-  if(!m_dev)
+  std::lock_guard g{m_mutex};
+  if(!m_enabled || !m_own_device)
     return;
 
-  auto n = address.toStdString();
   ossia::net::find_or_create_parameter(
-      m_dev->get_root_node(), address.toStdString(), type.toStdString());
+      m_own_device->get_root_node(), address.toStdString(), type.toStdString());
 }
 
 void qml_device_engine_functions::removeNode(QString address, QString type)
 {
-  if(!m_dev)
+  std::lock_guard g{m_mutex};
+  if(!m_enabled || !m_own_device)
     return;
 
-  if(auto res = ossia::net::find_node(m_dev->get_root_node(), address.toStdString()))
+  if(auto res
+     = ossia::net::find_node(m_own_device->get_root_node(), address.toStdString()))
     if(auto p = res->get_parent())
       p->remove_child(*res);
-}
-
-void qml_device_engine_functions::setDevice(net::device_base* d)
-{
-  m_dev = d;
-  this->devices.push_back(d);
-  ossia::remove_duplicates(this->devices);
 }
 }

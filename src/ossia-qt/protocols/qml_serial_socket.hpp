@@ -22,14 +22,13 @@
 #include <nano_observer.hpp>
 
 #include <algorithm>
+#include <mutex>
 #include <verdigris>
 
 namespace ossia::qt
 {
 
-class qml_serial_socket
-    : public QObject
-    , public Nano::Observer
+class qml_serial_socket : public QObject
 {
   W_OBJECT(qml_serial_socket)
 public:
@@ -50,11 +49,41 @@ public:
       ossia::net::serial_socket<ossia::net::size_prefix_4byte_le_framing>,
       ossia::net::serial_socket<ossia::net::fixed_length_framing>>;
 
-  struct state
+  //! Owns the transport and every asio-side callback. As on the TCP outbound
+  //! socket, the Nano::Observer lives here and not on the QObject: the signals
+  //! are members of this very object, so their unsynchronized slot lists can
+  //! only be mutated while the whole state is being destroyed, and the QObject
+  //! - destroyed on the Qt thread while the asio thread may be firing - is
+  //! only ever reached under qt_mutex.
+  struct state : Nano::Observer
   {
     socket_type socket;
     std::atomic_bool alive{true};
     ossia::net::encoding enc{ossia::net::encoding::none};
+
+    //! Guards `self`, which is cleared before the QObject starts dying. Held
+    //! for the whole asio -> Qt handover.
+    std::mutex qt_mutex;
+    qml_serial_socket* self{};
+
+    void detach()
+    {
+      std::lock_guard g{qt_mutex};
+      self = nullptr;
+    }
+
+    template <typename F>
+    void post_to_qt(F&& f)
+    {
+      std::lock_guard g{qt_mutex};
+      if(self)
+        ossia::qt::run_async(self, std::forward<F>(f), Qt::AutoConnection);
+    }
+
+    //! Nano slots, always on the asio thread.
+    void fire_open();
+    void fire_fail();
+    void fire_close();
 
     state(
         const ossia::net::serial_configuration& conf, boost::asio::io_context& ctx,
@@ -122,15 +151,19 @@ public:
   {
     std::shared_ptr<state> st;
     QPointer<qml_serial_socket> self;
-    QJSValue* target; // points to onMessage or onBytes on the QObject
+    // Points to onMessage or onBytes on the QObject; null when no callback is
+    // set, the read loop then only keeping the port's error and close
+    // notifications flowing. Dereferenced on the Qt thread only: a QJSValue
+    // must not be touched from asio.
+    QJSValue* target;
 
     void operator()(const unsigned char* data, std::size_t sz) const
     {
-      if(!st->alive)
+      if(!st->alive || !target)
         return;
       auto buf = apply_decoding(st->enc, data, sz);
       auto cb = target;
-      ossia::qt::run_async(self.get(), [self = self, buf, cb] {
+      st->post_to_qt([self = self, buf, cb] {
         if(!self.get())
           return;
         if(cb->isCallable())
@@ -138,7 +171,7 @@ public:
           if(auto engine = qjsEngine(self.get()))
             cb->call({engine->toScriptValue(buf)});
         }
-      }, Qt::AutoConnection);
+      });
     }
   };
 
@@ -149,6 +182,8 @@ public:
     if(m_state)
     {
       m_state->alive = false;
+      // No asio -> Qt call may start from here on.
+      m_state->detach();
       close();
     }
   }
@@ -167,11 +202,12 @@ public:
       f = ossia::net::framing::none;
 
     m_state = std::make_shared<state>(conf, ctx, f, delim, frame_size, e);
+    m_state->self = this;
 
-    ossia::visit([this](auto& sock) {
-      sock.on_open.template connect<&qml_serial_socket::on_open>(this);
-      sock.on_close.template connect<&qml_serial_socket::on_close>(this);
-      sock.on_fail.template connect<&qml_serial_socket::on_fail>(this);
+    ossia::visit([st = m_state.get()](auto& sock) {
+      sock.on_open.template connect<&state::fire_open>(st);
+      sock.on_close.template connect<&state::fire_close>(st);
+      sock.on_fail.template connect<&state::fire_fail>(st);
     }, m_state->socket);
 
     try
@@ -183,6 +219,7 @@ public:
       // Opening a port that does not exist is the common failure here; leave
       // the object unusable and let the caller report it.
       m_state->alive = false;
+      m_state->detach();
       m_state.reset();
       throw;
     }
@@ -258,20 +295,16 @@ public:
 
     auto st = m_state;
     auto self = QPointer{this};
-    if(onMessage.isCallable())
-    {
-      ossia::visit(
-          [cb = receive_callback{st, self, &self.data()->onMessage}](
-              auto& sock) mutable { sock.receive(std::move(cb)); },
-          st->socket);
-    }
-    else if(onBytes.isCallable())
-    {
-      ossia::visit(
-          [cb = receive_callback{st, self, &self.data()->onBytes}](auto& sock) mutable {
-        sock.receive(std::move(cb));
-      }, st->socket);
-    }
+    // The read loop is always armed: it is what makes the port's own stream
+    // notifications (errors, close) observable, even with no callback set.
+    // Which decoder runs was decided in open(): a serial_socket owns its
+    // framing.
+    QJSValue* target = onMessage.isCallable() ? &self.data()->onMessage
+                       : onBytes.isCallable() ? &self.data()->onBytes
+                                              : nullptr;
+    ossia::visit([cb = receive_callback{st, self, target}](auto& sock) mutable {
+      sock.receive(std::move(cb));
+    }, st->socket);
 
     if(onOpen.isCallable())
       ossia::qt::run_async(this, [=, this] {
@@ -311,5 +344,26 @@ private:
 
   std::shared_ptr<state> m_state;
 };
+
+inline void qml_serial_socket::state::fire_open()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_open();
+}
+
+inline void qml_serial_socket::state::fire_fail()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_fail();
+}
+
+inline void qml_serial_socket::state::fire_close()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_close();
+}
 
 }
