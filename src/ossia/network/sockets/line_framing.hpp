@@ -49,6 +49,11 @@ struct line_framing_decoder
    * shared_ptr that the handler keeps a copy of is what makes that final shrink
    * land on live memory; the lifetime token alone cannot help here, as by the
    * time it is checked the damage is done.
+   *
+   * The buffer also persists across receives: async_read_until reports where
+   * the first delimiter is but consumes nothing, so the remainder of a
+   * coalesced read -- further complete lines, then a partial one -- stays here
+   * for us to dispatch and consume.
    */
   std::shared_ptr<buffer_type> m_data{std::make_shared<buffer_type>()};
   uint8_t m_delimiter_len = 0;
@@ -70,9 +75,9 @@ struct line_framing_decoder
   {
     if(m_delimiter_len == 0)
       m_delimiter_len = strnlen(delimiter, 8);
-    m_data->clear();
 
-    // Receive until delimiter
+    // Receive until delimiter. m_data starts with the leftover of the previous
+    // read, which async_read_until scans before asking the socket for more.
     boost::asio::async_read_until(
         socket, boost::asio::dynamic_buffer(*m_data), (const char*)delimiter,
         [this, alive = m_lifetime.watch(), buf = m_data,
@@ -82,36 +87,64 @@ struct line_framing_decoder
       if(alive.expired())
         return;
 
-      if(ec.failed())
-        return;
-
-      int new_sz = sz;
-      new_sz -= m_delimiter_len;
-      if(new_sz > 0)
-        read_data(std::move(f), ec, new_sz);
-      else
-        this->receive(std::move(f));
+      // Errors are the stream's business: validate_stream is what turns an EOF
+      // into a close notification.
+      read_data(std::move(f), ec, sz);
     });
   }
 
+  //! `sz` is the end of the first line, delimiter included.
   template <typename F>
   void read_data(F&& f, boost::system::error_code ec, std::size_t sz)
   {
     if(!f.validate_stream(ec))
       return;
 
-    if(!ec && sz > 0)
-    {
-      try
-      {
-        f((const unsigned char*)m_data->data(), sz);
-      }
-      catch(...)
-      {
-      }
-    }
+    // Any other failure is persistent on this socket, so stop instead of
+    // spinning on an immediately-failing read.
+    if(ec.failed())
+      return;
+
+    if(sz > 0)
+      dispatch_lines(f, sz);
 
     this->receive(std::move(f));
+  }
+
+  //! Dispatch every complete line of the read in order, keep the last partial.
+  template <typename F>
+  void dispatch_lines(const F& f, std::size_t sz)
+  {
+    auto& data = *m_data;
+    std::size_t consumed = 0;
+    std::size_t end = sz;
+    for(;;)
+    {
+      // Empty lines carry nothing: consumed, but not dispatched.
+      if(end > consumed + m_delimiter_len)
+      {
+        try
+        {
+          f((const unsigned char*)data.data() + consumed,
+            end - consumed - m_delimiter_len);
+        }
+        catch(...)
+        {
+        }
+      }
+      consumed = end;
+
+      // Next line of the same read, if any: the search resumes where we left.
+      const char* const begin = data.data();
+      const char* const last = begin + data.size();
+      const char* const next
+          = std::search(begin + consumed, last, delimiter, delimiter + m_delimiter_len);
+      if(next == last)
+        break;
+      end = std::size_t(next - begin) + m_delimiter_len;
+    }
+
+    data.erase(data.begin(), data.begin() + consumed);
   }
 };
 

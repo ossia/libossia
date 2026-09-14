@@ -176,6 +176,11 @@ public:
       if(!st->alive)
         return;
       auto buf = apply_decoding(st->enc, data, sz);
+      // A frame that decodes to nothing is encoding metadata, not a message:
+      // the EOF record of Intel HEX / S-record firmware streams carries no
+      // payload. Unencoded frames are passed on as they are, empty or not.
+      if(buf.isEmpty() && st->enc != ossia::net::encoding::none)
+        return;
       ossia::qt::run_async(
           self.get(),
           [self = self, buf] {

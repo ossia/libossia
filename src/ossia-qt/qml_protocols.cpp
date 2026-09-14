@@ -4,6 +4,7 @@
 #include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/sockets/encoding.hpp>
 
+#include <ossia-qt/invoke.hpp>
 #include <ossia-qt/protocols/qml_bluetooth.hpp>
 #include <ossia-qt/protocols/qml_can_socket.hpp>
 #include <ossia-qt/protocols/qml_http_request.hpp>
@@ -51,6 +52,9 @@
   , onMessage: function(bytes) { console.log(bytes); }
  });
 
+ // Error callback of the UDP, TCP, Unix and WebSocket sockets: "onError" is the
+ // canonical spelling, "onFail" an accepted alias for it. They name one single
+ // callback: if a configuration carries both, the canonical spelling is used.
  var sock = Protocols.outboundTCP({
    Transport: { Host: "127.0.0.1", Port: 1234 },
    onOpen: function(socket) {
@@ -113,6 +117,7 @@ W_OBJECT_IMPL(ossia::qt::qml_tcp_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_tcp_connection)
 W_OBJECT_IMPL(ossia::qt::qml_tcp_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_websocket_outbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_websocket_connection)
 W_OBJECT_IMPL(ossia::qt::qml_websocket_inbound_socket)
 #if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
 W_OBJECT_IMPL(ossia::qt::qml_unix_datagram_outbound_socket)
@@ -219,6 +224,73 @@ static ossia::net::encoding parse_encoding(const QVariantMap& conf)
     return ossia::net::encoding::none;
 }
 
+//! The error callback of a socket configuration: "onError" is the canonical
+//! spelling, "onFail" an alias for that very same callback. A configuration
+//! carrying both is honoured with the canonical spelling.
+static QJSValue error_callback(const QVariantMap& conf)
+{
+  auto on_error = conf["onError"].value<QJSValue>();
+  if(on_error.isCallable())
+    return on_error;
+  return conf["onFail"].value<QJSValue>();
+}
+
+//! Calls a script callback on the next iteration of the event loop, for the
+//! same reason as open_later(): a factory runs while the QML component that
+//! hosts it is still being created, so the device tree a callback would write
+//! to does not exist yet.
+static void call_later(QObject* owner, const QJSValue& callback, const QString& argument)
+{
+  if(!callback.isCallable())
+    return;
+  ossia::qt::run_async(
+      owner, [callback, argument]() mutable { callback.call({argument}); });
+}
+
+//! Reports a socket that could not be opened through its error callback.
+static void report_open_failure(QJSValue& onError, const QString& error)
+{
+  ossia::logger().error("Protocols: {}", error.toStdString());
+  qDebug() << "Protocols:" << error;
+  if(onError.isCallable())
+    onError.call({error});
+}
+
+//! Opens a socket once the component that created it is in place.
+/**
+ * A factory is called while the QML properties of its host - a Mapper, for
+ * instance - are being evaluated, that is, before createTree() has built the
+ * device tree. Transports whose open, or whose failure, completes
+ * synchronously (MIDI and UMP ports, a unix-domain connect, an immediately
+ * refused endpoint) would then run onOpen / onError inside that window, where
+ * Device.write() has no address to resolve and is silently dropped.
+ *
+ * Opening on the next iteration of the event loop puts the whole dispatch
+ * after the tree exists, which is where the asynchronous transports already
+ * land. Qt drops queued invocations whose receiver died first, so a socket the
+ * script did not keep simply never opens; a synchronous failure is reported
+ * through the configured error callback like an asynchronous one.
+ */
+template <typename Socket, typename Open>
+static QObject* open_later(Socket* sock, Open open)
+{
+  ossia::qt::run_async(sock, [sock, open = std::move(open)]() mutable {
+    try
+    {
+      open();
+    }
+    catch(const std::exception& e)
+    {
+      report_open_failure(sock->onError, QString::fromUtf8(e.what()));
+    }
+    catch(...)
+    {
+      report_open_failure(sock->onError, QStringLiteral("could not open socket"));
+    }
+  });
+  return sock;
+}
+
 qml_protocols::qml_protocols(ossia::net::network_context_ptr ctx, QObject* parent)
     : QObject{parent}
     , context{ctx}
@@ -245,14 +317,11 @@ QObject* qml_protocols::outboundUDP(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, enc);
-    return sock;
-  } catch(...) {
-    delete sock;
-    return nullptr;
-  }
+  sock->onError = error_callback(conf);
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, enc] {
+    sock->open(ossia_conf, ctx->context, enc);
+  });
 }
 
 QObject* qml_protocols::inboundUDP(QVariant config)
@@ -271,20 +340,12 @@ QObject* qml_protocols::inboundUDP(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onMessage = conf["onMessage"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, enc] {
+    sock->open(ossia_conf, ctx->context, enc);
+  });
 }
 
 QObject* qml_protocols::osc(QVariant config)
@@ -308,19 +369,11 @@ QObject* qml_protocols::outboundUnixDatagram(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  sock->onError = error_callback(conf);
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, enc] {
+    sock->open(ossia_conf, ctx->context, enc);
+  });
 #else
   return nullptr;
 #endif
@@ -339,20 +392,12 @@ QObject* qml_protocols::inboundUnixDatagram(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onMessage = conf["onMessage"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, enc] {
+    sock->open(ossia_conf, ctx->context, enc);
+  });
 #else
   return nullptr;
 #endif
@@ -372,21 +417,13 @@ QObject* qml_protocols::outboundUnixStream(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, framing, delimiter, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, framing, delimiter, enc] {
+    sock->open(ossia_conf, ctx->context, framing, delimiter, enc);
+  });
 #else
   return nullptr;
 #endif
@@ -406,21 +443,13 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onConnection = conf["onConnection"].value<QJSValue>();
 
-  try {
-    sock->open(ossia_conf, context->context, framing, delimiter, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, framing, delimiter, enc] {
+    sock->open(ossia_conf, ctx->context, framing, delimiter, enc);
+  });
 #else
   return nullptr;
 #endif
@@ -441,21 +470,13 @@ QObject* qml_protocols::outboundTCP(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, framing, delimiter, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, framing, delimiter, enc] {
+    sock->open(ossia_conf, ctx->context, framing, delimiter, enc);
+  });
 }
 
 QObject* qml_protocols::inboundTCP(QVariant config)
@@ -475,20 +496,12 @@ QObject* qml_protocols::inboundTCP(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onConnection = conf["onConnection"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context, framing, delimiter, enc);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context, framing, delimiter, enc] {
+    sock->open(ossia_conf, ctx->context, framing, delimiter, enc);
+  });
 }
 
 QObject* qml_protocols::outboundWS(QVariant config)
@@ -504,21 +517,11 @@ QObject* qml_protocols::outboundWS(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onTextMessage = conf["onTextMessage"].value<QJSValue>();
   sock->onBinaryMessage = conf["onBinaryMessage"].value<QJSValue>();
-  try {
-    sock->open(ossia_conf, context->context);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context] { sock->open(ossia_conf, ctx->context); });
 }
 
 QObject* qml_protocols::inboundWS(QVariant config)
@@ -536,36 +539,102 @@ QObject* qml_protocols::inboundWS(QVariant config)
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
-  sock->onError = conf["onError"].value<QJSValue>();
+  sock->onError = error_callback(conf);
   sock->onConnection = conf["onConnection"].value<QJSValue>();
 
-  try {
-    sock->open(ossia_conf, context->context);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context] { sock->open(ossia_conf, ctx); });
 }
 
+// Default port of the URL's scheme: it must not appear in the Host header.
+static int http_default_port(const QUrl& url)
+{
+  return (url.scheme() == QLatin1String("https") || url.scheme() == QLatin1String("wss"))
+             ? 443
+             : 80;
+}
+
+// The host as it goes on the wire: an IPv6 literal keeps the brackets that
+// separate it from the port, and an IDN host is punycode - a raw UTF-8 host is
+// not something an HTTP server has to understand.
+static QString http_wire_host(const QUrl& url)
+{
+  return url.host(QUrl::FullyEncoded);
+}
+
+// Host header value: the wire host, plus ":port" whenever the port is not the
+// default of the scheme.
+static QString http_authority(const QUrl& url)
+{
+  QString host = http_wire_host(url);
+  if(host.contains(QLatin1Char(':')))
+    host = QLatin1Char('[') + host + QLatin1Char(']');
+
+  const int port = url.port(-1);
+  if(port < 0 || port == http_default_port(url))
+    return host;
+  return host + QLatin1Char(':') + QString::number(port);
+}
+
+// CR and LF end a header field: a QML-supplied key or value carrying one
+// injects headers - and with them a whole second request - into the stream.
+static bool http_header_injects(const QString& field)
+{
+  return field.contains(QLatin1Char('\r')) || field.contains(QLatin1Char('\n'));
+}
+
+// Userinfo in an http URL is Basic credentials to every mainstream client
+// (curl, browsers), so it is turned into the header it stands for rather than
+// dropped, which would send the request unauthenticated.
+static QString http_basic_authorization(const QUrl& url)
+{
+  if(url.userName().isEmpty() && url.password().isEmpty())
+    return {};
+
+  const auto credentials = url.userName() + QLatin1Char(':') + url.password();
+  return QStringLiteral("Basic ") + QString::fromLatin1(credentials.toUtf8().toBase64());
+}
+
+// Request target: encoded path (never empty) followed by the encoded query.
+static QString http_target(const QUrl& url)
+{
+  QString target = url.path(QUrl::FullyEncoded);
+  if(target.isEmpty())
+    target = QStringLiteral("/");
+  if(url.hasQuery())
+    target += QLatin1Char('?') + url.query(QUrl::FullyEncoded);
+  return target;
+}
+
+// Legacy overload: Protocols.http(url, callback, verb). It shares the client
+// implementation with the fetch overload below; only the callback shape
+// differs, the response framing must not.
 void qml_protocols::http(QUrl qurl, QJSValue val, QString verb)
 {
-  auto path = qurl.path();
+  const auto target = http_target(qurl);
+  const auto authority = http_authority(qurl);
+
+  std::vector<std::pair<std::string, std::string>> headers;
+  if(const auto authorization = http_basic_authorization(qurl); !authorization.isEmpty())
+    headers.emplace_back("Authorization", authorization.toStdString());
+
   qml_protocols_http_answer a{this, std::move(val)};
   qml_protocols_http_error e;
   auto hrq = std::make_shared<request_type>(
-      a, e, this->context->context, "ossia score", path.toStdString(),
-      verb.toStdString());
-  try {
-  hrq->resolve(qurl.host().toStdString(), std::to_string(qurl.port(80)));
-  } catch(const std::exception& e) {
+      std::move(a), std::move(e), this->context->context, verb.toStdString(),
+      authority.toStdString(), target.toStdString(), headers);
+  try
+  {
+    hrq->resolve(
+        http_wire_host(qurl).toStdString(),
+        std::to_string(qurl.port(http_default_port(qurl))));
+  }
+  catch(const std::exception& e)
+  {
     qDebug() << e.what();
-  } catch(...) {
+  }
+  catch(...)
+  {
     qDebug() << "Error while sending HTTP request";
   }
 }
@@ -585,31 +654,47 @@ void qml_protocols::http(QVariant config)
 
   QString body = conf["body"].toString();
 
-  // Build path with query string
-  QString path = qurl.path(QUrl::FullyEncoded);
-  if(qurl.hasQuery())
-    path += "?" + qurl.query(QUrl::FullyEncoded);
-  if(path.isEmpty())
-    path = "/";
-
-  auto host = qurl.host();
-
-  // Parse custom headers from QVariantMap
-  std::vector<std::pair<std::string, std::string>> headers;
-  auto headersMap = conf["headers"].toMap();
-  for(auto it = headersMap.begin(); it != headersMap.end(); ++it)
-    headers.emplace_back(it.key().toStdString(), it.value().toString().toStdString());
+  const auto target = http_target(qurl);
+  const auto authority = http_authority(qurl);
 
   qml_protocols_fetch_answer a{this, conf["onResponse"].value<QJSValue>()};
   qml_protocols_fetch_error e{this, conf["onError"].value<QJSValue>()};
 
+  // Parse custom headers from QVariantMap
+  std::vector<std::pair<std::string, std::string>> headers;
+  bool hasAuthorization = false;
+  auto headersMap = conf["headers"].toMap();
+  for(auto it = headersMap.begin(); it != headersMap.end(); ++it)
+  {
+    const auto& key = it.key();
+    const auto value = it.value().toString();
+    if(http_header_injects(key) || http_header_injects(value))
+    {
+      // Sending it would be a request-splitting hole: nothing goes out.
+      e(*this, "Invalid HTTP header \"" + key.toStdString() + "\": CR or LF");
+      return;
+    }
+
+    if(key.compare(QLatin1String("Authorization"), Qt::CaseInsensitive) == 0)
+      hasAuthorization = true;
+    headers.emplace_back(key.toStdString(), value.toStdString());
+  }
+
+  // An explicit Authorization header wins over the URL's userinfo.
+  if(!hasAuthorization)
+    if(const auto authorization = http_basic_authorization(qurl);
+       !authorization.isEmpty())
+      headers.emplace_back("Authorization", authorization.toStdString());
+
   auto hrq = std::make_shared<fetch_request_type>(
       std::move(a), std::move(e), this->context->context, verb.toStdString(),
-      host.toStdString(), path.toStdString(), headers, body.toStdString());
+      authority.toStdString(), target.toStdString(), headers, body.toStdString());
 
   try
   {
-    hrq->resolve(host.toStdString(), std::to_string(qurl.port(80)));
+    hrq->resolve(
+        http_wire_host(qurl).toStdString(),
+        std::to_string(qurl.port(http_default_port(qurl))));
   }
   catch(const std::exception& e)
   {
@@ -621,6 +706,27 @@ void qml_protocols::http(QVariant config)
   }
 }
 
+//! Name of the libremidi backend an endpoint belongs to.
+//! The backend is part of a port's identity: libremidi refuses to open a port
+//! whose api does not match the one of the midi_in / midi_out it is given to.
+//! Names rather than the numeric enum, as they survive JSON and QVariant
+//! round-trips and stay readable in the QML debug output.
+static QString midi_api_name(libremidi::API api)
+{
+  const auto name = libremidi::get_api_name(api);
+  return QString::fromUtf8(name.data(), name.size());
+}
+
+//! How Protocols.*Devices() observes the machine's endpoints. Software ones
+//! are part of it: the ports other applications expose - a synthesizer, a
+//! sequencer, a virtual keyboard - are where most of a studio's MIDI lives.
+static libremidi::observer_configuration enumeration_configuration()
+{
+  libremidi::observer_configuration conf;
+  conf.track_virtual = true;
+  return conf;
+}
+
 static void midi_port_information(
     QJSEngine* qjs, const libremidi::port_information& port, QJSValue& portInfo)
 {
@@ -628,6 +734,7 @@ static void midi_port_information(
   portInfo.setProperty("DisplayName", QString::fromStdString(port.display_name));
   portInfo.setProperty("Manufacturer", QString::fromStdString(port.manufacturer));
   portInfo.setProperty("DeviceName", QString::fromStdString(port.device_name));
+  portInfo.setProperty("API", midi_api_name(port.api));
 
   // Port type flags
   auto typeObj = qjs->newArray();
@@ -686,7 +793,8 @@ static void midi_port_information(
   }
 }
 
-static libremidi::port_information qjs_to_midi_port_information(const QJSValue& portInfo)
+static libremidi::port_information
+qjs_to_midi_port_information(const QJSValue& portInfo, QString& error)
 {
   libremidi::port_information port;
 
@@ -695,6 +803,27 @@ static libremidi::port_information qjs_to_midi_port_information(const QJSValue& 
   port.display_name = portInfo.property("DisplayName").toString().toStdString();
   port.manufacturer = portInfo.property("Manufacturer").toString().toStdString();
   port.device_name = portInfo.property("DeviceName").toString().toStdString();
+
+  // Backend: an endpoint can only be reopened on the API it was enumerated
+  // with, and there is nothing to fall back on if it is absent. An absent
+  // property is told apart from a wrong one by asking the value, not its
+  // string form: QJSValue::toString() renders `undefined` as the six-letter
+  // word.
+  const auto api_value = portInfo.property("API");
+  const auto api = api_value.toString();
+  const bool has_api
+      = !api_value.isUndefined() && !api_value.isNull() && !api.isEmpty();
+  port.api = has_api ? libremidi::get_compiled_api_by_name(api.toStdString())
+                     : libremidi::API::UNSPECIFIED;
+  if(port.api == libremidi::API::UNSPECIFIED)
+  {
+    error = has_api
+                ? QStringLiteral("Unknown MIDI API: %1").arg(api)
+                : QStringLiteral("Transport has no API: use one of the endpoints "
+                                 "returned by Protocols.inbound/outboundMIDIDevices() "
+                                 "or Protocols.inbound/outboundUMPDevices()");
+    return port;
+  }
 
   // Port type flags
   port.type = {};
@@ -782,13 +911,29 @@ static libremidi::port_information qjs_to_midi_port_information(const QJSValue& 
   return port;
 }
 
+//! Reports an endpoint that cannot be opened through the config's onError.
+/**
+ * Deferred like every other failure a factory reports: the tree the script
+ * writes the error into does not exist yet while the factory runs.
+ */
+static bool midi_port_failed(
+    QObject* owner, const QJSValue& config, const char* func, const QString& error)
+{
+  if(error.isEmpty())
+    return false;
+
+  qDebug() << func << error;
+  call_later(owner, config.property("onError"), error);
+  return true;
+}
+
 // for(let p of Protocols.inboundMIDIDevices()) { console.log(JSON.stringify(p)); }
 QJSValue qml_protocols::inboundMIDIDevices()
 {
   try
   {
     libremidi::observer observer{
-        libremidi::observer_configuration{}, libremidi::midi1::default_api()};
+        enumeration_configuration(), libremidi::midi1::default_api()};
     auto ports = observer.get_input_ports();
     auto qjs = qjsEngine(this);
     auto result = qjs->newArray(ports.size());
@@ -813,7 +958,7 @@ QJSValue qml_protocols::inboundUMPDevices()
   try
   {
     libremidi::observer observer{
-        libremidi::observer_configuration{}, libremidi::midi2::default_api()};
+        enumeration_configuration(), libremidi::midi2::default_api()};
     auto ports = observer.get_input_ports();
     auto qjs = qjsEngine(this);
     auto result = qjs->newArray(ports.size());
@@ -838,7 +983,7 @@ QJSValue qml_protocols::outboundMIDIDevices()
   try
   {
     libremidi::observer observer{
-        libremidi::observer_configuration{}, libremidi::midi1::default_api()};
+        enumeration_configuration(), libremidi::midi1::default_api()};
     auto ports = observer.get_output_ports();
     auto qjs = qjsEngine(this);
     auto result = qjs->newArray(ports.size());
@@ -863,7 +1008,7 @@ QJSValue qml_protocols::outboundUMPDevices()
   try
   {
     libremidi::observer observer{
-        libremidi::observer_configuration{}, libremidi::midi2::default_api()};
+        enumeration_configuration(), libremidi::midi2::default_api()};
     auto ports = observer.get_output_ports();
 
     auto qjs = qjsEngine(this);
@@ -886,8 +1031,10 @@ QJSValue qml_protocols::outboundUMPDevices()
 
 QObject* qml_protocols::inboundMIDI(QJSValue config)
 {
-  auto transport = config.property("Transport");
-  auto port = qjs_to_midi_port_information(transport);
+  QString error;
+  auto port = qjs_to_midi_port_information(config.property("Transport"), error);
+  if(midi_port_failed(this, config, "Protocols.inboundMIDI:", error))
+    return nullptr;
 
   auto sock = new qml_midi_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -899,24 +1046,15 @@ QObject* qml_protocols::inboundMIDI(QJSValue config)
   sock->onMessage = config.property("onMessage");
 
   // Open the MIDI port
-  try {
-    sock->open(port);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(sock, [sock, port] { sock->open(port); });
 }
 
 QObject* qml_protocols::inboundUMP(QJSValue config)
 {
-  auto transport = config.property("Transport");
-  auto port = qjs_to_midi_port_information(transport);
+  QString error;
+  auto port = qjs_to_midi_port_information(config.property("Transport"), error);
+  if(midi_port_failed(this, config, "Protocols.inboundUMP:", error))
+    return nullptr;
 
   auto sock = new qml_ump_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -928,24 +1066,15 @@ QObject* qml_protocols::inboundUMP(QJSValue config)
   sock->onMessage = config.property("onMessage");
 
   // Open the UMP port
-  try {
-    sock->open(port);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(sock, [sock, port] { sock->open(port); });
 }
 
 QObject* qml_protocols::outboundMIDI(QJSValue config)
 {
-  auto transport = config.property("Transport");
-  auto port = qjs_to_midi_port_information(transport);
+  QString error;
+  auto port = qjs_to_midi_port_information(config.property("Transport"), error);
+  if(midi_port_failed(this, config, "Protocols.outboundMIDI:", error))
+    return nullptr;
 
   auto sock = new qml_midi_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -956,24 +1085,15 @@ QObject* qml_protocols::outboundMIDI(QJSValue config)
   sock->onError = config.property("onError");
 
   // Open the MIDI port
-  try {
-    sock->open(port);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(sock, [sock, port] { sock->open(port); });
 }
 
 QObject* qml_protocols::outboundUMP(QJSValue config)
 {
-  auto transport = config.property("Transport");
-  auto port = qjs_to_midi_port_information(transport);
+  QString error;
+  auto port = qjs_to_midi_port_information(config.property("Transport"), error);
+  if(midi_port_failed(this, config, "Protocols.outboundUMP:", error))
+    return nullptr;
 
   auto sock = new qml_ump_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -984,18 +1104,7 @@ QObject* qml_protocols::outboundUMP(QJSValue config)
   sock->onError = config.property("onError");
 
   // Open the UMP port
-  try {
-    sock->open(port);
-    return sock;
-  } catch(const std::exception& e) {
-    qDebug() << e.what();
-    delete sock;
-    return nullptr;
-  } catch(...) {
-    qDebug() << "Error while creating device";
-    delete sock;
-    return nullptr;
-  }
+  return open_later(sock, [sock, port] { sock->open(port); });
 }
 
 static ossia::net::serial_configuration parse_serial(const QVariantMap& transport)
@@ -1034,17 +1143,15 @@ QObject* qml_protocols::serial(QVariant config)
   auto conf = config.toMap();
   auto onError = conf["onError"].value<QJSValue>();
 
-  auto fail = [&](const QString& err) -> QObject* {
-    ossia::logger().error("Protocols.serial: {}", err.toStdString());
-    qDebug() << "Protocols.serial:" << err;
-    if(onError.isCallable())
-      onError.call({err});
-    return nullptr;
-  };
-
   auto ossia_conf = parse_serial(conf["Transport"].toMap());
   if(ossia_conf.port.empty())
-    return fail("Transport.Port is required");
+  {
+    const QString err = "Transport.Port is required";
+    ossia::logger().error("Protocols.serial: {}", err.toStdString());
+    qDebug() << "Protocols.serial:" << err;
+    call_later(this, onError, err);
+    return nullptr;
+  }
 
   auto [framing, delimiter] = parse_framing(conf);
   auto enc = parse_encoding(conf);
@@ -1061,21 +1168,11 @@ QObject* qml_protocols::serial(QVariant config)
   sock->onError = onError;
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
-  try
-  {
-    sock->open(ossia_conf, context->context, framing, delimiter, frame_size, enc);
-    return sock;
-  }
-  catch(const std::exception& e)
-  {
-    delete sock;
-    return fail(QString::fromStdString(e.what()));
-  }
-  catch(...)
-  {
-    delete sock;
-    return fail("could not open " + QString::fromStdString(ossia_conf.port));
-  }
+  return open_later(
+      sock,
+      [sock, ossia_conf, ctx = context, framing, delimiter, frame_size, enc] {
+    sock->open(ossia_conf, ctx->context, framing, delimiter, frame_size, enc);
+  });
 }
 
 #if defined(__linux__)
@@ -1120,17 +1217,15 @@ QObject* qml_protocols::can(QVariant config)
   auto conf = config.toMap();
   auto onError = conf["onError"].value<QJSValue>();
 
-  auto fail = [&](const QString& err) -> QObject* {
-    ossia::logger().error("Protocols.can: {}", err.toStdString());
-    qDebug() << "Protocols.can:" << err;
-    if(onError.isCallable())
-      onError.call({err});
-    return nullptr;
-  };
-
   auto ossia_conf = parse_can(conf["Transport"].toMap(), conf["Filters"].toList());
   if(ossia_conf.interface_name.empty())
-    return fail("Transport.Interface is required");
+  {
+    const QString err = "Transport.Interface is required";
+    ossia::logger().error("Protocols.can: {}", err.toStdString());
+    qDebug() << "Protocols.can:" << err;
+    call_later(this, onError, err);
+    return nullptr;
+  }
 
   auto sock = new qml_can_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -1138,21 +1233,8 @@ QObject* qml_protocols::can(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = onError;
   sock->onMessage = conf["onMessage"].value<QJSValue>();
-  try
-  {
-    sock->open(ossia_conf, context->context);
-    return sock;
-  }
-  catch(const std::exception& e)
-  {
-    delete sock;
-    return fail(QString::fromStdString(e.what()));
-  }
-  catch(...)
-  {
-    delete sock;
-    return fail("could not open " + QString::fromStdString(ossia_conf.interface_name));
-  }
+  return open_later(
+      sock, [sock, ossia_conf, ctx = context] { sock->open(ossia_conf, ctx->context); });
 }
 
 QJSValue qml_protocols::canInterfaces()

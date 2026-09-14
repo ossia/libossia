@@ -21,6 +21,8 @@
 
 #include <nano_observer.hpp>
 
+#include <mutex>
+
 #include <verdigris>
 
 namespace ossia::qt
@@ -135,9 +137,7 @@ private:
   std::shared_ptr<state> m_state;
 };
 
-class qml_unix_stream_outbound_socket
-    : public QObject
-    , public Nano::Observer
+class qml_unix_stream_outbound_socket : public QObject
 {
   W_OBJECT(qml_unix_stream_outbound_socket)
 public:
@@ -155,10 +155,19 @@ public:
       ossia::net::size_prefix_4byte_le_framing::decoder<socket_t>,
       ossia::net::fixed_length_decoder<socket_t>>;
 
-  struct state
+  //! Owns the transport and every asio-side callback. As on the TCP outbound
+  //! socket, the Nano::Observer lives here and not on the QObject: the signals
+  //! are members of this very object, so their unsynchronized slot lists can
+  //! only be mutated while the whole state is being destroyed, and the QObject
+  //! - destroyed on the Qt thread while the asio thread may be firing - is
+  //! only ever reached under qt_mutex.
+  struct state : Nano::Observer
   {
     ossia::net::unix_stream_client socket;
     std::atomic_bool alive{true};
+    // on_close is emitted at most once, be it on EOF or on an explicit close;
+    // both emitters run on the io_context thread.
+    std::atomic_bool closed{false};
     ossia::net::framing framing{ossia::net::framing::none};
     ossia::net::encoding enc{ossia::net::encoding::none};
     char line_delimiter[8] = {};
@@ -270,23 +279,55 @@ public:
           break;
       }
     }
+
+    //! Guards `self`, which is cleared before the QObject starts dying. Held
+    //! for the whole asio -> Qt handover.
+    std::mutex qt_mutex;
+    qml_unix_stream_outbound_socket* self{};
+
+    void detach()
+    {
+      std::lock_guard g{qt_mutex};
+      self = nullptr;
+    }
+
+    template <typename F>
+    void post_to_qt(F&& f)
+    {
+      std::lock_guard g{qt_mutex};
+      if(self)
+        ossia::qt::run_async(self, std::forward<F>(f), Qt::AutoConnection);
+    }
+
+    //! Nano slots, always on the asio thread.
+    void fire_open();
+    void fire_fail();
+    void fire_close();
+
+    //! Single-shot close notification, whoever observed it first.
+    void notify_closed()
+    {
+      if(alive && !closed.exchange(true))
+        socket.on_close();
+    }
   };
 
   struct receive_callback
   {
     std::shared_ptr<state> st;
     QPointer<qml_unix_stream_outbound_socket> self;
+    // Points to onMessage or onBytes on the QObject; null when no callback is
+    // set, the read loop then only observing the remote closing. Dereferenced
+    // on the Qt thread only: a QJSValue must not be touched from asio.
     QJSValue* target;
 
     void operator()(const unsigned char* data, std::size_t sz) const
     {
-      if(!st->alive)
+      if(!st->alive || !target)
         return;
       auto buf = apply_decoding(st->enc, data, sz);
       auto cb = target;
-      ossia::qt::run_async(
-          self.get(),
-          [self = self, buf, cb] {
+      st->post_to_qt([self = self, buf, cb] {
         if(!self.get())
           return;
         if(cb->isCallable())
@@ -295,17 +336,21 @@ public:
           if(engine)
             cb->call({engine->toScriptValue(buf)});
         }
-      },
-          Qt::AutoConnection);
+      });
     }
 
     bool validate_stream(boost::system::error_code ec) const
     {
+      if(!ec)
+        return true;
       if(ec == boost::asio::error::operation_aborted)
         return false;
-      if(ec == boost::asio::error::eof)
-        return false;
-      return true;
+
+      // Any other error ends this stream -- eof on a graceful close,
+      // connection_reset on an RST -- and stops the read loop, so this is the
+      // only place where the close can be reported.
+      st->notify_closed();
+      return false;
     }
   };
 
@@ -316,6 +361,9 @@ public:
     if(m_state)
     {
       m_state->alive = false;
+      // No asio -> Qt call may start from here on: close() below still posts a
+      // shutdown, but its close notification is suppressed by `alive`.
+      m_state->detach();
       close();
     }
   }
@@ -329,16 +377,16 @@ public:
       ossia::net::encoding e = ossia::net::encoding::none)
   {
     m_state = std::make_shared<state>(conf, ctx, f, delim, e);
+    m_state->self = this;
 
     try
     {
       if(onOpen.isCallable())
-        m_state->socket.on_open.connect<&qml_unix_stream_outbound_socket::on_open>(this);
+        m_state->socket.on_open.connect<&state::fire_open>(m_state.get());
       if(onClose.isCallable())
-        m_state->socket.on_close.connect<&qml_unix_stream_outbound_socket::on_close>(
-            this);
+        m_state->socket.on_close.connect<&state::fire_close>(m_state.get());
       if(onError.isCallable())
-        m_state->socket.on_fail.connect<&qml_unix_stream_outbound_socket::on_fail>(this);
+        m_state->socket.on_fail.connect<&state::fire_fail>(m_state.get());
       m_state->socket.connect();
     }
     catch(const std::exception& e)
@@ -378,7 +426,9 @@ public:
       {
       }
       st->socket.m_socket.close();
-      st->socket.on_close();
+      // The destructor comes through here too: notify_closed() checks `alive`,
+      // so it cannot schedule a script call into an object that is gone.
+      st->notify_closed();
     });
   }
   W_SLOT(close)
@@ -390,6 +440,8 @@ public:
 
     auto st = m_state;
     auto self = QPointer{this};
+    // The read loop is always armed: it is what observes the remote closing.
+    // With no callback the cheapest decoder does, as nothing is dispatched.
     if(onMessage.isCallable())
     {
       ossia::visit(
@@ -397,11 +449,11 @@ public:
               auto& decoder) mutable { decoder.receive(std::move(cb)); },
           st->decoder);
     }
-    else if(onBytes.isCallable())
+    else
     {
+      QJSValue* target = onBytes.isCallable() ? &self.data()->onBytes : nullptr;
       st->decoder.template emplace<0>(st->socket.m_socket);
-      ossia::get<0>(st->decoder)
-          .receive(receive_callback{st, self, &self.data()->onBytes});
+      ossia::get<0>(st->decoder).receive(receive_callback{st, self, target});
     }
 
     ossia::qt::run_async(
@@ -466,6 +518,27 @@ public:
 private:
   std::shared_ptr<state> m_state;
 };
+
+inline void qml_unix_stream_outbound_socket::state::fire_open()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_open();
+}
+
+inline void qml_unix_stream_outbound_socket::state::fire_fail()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_fail();
+}
+
+inline void qml_unix_stream_outbound_socket::state::fire_close()
+{
+  std::lock_guard g{qt_mutex};
+  if(self)
+    self->on_close();
+}
 
 }
 #endif
