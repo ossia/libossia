@@ -23,8 +23,15 @@ block()
   # the same asio templates -- an ODR violation.
   # Same condition as ossia_setup.cmake: on Windows the boost headers already
   # define it, and defining it again warns.
+  #
+  # Both branches name a macro on purpose. Qt before 6.6 copies the directory's
+  # COMPILE_DEFINITIONS into moc's parameter file as one "-D<def>" line each, so
+  # a definition that evaluates to nothing leaves a bare "-D" there; moc then
+  # takes the line after it -- the "-o" -- as that option's value and reports the
+  # output path as a second input file.
   if(NOT WIN32)
-    add_compile_definitions($<$<CONFIG:Debug>:BOOST_ASIO_ENABLE_BUFFER_DEBUGGING>)
+    add_compile_definitions(
+        $<IF:$<CONFIG:Debug>,BOOST_ASIO_ENABLE_BUFFER_DEBUGGING,OSSIA_ASIO_BUFFER_DEBUGGING_UNSET>)
   endif()
 
   if(WIN32)
