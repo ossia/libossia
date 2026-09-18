@@ -140,10 +140,10 @@ struct repitch_stretcher
         }
         next_sample_to_read += data.input_frames_used;
         samples_to_read = 16;
-        const int64_t before = num_samples_available;
         num_samples_available = repitchers[0].data.size();
-        // The ring saturates, so a request larger than it would spin for ever.
-        if(num_samples_available <= before)
+        // src_process emits nothing while its FIR history fills, so only a call
+        // that neither consumed nor produced will never end.
+        if(data.input_frames_used == 0 && data.output_frames_gen == 0)
           break;
       }
 
@@ -190,9 +190,10 @@ struct repitch_stretcher
         }
         next_sample_to_read -= data.input_frames_used;
         samples_to_read = 16;
-        const int64_t before = num_samples_available;
         num_samples_available = repitchers[0].data.size();
-        if(num_samples_available <= before)
+        // src_process emits nothing while its FIR history fills, so only a call
+        // that neither consumed nor produced will never end.
+        if(data.input_frames_used == 0 && data.output_frames_gen == 0)
           break;
       }
 
