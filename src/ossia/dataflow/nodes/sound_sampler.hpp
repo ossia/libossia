@@ -43,7 +43,8 @@ struct sound_sampler
       m_dataSampleRate = 44100;
       m_data.assign(m_handle->data.begin(), m_handle->data.end());
       info->m_resampler.reset(
-          0, audio_stretch_mode::None, m_handle->data.size(), m_dataSampleRate);
+          0, audio_stretch_mode::None, m_handle->data.size(), m_dataSampleRate,
+          m_dataSampleRate);
     }
   }
 
@@ -130,12 +131,13 @@ struct sound_sampler
       ap.channel(i).resize(e.bufferSize());
     }
 
-    const double stretch_ratio = info->update_stretch(t, e);
+    const double rate_ratio = snd::rate_ratio(m_dataSampleRate, e.sampleRate());
+    const double stretch_ratio = info->update_stretch(t, e, rate_ratio);
     const double abs_stretch_ratio = std::abs(stretch_ratio);
 
     info->m_resampler.run(
-        *this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write,
-        samples_offset, ap);
+        *this, t, e, stretch_ratio, rate_ratio, chan, len, samples_to_read,
+        samples_to_write, samples_offset, ap);
 
     const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
     const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);

@@ -13,6 +13,7 @@
 
 #include <samplerate.h>
 
+#include <algorithm>
 #include <cinttypes>
 #include <cmath>
 namespace ossia
@@ -89,11 +90,17 @@ struct repitch_stretcher
   template <typename T>
   void
   run(T& audio_fetcher, const ossia::token_request& t, ossia::exec_state_facade e,
-      double tempo_ratio, const std::size_t chan, const int64_t len,
+      double tempo_ratio, double rate_ratio, const std::size_t chan, const int64_t len,
       int64_t samples_to_read, const int64_t samples_to_write,
       const int64_t samples_offset, const ossia::mutable_audio_span<double>& ap) noexcept
   {
     assert(chan > 0);
+
+    // src_ratio is output frames per input frame: rate and tempo multiply.
+    // Clamped to what libsamplerate accepts: outside [1/256, 256] src_process
+    // fails without writing input_frames_used, and the loops below never end.
+    const double src_ratio
+        = std::clamp(std::abs(rate_ratio * tempo_ratio), 1. / 256., 70.);
 
     input_channels.resize(chan);
     for(std::size_t i = 0; i < chan; i++)
@@ -122,7 +129,7 @@ struct repitch_stretcher
           data.output_frames = samples_to_write - num_samples_available;
           data.input_frames_used = 0;
           data.output_frames_gen = 0;
-          data.src_ratio = std::min(70., tempo_ratio);
+          data.src_ratio = src_ratio;
           data.end_of_input = 0;
 
           // Resample
@@ -133,19 +140,28 @@ struct repitch_stretcher
         }
         next_sample_to_read += data.input_frames_used;
         samples_to_read = 16;
+        const int64_t before = num_samples_available;
         num_samples_available = repitchers[0].data.size();
+        // The ring saturates once it is full, so without this a request larger
+        // than its capacity spins in the audio callback for ever.
+        if(num_samples_available <= before)
+          break;
       }
 
+      const int64_t got
+          = std::min<int64_t>(samples_to_write, repitchers[0].data.size());
       for(std::size_t i = 0; i < chan; ++i)
       {
         auto it = repitchers[i].data.begin();
-        for(int j = 0; j < samples_to_write; j++)
+        for(int64_t j = 0; j < got; j++)
         {
           ap[i][j + samples_offset] = double(*it);
           ++it;
         }
+        for(int64_t j = got; j < samples_to_write; j++)
+          ap[i][j + samples_offset] = 0.;
 
-        repitchers[i].data.erase_begin(samples_to_write);
+        repitchers[i].data.erase_begin(got);
       }
     }
     else
@@ -165,7 +181,7 @@ struct repitch_stretcher
           data.output_frames = samples_to_write - num_samples_available;
           data.input_frames_used = 0;
           data.output_frames_gen = 0;
-          data.src_ratio = std::min(70., std::abs(tempo_ratio));
+          data.src_ratio = src_ratio;
           data.end_of_input = 0;
 
           src_process(repitchers[i].resampler, &data);
@@ -175,19 +191,26 @@ struct repitch_stretcher
         }
         next_sample_to_read -= data.input_frames_used;
         samples_to_read = 16;
+        const int64_t before = num_samples_available;
         num_samples_available = repitchers[0].data.size();
+        if(num_samples_available <= before)
+          break;
       }
 
+      const int64_t got
+          = std::min<int64_t>(samples_to_write, repitchers[0].data.size());
       for(std::size_t i = 0; i < chan; ++i)
       {
         auto it = repitchers[i].data.begin();
-        for(int j = 0; j < samples_to_write; j++)
+        for(int64_t j = 0; j < got; j++)
         {
           ap[i][j + samples_offset] = double(*it);
           ++it;
         }
+        for(int64_t j = got; j < samples_to_write; j++)
+          ap[i][j + samples_offset] = 0.;
 
-        repitchers[i].data.erase_begin(samples_to_write);
+        repitchers[i].data.erase_begin(got);
       }
     }
   }

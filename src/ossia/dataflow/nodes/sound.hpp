@@ -42,6 +42,14 @@ sample_info(int64_t bufferSize, double durationRatio, const ossia::token_request
   return _;
 }
 
+// Output samples per input sample of the fetched material; 1. if none needed.
+inline double rate_ratio(int64_t material_rate, int64_t graph_rate) noexcept
+{
+  if(material_rate <= 0 || graph_rate <= 0 || material_rate == graph_rate)
+    return 1.;
+  return double(graph_rate) / double(material_rate);
+}
+
 inline void
 perform_upmix(const std::size_t upmix, const std::size_t chan, ossia::audio_port& ap)
 {
@@ -137,15 +145,42 @@ struct resampler
         [=](auto& stretcher) noexcept { return stretcher.transport(date); }, m_stretch);
   }
 
+  //! \param materialSampleRate rate of what the node's fetch_audio() delivers
+  //! \param graphSampleRate rate the execution graph runs at
+  //!
+  //! Differing rates need a converter even in mode None, since raw_stretcher
+  //! is 1:1. That does not make it time-stretching -- see stretch().
   void reset(
       int64_t date, ossia::audio_stretch_mode mode, std::size_t channels,
-      std::size_t fileSampleRate)
+      std::size_t materialSampleRate, std::size_t graphSampleRate = 0)
   {
+    if(graphSampleRate == 0)
+      graphSampleRate = materialSampleRate;
+    [[maybe_unused]] const bool converts
+        = materialSampleRate != graphSampleRate && materialSampleRate > 0
+          && graphSampleRate > 0;
     // TODO use the date parameter to buffer ! else transport won't work
     switch(mode)
     {
       default:
       case ossia::audio_stretch_mode::None: {
+#if defined(OSSIA_ENABLE_LIBSAMPLERATE)
+        if(converts)
+        {
+          constexpr auto preset = get_samplerate_preset(
+              ossia::audio_stretch_mode::Repitch);
+          if(auto s = ossia::get_if<RepitchStretcher>(&m_stretch);
+             s && s->repitchers.size() == channels && s->preset == preset)
+          {
+            s->transport(date);
+          }
+          else
+          {
+            m_stretch.emplace<repitch_stretcher>(preset, channels, 1024, date);
+          }
+          break;
+        }
+#endif
         if(auto s = ossia::get_if<RawStretcher>(&m_stretch))
         {
           s->transport(date);
@@ -171,8 +206,10 @@ struct resampler
         else
         {
           m_stretch.emplace<rubberband_stretcher>(
-              preset, channels, fileSampleRate, date);
+              preset, channels, materialSampleRate, date);
         }
+        ossia::get<RubberbandStretcher>(m_stretch)
+            .set_rate_ratio(snd::rate_ratio(materialSampleRate, graphSampleRate));
         break;
       }
 #endif
@@ -196,27 +233,37 @@ struct resampler
       }
 #endif
     }
+
+    // Not simply `mode != None`: a mode whose backend is compiled out falls
+    // back to raw_stretcher, and a converting None installs a repitcher
+    // without that being time-stretching.
+    m_stretching = (mode != ossia::audio_stretch_mode::None)
+                   && (m_stretch.index() != RawStretcher);
   }
 
   template <typename T>
   void
   run(T& audio_fetcher, const ossia::token_request& t, ossia::exec_state_facade e,
-      double tempo_ratio, std::size_t chan, std::size_t len, int64_t samples_to_read,
-      int64_t samples_to_write, int64_t samples_offset,
+      double tempo_ratio, double rate_ratio, std::size_t chan, std::size_t len,
+      int64_t samples_to_read, int64_t samples_to_write, int64_t samples_offset,
       const ossia::mutable_audio_span<double>& ap)
   {
     ossia::visit(
         [&](auto& stretcher) {
       stretcher.run(
-          audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write,
-          samples_offset, ap);
+          audio_fetcher, t, e, tempo_ratio, rate_ratio, chan, len, samples_to_read,
+          samples_to_write, samples_offset, ap);
         },
         m_stretch);
   }
 
-  [[nodiscard]] bool stretch() const noexcept { return m_stretch.index() != 0; }
+  //! Whether the mode asks for time-stretching. Mode None holds a repitcher
+  //! too when it has a sample rate to convert, and must not count as one.
+  [[nodiscard]] bool stretch() const noexcept { return m_stretching; }
 
 private:
+  bool m_stretching{};
+
   ossia::variant<
       raw_stretcher
 #if defined(OSSIA_ENABLE_RUBBERBAND)
@@ -296,8 +343,13 @@ struct sound_processing_info
     return base;
   }
 
+  //! \param rate_ratio graph samples per sample of the fetched material
+  //!
+  //! Loop and start-offset counts index the material, so model time goes
+  //! through the material's rate rather than the graph's.
   double update_stretch(
-      const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
+      const ossia::token_request& t, const ossia::exec_state_facade& e,
+      double rate_ratio = 1.) noexcept
   {
     double stretch_ratio = 1.;
     double model_ratio = 1.;
@@ -307,8 +359,12 @@ struct sound_processing_info
       stretch_ratio = this->tempo / t.tempo;
     }
 
-    m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
-    m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * model_ratio;
+    if(!(rate_ratio > 0.))
+      rate_ratio = 1.;
+    const double to_material = e.modelToSamples() * model_ratio / rate_ratio;
+
+    m_loop_duration_samples = m_loop_duration.impl * to_material;
+    m_start_offset_samples = m_start_offset.impl * to_material;
     return stretch_ratio;
   }
 };

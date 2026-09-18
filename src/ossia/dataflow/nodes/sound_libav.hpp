@@ -356,9 +356,10 @@ public:
     const double stretch_ratio = update_stretch(t, e);
     const double abs_stretch_ratio = std::abs(stretch_ratio);
 
+    // swr already outputs at the graph's rate.
     m_resampler.run(
-        *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
-        samples_offset, ap);
+        *this, t, e, stretch_ratio, 1., channels, len, samples_to_read,
+        samples_to_write, samples_offset, ap);
 
     const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
     const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);

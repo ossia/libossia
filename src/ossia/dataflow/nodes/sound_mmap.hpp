@@ -91,7 +91,7 @@ public:
       int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
   {
     const int channels = this->channels();
-    const int file_duration = this->duration();
+    const int64_t file_duration = this->duration();
 
     m_resampleBuffer.resize(channels);
     for(auto& buf : m_resampleBuffer)
@@ -119,13 +119,13 @@ public:
       frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
     }
 
-    if(m_loops)
+    if(m_loops && m_loop_duration_samples > 0)
     {
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos = this->m_start_offset_samples
-                  + ((start + k) % this->m_loop_duration_samples);
+        int64_t pos = this->m_start_offset_samples
+                      + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -191,7 +191,7 @@ public:
   void fetch_audio(int64_t start, int64_t samples_to_write, float** audio_array) noexcept
   {
     const int channels = this->channels();
-    const int file_duration = this->duration();
+    const int64_t file_duration = this->duration();
 
     ossia::mutable_audio_span<float> source(channels);
 
@@ -208,13 +208,13 @@ public:
       frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
     }
 
-    if(m_loops)
+    if(m_loops && m_loop_duration_samples > 0)
     {
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos = this->m_start_offset_samples
-                  + ((start + k) % this->m_loop_duration_samples);
+        int64_t pos = this->m_start_offset_samples
+                      + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -274,7 +274,7 @@ public:
       int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
   {
     const int channels = this->channels();
-    const int file_duration = this->duration();
+    const int64_t file_duration = this->duration();
 
     m_resampleBuffer.resize(channels);
     for(auto& buf : m_resampleBuffer)
@@ -385,7 +385,7 @@ public:
   fetch_audio_backward(int64_t start, int64_t samples_to_write, float** audio_array) noexcept
   {
     const int channels = this->channels();
-    const int file_duration = this->duration();
+    const int64_t file_duration = this->duration();
 
     ossia::mutable_audio_span<float> source(channels);
 
@@ -526,12 +526,14 @@ public:
       ap.channel(chan).resize(e.bufferSize());
     }
 
-    const double stretch_ratio = update_stretch(t, e);
+    const double rate_ratio = snd::rate_ratio(m_handle.sampleRate(), e.sampleRate());
+    const double stretch_ratio = update_stretch(t, e, rate_ratio);
     const double abs_stretch_ratio = std::abs(stretch_ratio);
 
+
     m_resampler.run(
-        *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
-        samples_offset, ap);
+        *this, t, e, stretch_ratio, rate_ratio, channels, len, samples_to_read,
+        samples_to_write, samples_offset, ap);
 
     const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
     const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);

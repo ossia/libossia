@@ -27,10 +27,13 @@ struct raw_stretcher
   template <typename T>
   void
   run(T& audio_fetcher, const ossia::token_request& t, const ossia::exec_state_facade e,
-      double tempo_ratio, const std::size_t chan, const int64_t len,
-      const int64_t samples_to_read, const int64_t samples_to_write,
+      double tempo_ratio, double rate_ratio, const std::size_t chan,
+      const int64_t len, const int64_t samples_to_read, const int64_t samples_to_write,
       const int64_t samples_offset, const ossia::mutable_audio_span<double>& ap) noexcept
   {
+    // 1:1; only selected when material and graph rates match.
+    (void)rate_ratio;
+
     if(t.forward())
     {
       double** output = (double**)alloca(sizeof(double*) * chan);

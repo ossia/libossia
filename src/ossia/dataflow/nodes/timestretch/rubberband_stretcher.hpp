@@ -79,15 +79,22 @@ struct rubberband_stretcher
       , next_sample_to_read{pos}
       , options{opt}
   {
-    // Pre-size the prime() zero-pad here so the audio thread never allocates.
-    // If a later setPitchScale() inflates the required size, prime() no-ops.
+    m_channels = channels;
+    size_prime_pad();
+  }
+
+  //! Pre-sizes the prime() zero-pad so the audio thread never allocates.
+  //! getPreferredStartPad() moves with the pitch scale, so this has to be
+  //! redone whenever that changes or prime() silently gives up.
+  void size_prime_pad()
+  {
     const std::size_t pad
         = m_rubberBand ? m_rubberBand->getPreferredStartPad() : 0;
-    if(channels > 0 && pad > 0)
+    if(m_channels > 0 && pad > 0)
     {
-      m_prime_zero_storage.assign(channels * pad, 0.f);
-      m_prime_zero_ptrs.resize(channels);
-      for(std::size_t c = 0; c < channels; ++c)
+      m_prime_zero_storage.assign(m_channels * pad, 0.f);
+      m_prime_zero_ptrs.resize(m_channels);
+      for(std::size_t c = 0; c < m_channels; ++c)
       {
         m_prime_zero_ptrs[c] = m_prime_zero_storage.data() + c * pad;
       }
@@ -104,6 +111,8 @@ struct rubberband_stretcher
   uint32_t options{};
   bool m_needs_prime{true};
 
+  std::size_t m_channels{};
+
   // Zero-pad scratch buffer for prime(), sized in the ctor.
   std::vector<float> m_prime_zero_storage;
   std::vector<float*> m_prime_zero_ptrs;
@@ -111,6 +120,18 @@ struct rubberband_stretcher
   [[nodiscard]] int64_t start_delay() const noexcept
   {
     return m_rubberBand ? int64_t(m_rubberBand->getStartDelay()) : 0;
+  }
+
+  //! Set from resampler::reset(), off the audio thread: changing the pitch
+  //! scale makes RubberBand reconfigure, which allocates a new window.
+  void set_rate_ratio(double ratio)
+  {
+    const double pitch = (ratio != 0.) ? 1. / ratio : 1.;
+    if(m_rubberBand && pitch != m_rubberBand->getPitchScale())
+    {
+      m_rubberBand->setPitchScale(pitch);
+      size_prime_pad();
+    }
   }
 
   void transport(int64_t date)
@@ -123,15 +144,20 @@ struct rubberband_stretcher
   template <typename T>
   void
   run(T& audio_fetcher, const ossia::token_request& t, ossia::exec_state_facade e,
-      double tempo_ratio, const std::size_t chan, const std::size_t len,
-      int64_t samples_to_read, const int64_t samples_to_write,
+      double tempo_ratio, double rate_ratio, const std::size_t chan,
+      const std::size_t len, int64_t samples_to_read, const int64_t samples_to_write,
       const int64_t samples_offset, const ossia::mutable_audio_span<double>& ap) noexcept
   {
-    const double abs_tempo_ratio = std::min(70., std::abs(tempo_ratio));
+    // Fed at the material's rate and drained one frame per graph frame, so a
+    // rate conversion is a time ratio; the pitch scale undoes the transposition
+    // that comes with it.
+    const double abs_tempo_ratio
+        = std::min(70., std::abs(tempo_ratio) * std::abs(rate_ratio));
     if(abs_tempo_ratio != m_rubberBand->getTimeRatio())
     {
       m_rubberBand->setTimeRatio(abs_tempo_ratio);
     }
+
 
     // Lazy pre-roll on first run after ctor/transport(); see prime().
     if(m_needs_prime) [[unlikely]]
