@@ -86,16 +86,9 @@ endif()
 
 include(OssiaOptions)
 
-# add_subdirectory() freezes CMAKE_CXX_FLAGS as it stands, and the dependencies
-# go in before OssiaConfiguration sets them. boost.asio keys part of its inline
-# ABI namespace on __cplusplus, which MSVC only reports honestly with
-# /Zc:__cplusplus, so a dependency built without it lands in a different asio
-# namespace than ossia and the two do not link. Set it here rather than moving
-# the whole configuration up, which would also hand the dependencies
-# /permissive-, /std:c++latest and our warning options.
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "/Zc:__cplusplus ${CMAKE_CXX_FLAGS}")
-endif()
+# Language standard: before the dependencies on purpose, so that they build
+# against the same one we do.
+include(OssiaCxxStandard)
 
 # Dependencies
 include(OssiaDeps)
