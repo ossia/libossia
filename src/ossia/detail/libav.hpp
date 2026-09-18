@@ -51,8 +51,8 @@ inline bool seek_to_flick(
       return false;
   }
 
-  avio_flush(format->pb);
-  avformat_flush(format);
+  // Decoder only: flushing the format context here resets the read to the
+  // start of the stream, silently undoing the seek.
   if(codec)
     avcodec_flush_buffers(codec);
 
@@ -254,11 +254,11 @@ struct libav_handle
 
   void fetch(int64_t frame, int samples_to_write, auto func)
   {
-    // First seek
+    // At or before: the loop below only walks forward.
     ossia::seek_to_flick(
         format, codec, stream,
         ossia::flicks_per_second<double> * frame / stream->codecpar->sample_rate,
-        AVSEEK_FLAG_ANY);
+        AVSEEK_FLAG_BACKWARD);
 
     const std::size_t channels = this->channels();
     std::vector<float> tmp;
@@ -297,12 +297,13 @@ struct libav_handle
           ret = avcodec_receive_frame(codec, avframe);
           if(ret == 0)
           {
-            const int av_frame_start = avframe->best_effort_timestamp;
+            // A sample index, which stops fitting in 32 bits after ~12 h.
+            const int64_t av_frame_start = avframe->best_effort_timestamp;
             const int samples = avframe->nb_samples;
 
             // It's possible that we get a frame that is just after what we have asked, thus
             // frame - av_frame_start can sometimes be negative
-            const int offset = (frame < av_frame_start) ? 0 : (frame - av_frame_start);
+            const int64_t offset = (frame < av_frame_start) ? 0 : (frame - av_frame_start);
             if(offset >= samples)
             {
               // ffmpeg didn't even manage to seek to the correct frame, we have to read another
