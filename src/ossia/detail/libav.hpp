@@ -84,6 +84,8 @@ struct libav_handle
   AVStream* stream{};
   AVCodecContext* codec{};
   SwrContext* resample{};
+  // Rate `resample` converts to; rate() stays the file's own.
+  int output_rate{};
   void* io_owner{};
   void (*io_free)(void*){};
 
@@ -99,6 +101,8 @@ struct libav_handle
     other.codec = nullptr;
     resample = other.resample;
     other.resample = nullptr;
+    output_rate = other.output_rate;
+    other.output_rate = 0;
     io_owner = other.io_owner;
     other.io_owner = nullptr;
     io_free = other.io_free;
@@ -115,6 +119,8 @@ struct libav_handle
     other.codec = nullptr;
     resample = other.resample;
     other.resample = nullptr;
+    output_rate = other.output_rate;
+    other.output_rate = 0;
     io_owner = other.io_owner;
     other.io_owner = nullptr;
     io_free = other.io_free;
@@ -130,6 +136,7 @@ struct libav_handle
   void cleanup()
   {
     stream = nullptr;
+    output_rate = 0;
     if(resample)
       swr_free(&resample);
     if(codec)
@@ -219,11 +226,37 @@ struct libav_handle
         resample, out_layout, out_sample_fmt, out_sample_rate, in_layout, in_sample_fmt,
         in_sample_rate, 0, nullptr);
 #endif
-    if(resample)
-      swr_init(resample);
+    // A handle whose resampler failed to build would hand swr_convert() a null
+    // context on the audio thread.
+    if(!resample || swr_init(resample) < 0)
+    {
+      cleanup();
+      return;
+    }
+    output_rate = out_sample_rate;
   }
 
   int rate() const noexcept { return stream->codecpar->sample_rate; }
+
+  //! Rate of the samples this handle hands out.
+  int out_rate() const noexcept { return output_rate > 0 ? output_rate : rate(); }
+
+  //! Output frames swr_convert() may need for `in_samples`, backlog included.
+  int out_capacity_for(int in_samples) const noexcept
+  {
+    const int in_rate = rate();
+    if(!resample || in_rate <= 0)
+      return in_samples;
+    const int64_t delay = swr_get_delay(resample, in_rate);
+    return int(av_rescale_rnd(delay + in_samples, out_rate(), in_rate, AV_ROUND_UP));
+  }
+
+  //! Drops swr's backlog, which belongs to the old position after a seek.
+  void flush_resampler() noexcept
+  {
+    if(resample)
+      swr_init(resample);
+  }
   int channels() const noexcept { return avstream_get_audio_channels(*stream); }
 
   int64_t totalPCMFrameCount() const noexcept
@@ -297,7 +330,9 @@ struct libav_handle
           ret = avcodec_receive_frame(codec, avframe);
           if(ret == 0)
           {
-            // A sample index, which stops fitting in 32 bits after ~12 h.
+            // Sample positions, not an int: past two hours of 48k audio a
+            // frame index no longer fits in 32 bits and the offset computed
+            // from it wraps into the middle of the file.
             const int64_t av_frame_start = avframe->best_effort_timestamp;
             const int samples = avframe->nb_samples;
 
