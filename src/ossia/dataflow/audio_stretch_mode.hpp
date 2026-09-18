@@ -5,8 +5,7 @@
 
 namespace ossia
 {
-//! Whether the execution graph can convert a sample rate at all. When it
-//! cannot, material has to reach it at the graph's own rate.
+//! Without it, material has to reach the graph at the graph's own rate.
 #if defined(OSSIA_ENABLE_LIBSAMPLERATE)
 inline constexpr bool graph_resampling = true;
 #else

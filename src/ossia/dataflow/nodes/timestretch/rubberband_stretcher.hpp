@@ -83,7 +83,6 @@ struct rubberband_stretcher
     size_prime_pad();
   }
 
-  //! Pre-sizes the prime() zero-pad so the audio thread never allocates.
   //! getPreferredStartPad() moves with the pitch scale, so this has to be
   //! redone whenever that changes or prime() silently gives up.
   void size_prime_pad()
@@ -122,8 +121,8 @@ struct rubberband_stretcher
     return m_rubberBand ? int64_t(m_rubberBand->getStartDelay()) : 0;
   }
 
-  //! Set from resampler::reset(), off the audio thread: changing the pitch
-  //! scale makes RubberBand reconfigure, which allocates a new window.
+  //! Off the audio thread: changing the pitch scale makes RubberBand
+  //! reconfigure, which allocates.
   void set_rate_ratio(double ratio)
   {
     const double pitch = (ratio != 0.) ? 1. / ratio : 1.;

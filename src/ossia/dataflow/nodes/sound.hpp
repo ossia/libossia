@@ -42,7 +42,7 @@ sample_info(int64_t bufferSize, double durationRatio, const ossia::token_request
   return _;
 }
 
-// Output samples per input sample of the fetched material; 1. if none needed.
+// Output samples per input sample of the material.
 inline double rate_ratio(int64_t material_rate, int64_t graph_rate) noexcept
 {
   if(material_rate <= 0 || graph_rate <= 0 || material_rate == graph_rate)
@@ -148,8 +148,7 @@ struct resampler
   //! \param materialSampleRate rate of what the node's fetch_audio() delivers
   //! \param graphSampleRate rate the execution graph runs at
   //!
-  //! Differing rates need a converter even in mode None, since raw_stretcher
-  //! is 1:1. That does not make it time-stretching -- see stretch().
+  //! Differing rates need a converter even in mode None: raw_stretcher is 1:1.
   void reset(
       int64_t date, ossia::audio_stretch_mode mode, std::size_t channels,
       std::size_t materialSampleRate, std::size_t graphSampleRate = 0)
@@ -234,9 +233,7 @@ struct resampler
 #endif
     }
 
-    // Not simply `mode != None`: a mode whose backend is compiled out falls
-    // back to raw_stretcher, and a converting None installs a repitcher
-    // without that being time-stretching.
+    // A mode whose backend is compiled out falls back to raw_stretcher.
     m_stretching = (mode != ossia::audio_stretch_mode::None)
                    && (m_stretch.index() != RawStretcher);
   }
@@ -257,8 +254,7 @@ struct resampler
         m_stretch);
   }
 
-  //! Whether the mode asks for time-stretching. Mode None holds a repitcher
-  //! too when it has a sample rate to convert, and must not count as one.
+  //! Whether the mode asks for time-stretching; a converting None does not.
   [[nodiscard]] bool stretch() const noexcept { return m_stretching; }
 
 private:
@@ -343,8 +339,6 @@ struct sound_processing_info
     return base;
   }
 
-  //! \param rate_ratio graph samples per sample of the fetched material
-  //!
   //! Loop and start-offset counts index the material, so model time goes
   //! through the material's rate rather than the graph's.
   double update_stretch(

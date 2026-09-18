@@ -96,9 +96,9 @@ struct repitch_stretcher
   {
     assert(chan > 0);
 
-    // src_ratio is output frames per input frame: rate and tempo multiply.
-    // Clamped to what libsamplerate accepts: outside [1/256, 256] src_process
-    // fails without writing input_frames_used, and the loops below never end.
+    // Output frames per input frame, so rate and tempo multiply. Outside
+    // [1/256, 256] src_process fails without writing input_frames_used, and the
+    // loops below never end.
     const double src_ratio
         = std::clamp(std::abs(rate_ratio * tempo_ratio), 1. / 256., 70.);
 
@@ -142,8 +142,7 @@ struct repitch_stretcher
         samples_to_read = 16;
         const int64_t before = num_samples_available;
         num_samples_available = repitchers[0].data.size();
-        // The ring saturates once it is full, so without this a request larger
-        // than its capacity spins in the audio callback for ever.
+        // The ring saturates, so a request larger than it would spin for ever.
         if(num_samples_available <= before)
           break;
       }

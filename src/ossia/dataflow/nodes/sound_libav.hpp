@@ -71,8 +71,7 @@ public:
     transport_scaled(flicks, tinfo.current_tempo);
   }
 
-  //! Only moves the stretcher's position: fetch_audio() seeks to whatever it
-  //! is then asked for, which is not necessarily this.
+  //! Only moves the stretcher's position; fetch_audio() does the seeking.
   void transport_scaled(time_value flicks, double timeline_tempo)
   {
     if(!m_handle)
@@ -81,8 +80,8 @@ public:
         file_sample_for_model_time(flicks, timeline_tempo, m_handle.out_rate()));
   }
 
-  //! Decodes one frame into the window. False at end of stream; `pts` is the
-  //! frame's timestamp in the stream's time base, unset if it had none.
+  //! False at end of stream. `pts` is in the stream's time base, unset if the
+  //! frame carried none.
   bool decode_one(std::optional<int64_t>& pts) noexcept
   {
     auto fmt_ctx = m_handle.format;
@@ -94,8 +93,7 @@ public:
 
     for(;;)
     {
-      // Drain first: a packet can hold several frames, and sending again
-      // before taking them out only ever returns EAGAIN.
+      // Drain first: a packet can hold several frames.
       int ret = avcodec_receive_frame(codec_ctx, frame);
       if(ret == 0)
       {
@@ -130,7 +128,7 @@ public:
 
       if(ret < 0)
       {
-        // Flush the decoder so the tail of the file is not lost.
+        // Flush, or the tail of the file is lost.
         m_drained = true;
         avcodec_send_packet(codec_ctx, nullptr);
       }
@@ -141,7 +139,7 @@ public:
     }
   }
 
-  //! Appends `frames` output-rate frames, dropping the oldest to fit.
+  //! Drops the oldest frames to make room.
   void push_window(const float* data, int64_t frames) noexcept
   {
     const int64_t channels = int64_t(this->channels());
@@ -181,8 +179,7 @@ public:
     if(orate <= 0 || !m_handle.stream)
       return false;
 
-    // At or before: packets rarely begin on the requested sample, and
-    // ensure_window() can only walk forward from the one that contains it.
+    // At or before: ensure_window() can only walk forward.
     const int64_t flicks = int64_t(
         std::llround(ossia::flicks_per_second<double> * double(frame) / double(orate)));
     if(!ossia::seek_to_flick(
@@ -192,8 +189,8 @@ public:
 
     m_handle.flush_resampler();
 
-    // The timestamp only lines up with the first output sample right after
-    // the flush; from here the position is counted.
+    // The timestamp only lines up with the first output sample right after a
+    // flush; from here the position is counted.
     std::optional<int64_t> pts;
     if(!decode_one(pts) || !pts)
       return false;
@@ -206,8 +203,8 @@ public:
     if(pos < 0)
       return false;
 
-    // decode_one may already have trimmed the front to make its chunk fit;
-    // m_window_start holds how much, and the seek position is on top of it.
+    // decode_one may have trimmed the front to fit; m_window_start holds how
+    // much, and the seek position is on top of it.
     m_window_start += pos;
     m_positioned = true;
     return true;
@@ -220,8 +217,7 @@ public:
     if(channels == 0 || count <= 0)
       return;
 
-    // Request plus lookahead plus history, so that a stretcher re-reading
-    // behind what it consumed costs an index rather than a seek.
+    // History, so a stretcher re-reading behind what it consumed does not seek.
     const std::size_t want = std::size_t((2 * count + 32768) * channels);
     if(m_channel_q.capacity() < want)
       m_channel_q.set_capacity(want);
@@ -232,8 +228,7 @@ public:
     if(!in_reach && !seek_window(frame))
       return;
 
-    // Bounded: a stream whose timestamps jump backwards would otherwise decode
-    // the rest of the file inside one audio callback.
+    // Or a stream whose timestamps jump back decodes the rest of the file here.
     const int64_t limit = int64_t(m_channel_q.capacity()) / channels;
     int64_t decoded = 0;
     while(m_window_start + int64_t(m_channel_q.size()) / channels < frame + count)
@@ -294,8 +289,8 @@ public:
     if(channels == 0 || samples_to_write <= 0)
       return;
 
-    // `start` is the newest sample of the span. read_window() zeroes whatever
-    // of it falls before the start of the file, so `first` is not clamped.
+    // `start` is the newest sample; read_window() zeroes what precedes the
+    // file, so `first` is left negative.
     const int64_t first = start - samples_to_write + 1;
 
     ensure_window(std::max<int64_t>(0, first), samples_to_write);
@@ -394,7 +389,7 @@ public:
   {
     return m_handle ? m_handle.channels() : 0;
   }
-  //! In this node's output rate, which is what positions count in.
+  //! In this node's output rate, not the file's.
   [[nodiscard]] std::size_t duration() const
   {
     if(!m_handle)
@@ -417,13 +412,11 @@ private:
 
   ossia::pod_vector<float> m_tmp{};
 
-  //! Window over the decoded stream: the stretchers do not read strictly
-  //! forwards, so what was handed out has to stay readable. m_window_start is
-  //! its first frame, in the handle's output rate.
+  //! A window rather than a queue: the stretchers do not read strictly
+  //! forwards. m_window_start is its first frame, in the handle's output rate.
   boost::circular_buffer<float> m_channel_q;
   int64_t m_window_start{};
   bool m_positioned{};
-  //! The decoder has been sent its flush packet; there is nothing left to read.
   bool m_drained{};
 };
 
