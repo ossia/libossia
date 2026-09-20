@@ -45,6 +45,10 @@ public:
   void assign(int sock) { m_socket.assign(boost::asio::ip::udp::v4(), sock); }
   void open()
   {
+#if defined(__EMSCRIPTEN__)
+    // A browser has no way to bind a port.
+    return;
+#else
     m_socket.open(boost::asio::ip::udp::v4());
     if(!m_multicast_group.empty())
     {
@@ -66,6 +70,7 @@ public:
       const auto iface = boost::asio::ip::make_address_v4(m_multicast_interface);
       m_socket.set_option(boost::asio::ip::multicast::join_group(group, iface));
     }
+#endif
   }
 
   void close()
@@ -99,6 +104,10 @@ public:
   template <typename F>
   void receive(F f)
   {
+#if defined(__EMSCRIPTEN__)
+    (void)f;
+    return;
+#else
     m_socket.async_receive_from(
         boost::asio::mutable_buffer(&m_data[0], std::size(m_data)), m_endpoint,
         [this, f](auto ec, std::size_t sz) {
@@ -123,6 +132,7 @@ public:
 
       this->receive(f);
         });
+#endif
   }
 
   Nano::Signal<void()> on_close;
@@ -163,6 +173,9 @@ public:
 
   void connect()
   {
+#if defined(__EMSCRIPTEN__)
+    return;
+#else
     m_socket.open(boost::asio::ip::udp::v4());
 
     m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
@@ -185,6 +198,7 @@ public:
             boost::asio::ip::multicast::enable_loopback(*m_multicast_loopback));
       }
     }
+#endif
   }
 
   void close()
