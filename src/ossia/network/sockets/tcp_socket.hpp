@@ -66,9 +66,14 @@ public:
 
   tcp_server(const inbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
+#if defined(__EMSCRIPTEN__)
+      // A browser has no way to bind a port.
+      , m_acceptor{boost::asio::make_strand(ctx)}
+#else
       , m_acceptor{
             boost::asio::make_strand(ctx),
             proto::endpoint{boost::asio::ip::make_address(conf.bind), conf.port}}
+#endif
   {
   }
 
