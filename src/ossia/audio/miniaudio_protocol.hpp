@@ -46,6 +46,10 @@
 
 #include <miniaudio.h>
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/em_asm.h>
+#endif
+
 #define OSSIA_AUDIO_MINIAUDIO 1
 
 namespace ossia
@@ -146,6 +150,23 @@ public:
 
     if(ma_device_start(&m_stream) != MA_SUCCESS)
       throw std::runtime_error("Cannot start miniaudio");
+
+#if defined(__EMSCRIPTEN__)
+    // A duplex device only reaches the output from inside getUserMedia()'s
+    // then(): a page with no microphone, or one whose capture fails for any
+    // other reason, plays nothing at all. Connecting an already connected node
+    // is a no-op, so doing it here costs nothing and makes playback independent
+    // of capture.
+    EM_ASM(
+        {
+          const node = emscriptenGetAudioObject($0);
+          const ctx = emscriptenGetAudioObject($1);
+          if(node && ctx)
+            node.connect(ctx.destination);
+        },
+        m_stream.webaudio.audioWorklet, m_stream.webaudio.audioContext);
+#endif
+
     m_active = true;
   }
 
