@@ -1073,6 +1073,25 @@ TEST_CASE("test_cable_unit_and_domain_ordering", "test_cable_unit_and_domain")
     }
   }
 
+  GIVEN("A cable into a port that declares a four-component unit")
+  {
+    ossia::value_port src, snk;
+    src.type = ossia::val_type::FLOAT;
+    snk.type = ossia::unit_t{ossia::rgba_u{}};
+
+    WHEN("A scalar goes down the cable")
+    {
+      cable(src, snk, 0.5f);
+
+      THEN("It takes the shape the unit is expressed in")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        INFO("got: " << ossia::value_to_pretty_string(snk.get_data()[0].value));
+        CHECK(snk.get_data()[0].value.get_type() == ossia::val_type::VEC4F);
+      }
+    }
+  }
+
   GIVEN("A cable between two ports that only have ranges")
   {
     ossia::value_port src, snk;
