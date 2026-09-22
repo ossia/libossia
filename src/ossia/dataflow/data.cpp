@@ -201,10 +201,40 @@ static void adapt_value(
   }
 }
 
+struct is_vector_domain_visitor
+{
+  bool operator()() const noexcept { return false; }
+  bool operator()(const ossia::vector_domain&) const noexcept { return true; }
+  template <std::size_t N>
+  bool operator()(const ossia::vecf_domain<N>&) const noexcept
+  {
+    return true;
+  }
+  template <typename T>
+  bool operator()(const T&) const noexcept
+  {
+    return false;
+  }
+};
+
+//! Whether a domain bounds each component separately.
+static bool is_vector_domain(const ossia::domain& dom) noexcept
+{
+  return ossia::apply(is_vector_domain_visitor{}, dom.v);
+}
+
 void process_control_value(
     ossia::value& v, const ossia::domain& source_domain,
     const ossia::domain& sink_domain) noexcept
 {
+  // Two per-component domains have to be mapped component by component: a
+  // single ratio taken across all of them rescales each by the widest one.
+  if(is_vector_domain(source_domain) && is_vector_domain(sink_domain))
+  {
+    map_value(v, ossia::destination_index{}, source_domain, sink_domain);
+    return;
+  }
+
   auto [src_min, src_max] = ossia::get_float_minmax(source_domain);
   auto [tgt_min, tgt_max] = ossia::get_float_minmax(sink_domain);
 
