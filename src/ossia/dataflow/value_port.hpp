@@ -68,7 +68,9 @@ struct OSSIA_EXPORT value_port
   {
     if(type)
       return type;
-    return address_unit;
+    if(address_unit)
+      return address_unit;
+    return {};
   }
 
   //! Cheaper than building the effective type just to test it.
