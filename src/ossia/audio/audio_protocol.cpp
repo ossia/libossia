@@ -12,10 +12,36 @@ audio_protocol::audio_protocol()
 
 audio_protocol::~audio_protocol() = default;
 
+void audio_protocol::clear_buffers() noexcept
+{
+  auto clear = [](ossia::audio_parameter* p) {
+    if(p)
+      for(auto& chan : p->audio)
+        chan = {};
+  };
+
+  clear(main_audio_in);
+  clear(main_audio_out);
+  for(auto p : audio_ins)
+    clear(p);
+  for(auto p : audio_outs)
+    clear(p);
+  for(auto p : in_mappings)
+    clear(p);
+  for(auto p : out_mappings)
+    clear(p);
+}
+
+void audio_protocol::stop()
+{
+  clear_buffers();
+}
+
 void audio_protocol::setup_tree(int inputs, int outputs)
 {
-  if(inputs == int(audio_ins.size()) && outputs == int(audio_outs.size()))
-    return;
+  // The parameters that go away when the channel count shrinks would otherwise
+  // keep spans into the previous driver's buffers.
+  clear_buffers();
 
   auto& dev = get_device();
   auto& root = dev.get_root_node();
@@ -53,18 +79,24 @@ void audio_protocol::setup_tree(int inputs, int outputs)
 
 void audio_protocol::advance_tick(std::size_t count)
 {
-  for(auto& chan : main_audio_in->audio)
+  if(main_audio_in)
   {
-    if(!chan.empty())
+    for(auto& chan : main_audio_in->audio)
     {
-      chan = chan.subspan(count);
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
     }
   }
-  for(auto& chan : main_audio_out->audio)
+  if(main_audio_out)
   {
-    if(!chan.empty())
+    for(auto& chan : main_audio_out->audio)
     {
-      chan = chan.subspan(count);
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
     }
   }
 
@@ -191,7 +223,10 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
 
 void audio_protocol::setup_buffers(ossia::audio_tick_state state)
 {
-  setup_tree(state.n_in, state.n_out);
+  // The tree itself is only built in setup_tree, off the audio thread: here we
+  // merely rebind the spans, and ignore the channels the tree does not have.
+  const int n_in = std::min(state.n_in, int(audio_ins.size()));
+  const int n_out = std::min(state.n_out, int(audio_outs.size()));
 
   // using idx_t = std::span<float>::index_type;
   const std::span<float>::size_type fc = state.frames;
@@ -203,7 +238,7 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
   }
 
   // Prepare audio inputs
-  for(int i = 0; i < state.n_in; i++)
+  for(int i = 0; i < n_in; i++)
   {
     main_audio_in->audio[i] = {state.inputs[i], fc};
     audio_ins[i]->audio[0] = {state.inputs[i], fc};
@@ -225,13 +260,16 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
   // Prepare audio outputs
   for(int i = 0; i < state.n_out; i++)
   {
-    main_audio_out->audio[i] = {state.outputs[i], fc};
-    audio_outs[i]->audio[0] = {state.outputs[i], fc};
-
     for(int j = 0; j < (int)state.frames; j++)
     {
       state.outputs[i][j] = 0;
     }
+  }
+
+  for(int i = 0; i < n_out; i++)
+  {
+    main_audio_out->audio[i] = {state.outputs[i], fc};
+    audio_outs[i]->audio[0] = {state.outputs[i], fc};
   }
 
   for(auto mapped : out_mappings)

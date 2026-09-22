@@ -14,9 +14,13 @@ public:
   audio_protocol();
   ~audio_protocol() override;
 
+  // Allocates and mutates the node tree: must not be called from the audio thread.
   void setup_tree(int inputs, int outputs);
   void advance_tick(std::size_t count);
   void setup_buffers(audio_tick_state state);
+
+  // Drops every span pointing into the driver's buffers.
+  void clear_buffers() noexcept;
 
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
@@ -26,6 +30,7 @@ public:
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
   void set_device(ossia::net::device_base& dev) override;
+  void stop() override;
 
   void register_parameter(mapped_audio_parameter& p);
   void unregister_parameter(mapped_audio_parameter& p);
