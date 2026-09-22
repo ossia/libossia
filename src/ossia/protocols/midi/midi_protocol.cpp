@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/math.hpp>
 #include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/protocols/midi/midi_device.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
@@ -603,6 +604,10 @@ void midi_protocol::value_callback(
 
 void midi_protocol::midi_callback(libremidi::message&& mess)
 {
+  const auto n_bytes = mess.bytes.size();
+  if(n_bytes == 0)
+    return;
+
   if(m_logger.inbound_logger)
   {
     if(mess.bytes.size() >= 3)
@@ -614,10 +619,9 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       m_logger.inbound_logger->info("MIDI in: {0}", mess.bytes[0]);
   }
 
-  if(this->m_config.velocity_zero_is_note_off) {
+  if(this->m_config.velocity_zero_is_note_off && n_bytes >= 3) {
     if(mess.get_message_type() == libremidi::message_type::NOTE_ON) {
       const auto status = mess.bytes[0];
-      const auto note = mess.bytes[1];
       const auto vel = mess.bytes[2];
       if(vel == 0)
         mess.bytes[0] = (status & 0x0F) | 0x80;
@@ -653,6 +657,8 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
   switch(mess.get_message_type())
   {
     case libremidi::message_type::NOTE_ON:
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.note_on_N))
+        break;
       c.note_on.first = mess.bytes[1];
       c.note_on.second = mess.bytes[2];
       c.note_on_N[c.note_on.first] = c.note_on.second;
@@ -670,6 +676,8 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       }
       break;
     case libremidi::message_type::NOTE_OFF:
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.note_off_N))
+        break;
       c.note_off.first = mess.bytes[1];
       c.note_off.second = mess.bytes[2];
       c.note_off_N[c.note_off.first] = c.note_off.second;
@@ -689,6 +697,8 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       }
       break;
     case libremidi::message_type::CONTROL_CHANGE:
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.cc_N))
+        break;
       c.cc.first = mess.bytes[1];
       c.cc.second = mess.bytes[2];
       c.cc_N[c.cc.first] = c.cc.second;
@@ -704,6 +714,8 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       }
       break;
     case libremidi::message_type::PROGRAM_CHANGE:
+      if(n_bytes < 2 || !ossia::valid_index(mess.bytes[1], c.param_pc_N))
+        break;
       c.pc = mess.bytes[1];
       if(c.param_pc)
       {
@@ -715,6 +727,8 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
       }
       break;
     case libremidi::message_type::PITCH_BEND:
+      if(n_bytes < 3)
+        break;
       c.pb = mess.bytes[2] * 128 + mess.bytes[1];
       if(c.param_pb)
       {
@@ -740,16 +754,20 @@ midi_node* find_or_create(
 
 void midi_protocol::on_learn(const libremidi::message& mess)
 {
+  const auto n_bytes = mess.bytes.size();
   const midi_size_t chan = mess.get_channel();
   if(chan == 0)
     return;
 
+  const midi_channel& c = m_channels[chan - 1];
   auto channel_node = find_or_create<ossia::net::midi::channel_node>(
       midi_node_name(chan), *m_dev, *m_dev, false, chan);
 
   switch(mess.get_message_type())
   {
     case libremidi::message_type::NOTE_ON: {
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.param_note_on_N))
+        break;
       auto node = find_or_create<generic_node>(
           "on", *m_dev, *channel_node,
           address_info{chan, address_info::Type::NoteOn, 0});
@@ -766,6 +784,8 @@ void midi_protocol::on_learn(const libremidi::message& mess)
     }
 
     case libremidi::message_type::NOTE_OFF: {
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.param_note_off_N))
+        break;
       auto node = find_or_create<generic_node>(
           "off", *m_dev, *channel_node,
           address_info{chan, address_info::Type::NoteOff, 0});
@@ -782,6 +802,8 @@ void midi_protocol::on_learn(const libremidi::message& mess)
     }
 
     case libremidi::message_type::CONTROL_CHANGE: {
+      if(n_bytes < 3 || !ossia::valid_index(mess.bytes[1], c.param_cc_N))
+        break;
       auto node = find_or_create<generic_node>(
           "control", *m_dev, *channel_node,
           address_info{chan, address_info::Type::CC, 0});
@@ -798,6 +820,8 @@ void midi_protocol::on_learn(const libremidi::message& mess)
     }
 
     case libremidi::message_type::PROGRAM_CHANGE: {
+      if(n_bytes < 2 || !ossia::valid_index(mess.bytes[1], c.param_pc_N))
+        break;
       auto node = find_or_create<generic_node>(
           "program", *m_dev, *channel_node,
           address_info{chan, address_info::Type::PC, 0});
