@@ -3,6 +3,8 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 
+#include <algorithm>
+
 namespace ossia
 {
 namespace detail
@@ -242,10 +244,21 @@ struct domain_float_minmax_visitor_helper<vector_domain>
   OSSIA_INLINE float_minmax operator()(const vector_domain& value) const { return {}; }
 };
 
+//! The bounds a scalar sees on a vector domain: the widest any component takes.
 template <std::size_t N>
 struct domain_float_minmax_visitor_helper<vecf_domain<N>>
 {
-  OSSIA_INLINE float_minmax operator()(const vecf_domain<N>& value) const { return {}; }
+  OSSIA_INLINE float_minmax operator()(const vecf_domain<N>& value) const
+  {
+    float_minmax ret;
+    for(const auto& m : value.min)
+      if(m)
+        ret.first = ret.first ? std::min(*ret.first, *m) : *m;
+    for(const auto& m : value.max)
+      if(m)
+        ret.second = ret.second ? std::max(*ret.second, *m) : *m;
+    return ret;
+  }
 };
 
 }

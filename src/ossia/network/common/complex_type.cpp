@@ -306,15 +306,15 @@ ossia::value convert(
   {
     return ossia::convert(v, *src_u, *tgt_u);
   }
-  else
+  else if(auto tgt_t = dest_t.target<ossia::val_type>())
   {
-    // auto src_t = source_t.target<ossia::val_type>();
-    auto tgt_t = dest_t.target<ossia::val_type>();
-
-    if(tgt_t)
-    {
-      return ossia::convert(v, *tgt_t);
-    }
+    return ossia::convert(v, *tgt_t);
+  }
+  else if(tgt_u && bool(*tgt_u))
+  {
+    // Nothing says what the value is in, so there is no quantity to preserve:
+    // it only has to take the shape the destination unit is expressed in.
+    return ossia::convert(v, ossia::underlying_type(dest_t));
   }
 
   // TODO else

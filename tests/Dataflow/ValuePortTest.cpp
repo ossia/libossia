@@ -975,6 +975,104 @@ TEST_CASE("test_cable_unit_and_domain_ordering", "test_cable_unit_and_domain")
     }
   }
 
+  GIVEN("A scalar source cabled into a three-component control")
+  {
+    ossia::value_port src, snk;
+    src.type = ossia::val_type::FLOAT;
+    src.domain = ossia::make_domain(0.f, 1.f);
+    snk.type = ossia::val_type::VEC3F;
+    snk.domain = ossia::make_domain(0.f, 360.f);
+
+    WHEN("The top of the source range goes down the cable")
+    {
+      cable(src, snk, 1.f);
+
+      THEN("It is rescaled to the sink's range, then widened to its arity")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        CHECK(snk.get_data()[0].value == ossia::value{ossia::vec3f{360.f, 360.f, 360.f}});
+      }
+    }
+  }
+
+  GIVEN("The same cable into a control whose range is per-component")
+  {
+    ossia::value_port src, snk;
+    src.type = ossia::val_type::FLOAT;
+    src.domain = ossia::make_domain(0.f, 1.f);
+    snk.type = ossia::val_type::VEC3F;
+    snk.domain = ossia::make_domain(ossia::vec3f{0.f, 0.f, 0.f},
+                                    ossia::vec3f{360.f, 360.f, 360.f});
+
+    WHEN("The top of the source range goes down the cable")
+    {
+      cable(src, snk, 1.f);
+
+      THEN("A vector range bounds a scalar the same way a float one does")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        CHECK(snk.get_data()[0].value == ossia::value{ossia::vec3f{360.f, 360.f, 360.f}});
+      }
+    }
+  }
+
+  GIVEN("A scalar source cabled into a port that declares a unit")
+  {
+    ossia::value_port src, snk;
+    src.type = ossia::val_type::FLOAT;
+    snk.type = ossia::unit_t{ossia::cartesian_3d_u{}};
+
+    WHEN("A value goes down the cable")
+    {
+      cable(src, snk, 0.5f);
+
+      THEN("It takes the shape the unit is expressed in")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        CHECK(snk.get_data()[0].value == ossia::value{ossia::vec3f{0.5f, 0.5f, 0.5f}});
+      }
+    }
+  }
+
+  GIVEN("Two cart3D ports with different ranges")
+  {
+    ossia::value_port src, snk;
+    src.type = ossia::unit_t{ossia::cartesian_3d_u{}};
+    src.domain = ossia::make_domain(0.f, 1.f);
+    snk.type = ossia::unit_t{ossia::cartesian_3d_u{}};
+    snk.domain = ossia::make_domain(0.f, 360.f);
+
+    WHEN("A position goes down the cable")
+    {
+      cable(src, snk, ossia::vec3f{1.f, 1.f, 1.f});
+
+      THEN("The unit has said everything: the range bounds, it does not rescale")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        CHECK(snk.get_data()[0].value == ossia::value{ossia::vec3f{1.f, 1.f, 1.f}});
+      }
+    }
+  }
+
+  GIVEN("A cable from a port that declares nothing into one that declares a unit")
+  {
+    ossia::value_port src, snk;
+    src.domain = ossia::make_domain(0.f, 2.f);
+    snk.type = ossia::unit_t{ossia::cartesian_3d_u{}};
+    snk.domain = ossia::make_domain(0.f, 1.f);
+
+    WHEN("A value goes down the cable")
+    {
+      cable(src, snk, 1.f);
+
+      THEN("A port with nothing to say is not treated as having a unit")
+      {
+        REQUIRE(snk.get_data().size() == 1);
+        CHECK(snk.get_data()[0].value == ossia::value{0.5f});
+      }
+    }
+  }
+
   GIVEN("A cable between two ports that only have ranges")
   {
     ossia::value_port src, snk;
