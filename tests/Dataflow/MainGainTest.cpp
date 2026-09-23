@@ -115,3 +115,44 @@ TEST_CASE("A main gain change ramps over one buffer", "[audio][main][gain]")
   for(float s : c.out_buffers[0])
     CHECK(s == Catch::Approx(0.));
 }
+
+TEST_CASE("/in/main scales every input read", "[audio][main][gain]")
+{
+  ossia::audio_protocol* proto{};
+  ossia::net::generic_device dev{
+      [&] {
+    auto p = std::make_unique<ossia::audio_protocol>();
+    proto = p.get();
+    return p;
+  }(),
+      "audio"};
+  proto->setup_tree(2, 0);
+
+  std::array<float, frames> l{}, r{};
+  l.fill(1.f);
+  r.fill(1.f);
+  std::array<float*, 2> inputs{l.data(), r.data()};
+  proto->setup_buffers(
+      {.inputs = inputs.data(), .outputs = nullptr, .n_in = 2, .n_out = 0,
+       .frames = frames});
+
+  proto->main_audio_in->set_value(0.5f);
+  proto->audio_ins[1]->set_value(0.5f);
+
+  auto read = [](const ossia::audio_parameter& p) {
+    ossia::audio_vector v;
+    p.clone_value(v);
+    return v;
+  };
+
+  const auto main = read(*proto->main_audio_in);
+  REQUIRE(main.size() == 2);
+  CHECK(main[0][0] == Catch::Approx(0.5));
+
+  const auto first = read(*proto->audio_ins[0]);
+  REQUIRE(first.size() == 1);
+  CHECK(first[0][0] == Catch::Approx(0.5));
+
+  const auto second = read(*proto->audio_ins[1]);
+  CHECK(second[0][0] == Catch::Approx(0.25));
+}
