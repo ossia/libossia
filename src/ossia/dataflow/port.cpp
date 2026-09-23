@@ -283,6 +283,25 @@ void audio_outlet::post_process()
   if(auto& gain_msg = std::as_const(gain_inlet).data.get_data(); !gain_msg.empty())
     gain = ossia::convert<float>(gain_msg.back().value);
 
+  if(upmix != upmix_mode::none)
+  {
+    const std::size_t in = data.channels();
+    const std::size_t out = upmix_channels;
+    if(in > 0 && in < out)
+    {
+      data.set_channels(out);
+      const std::size_t n = data.channel(0).size();
+      for(std::size_t c = in; c < out; c++)
+      {
+        auto& chan = data.channel(c);
+        if(upmix == upmix_mode::repeat)
+          chan.assign(data.channel(c % in).begin(), data.channel(c % in).end());
+        else
+          chan.assign(n, 0.);
+      }
+    }
+  }
+
   // TODO pan inlet
   const std::size_t C = data.channels();
   if(C == 0)

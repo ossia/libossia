@@ -198,3 +198,41 @@ TEST_CASE("A benchmarked graph times the nodes that have a tap", "[dataflow][ben
   check_levels(c.tick(), {1.});
   CHECK(tap->pending.runs == 1);
 }
+
+TEST_CASE("A mono interval repeated to stereo can be panned", "[dataflow][interval][upmix]")
+{
+  Chain c{{1.}};
+  c.interval->audio_out.upmix = ossia::audio_outlet::upmix_mode::repeat;
+  c.interval->audio_out.upmix_channels = 2;
+  c.interval->audio_out.pan = ossia::pan_weight{1., 0.25};
+  check_levels(c.tick(), {1., 0.25});
+}
+
+TEST_CASE("Repeating wraps the channels around", "[dataflow][interval][upmix]")
+{
+  Chain c{{0.1, 0.2}};
+  c.interval->audio_out.upmix = ossia::audio_outlet::upmix_mode::repeat;
+  c.interval->audio_out.upmix_channels = 5;
+  check_levels(c.tick(), {0.1, 0.2, 0.1, 0.2, 0.1});
+}
+
+TEST_CASE("Padding adds silent channels", "[dataflow][interval][upmix]")
+{
+  Chain c{{0.5}};
+  c.interval->audio_out.upmix = ossia::audio_outlet::upmix_mode::pad;
+  c.interval->audio_out.upmix_channels = 3;
+  check_levels(c.tick(), {0.5, 0., 0.});
+}
+
+TEST_CASE("A signal already wide enough is left as it is", "[dataflow][interval][upmix]")
+{
+  Chain c{{0.1, 0.2, 0.3}};
+  c.interval->audio_out.upmix = ossia::audio_outlet::upmix_mode::repeat;
+  c.interval->audio_out.upmix_channels = 2;
+  check_levels(c.tick(), {0.1, 0.2, 0.3});
+
+  Chain silent{{}};
+  silent.interval->audio_out.upmix = ossia::audio_outlet::upmix_mode::repeat;
+  silent.interval->audio_out.upmix_channels = 2;
+  CHECK(silent.tick().empty());
+}
