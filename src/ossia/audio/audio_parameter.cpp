@@ -157,6 +157,18 @@ virtual_audio_parameter::virtual_audio_parameter(int num_channels, net::node_bas
   proto.register_parameter(*this);
 }
 
+auto virtual_audio_parameter::make_channels(int num_channels) const -> channels
+{
+  const auto bs = m_audio_data.empty() ? std::size_t(512) : m_audio_data.front().size();
+  channels c;
+  c.data.resize(std::max(num_channels, 0));
+  for(auto& d : c.data)
+    d.resize(bs);
+  for(auto& d : c.data)
+    c.spans.push_back(d);
+  return c;
+}
+
 void virtual_audio_parameter::push_value(const audio_port& port)
 {
   const double g = gain();

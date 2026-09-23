@@ -10,6 +10,8 @@
 #include <ossia/audio/sdl_protocol.hpp>
 #include <ossia/detail/logger.hpp>
 
+#include <chrono>
+#include <cmath>
 #include <thread>
 
 namespace ossia
@@ -87,20 +89,40 @@ void audio_engine::sync()
   }
 }
 
-void audio_engine::run_parked(const std::function<void()>& f)
+void audio_engine::run_between_ticks(const std::function<void()>& f)
 {
-  if(stop_processing || !running())
+  if(!running())
   {
     f();
     return;
   }
 
-  // Past sync(), the callback that may have been running has returned and the
-  // next ones skip their tick until stop_processing is lowered.
-  stop_processing = true;
-  sync();
-  f();
-  stop_processing = false;
+  m_betweenDone.store(false, std::memory_order_relaxed);
+  m_between.store(&f, std::memory_order_release);
+
+  int buffer_ms = 8;
+  if(effective_sample_rate > 0)
+    buffer_ms = std::max(
+        1, int(std::ceil(effective_buffer_size * 1000. / effective_sample_rate)));
+
+  // A few buffers' worth: a callback that does not come by then is not coming.
+  const auto deadline
+      = std::chrono::steady_clock::now() + std::chrono::milliseconds(8 * buffer_ms + 50);
+  while(!m_betweenDone.load(std::memory_order_acquire))
+  {
+    if(std::chrono::steady_clock::now() > deadline)
+    {
+      // Taken back before the callback took it: it is safe to run it here.
+      if(m_between.exchange(nullptr, std::memory_order_acq_rel) == &f)
+      {
+        ossia::logger().warn("Audio engine: no callback, running the change directly");
+        f();
+        return;
+      }
+      // The callback took it and is running it: it will be done shortly.
+    }
+    std::this_thread::sleep_for(std::chrono::microseconds(100));
+  }
 }
 
 void audio_engine::gc()
@@ -124,6 +146,12 @@ void audio_engine::set_tick(audio_engine::fun_type&& t)
 
 void audio_engine::load_audio_tick()
 {
+  if(auto f = m_between.exchange(nullptr, std::memory_order_acq_rel))
+  {
+    (*f)();
+    m_betweenDone.store(true, std::memory_order_release);
+  }
+
   fun_type tick;
   while(tick_funlist.try_dequeue(tick))
   {
