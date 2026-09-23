@@ -427,8 +427,11 @@ struct faust_node_utils
         = self.root_outputs()[0]->template cast<ossia::audio_port>();
 
     const int64_t n_in = audio_in.channels();
-    audio_out.set_channels(n_in);
-    while(self.clones.size() < n_in)
+    // One clone per incoming channel; a generator has none to follow and
+    // makes one.
+    const int64_t n_chans = dsp.getNumInputs() == 0 ? 1 : n_in;
+    audio_out.set_channels(n_chans);
+    while(self.clones.size() < n_chans)
     {
       self.clones.emplace_back(dsp.clone(), self.clones[0]);
     }
@@ -452,15 +455,18 @@ struct faust_node_utils
       memset(input, 0, d * sizeof(float));
       float* output = (float*)alloca(d * sizeof(float));
 
-      for(int i = 0; i < n_in; i++)
+      for(int i = 0; i < n_chans; i++)
       {
-        auto& in_chan = audio_in.channel(i);
         auto& out_chan = audio_out.channel(i);
         auto& clone = self.clones[i];
-        in_chan.resize(e.bufferSize());
         out_chan.resize(e.bufferSize());
 
-        copy_input_mono(self, d, n_in, input, in_chan);
+        if(i < n_in)
+        {
+          auto& in_chan = audio_in.channel(i);
+          in_chan.resize(e.bufferSize());
+          copy_input_mono(self, d, n_in, input, in_chan);
+        }
         memset(output, 0, d * sizeof(float));
         for(int z = 0; z < d; z++)
         {
@@ -484,14 +490,18 @@ struct faust_node_utils
     }
     else
     {
-      for(int i = 0; i < n_in; i++)
+      for(int i = 0; i < n_chans; i++)
       {
-        auto& in_chan = audio_in.channel(i);
         auto& out_chan = audio_out.channel(i);
-        in_chan.resize(e.bufferSize());
         out_chan.resize(e.bufferSize());
 
-        double* input = in_chan.data() + st;
+        double* input = nullptr;
+        if(i < n_in)
+        {
+          auto& in_chan = audio_in.channel(i);
+          in_chan.resize(e.bufferSize());
+          input = in_chan.data() + st;
+        }
         double* output = out_chan.data() + st;
 
         self.clones[i].fx->compute(d, &input, &output);
