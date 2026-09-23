@@ -195,7 +195,9 @@ template <typename X, typename Y>
 inline bool
 curve<X, Y>::add_point(ossia::curve_segment<Y>&& segment, X abscissa, Y value)
 {
-  m_points.emplace(abscissa, std::make_pair(value, std::move(segment)));
+  // Curves are built in increasing abscissa: the hint makes that O(1).
+  m_points.emplace_hint(
+      m_points.end(), abscissa, std::make_pair(value, std::move(segment)));
 
   return true;
 }
@@ -209,30 +211,34 @@ inline bool curve<X, Y>::remove_point(X abscissa)
 template <typename X, typename Y>
 inline Y curve<X, Y>::value_at(X abscissa) const
 {
-  X lastAbscissa = get_x0();
-  Y lastValue = get_y0();
+  // Runs on the audio thread on every tick.
+  const X x0 = get_x0();
+  // Always read: with a destination, the first call captures the start value.
+  const Y y0 = get_y0();
+  if(!(abscissa > x0))
+    return y0;
 
-  auto end = m_points.end();
-  for(auto it = m_points.begin(); it != end; ++it)
+  // The first point at or after abscissa, and the one before it.
+  auto it = m_points.lower_bound(abscissa);
+  if(it == m_points.end())
+    return m_points.empty() ? y0 : std::prev(it)->second.first;
+
+  X lastAbscissa = x0;
+  Y lastValue = y0;
+  if(it != m_points.begin())
   {
-    if(abscissa > lastAbscissa && abscissa <= it->first)
+    auto prev = std::prev(it);
+    if(prev->first >= x0)
     {
-      lastValue = it->second.second(
-          ((double)abscissa - (double)lastAbscissa)
-              / ((double)it->first - (double)lastAbscissa),
-          lastValue, it->second.first);
-      break;
+      lastAbscissa = prev->first;
+      lastValue = prev->second.first;
     }
-    else if(abscissa > it->first)
-    {
-      lastAbscissa = it->first;
-      lastValue = it->second.first;
-    }
-    else
-      break;
   }
 
-  return lastValue;
+  return it->second.second(
+      ((double)abscissa - (double)lastAbscissa)
+          / ((double)it->first - (double)lastAbscissa),
+      lastValue, it->second.first);
 }
 
 template <typename X, typename Y>

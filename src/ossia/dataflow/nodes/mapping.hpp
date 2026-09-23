@@ -35,6 +35,10 @@ public:
 
   void set_behavior(const ossia::behavior& b) { m_drive = b; }
 
+  //! Hands the previous behavior back instead of destroying it here: on the
+  //! audio thread, freeing a large curve is a real-time violation.
+  void swap_behavior(ossia::behavior& b) noexcept { std::swap(m_drive, b); }
+
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
