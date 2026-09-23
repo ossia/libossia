@@ -8,6 +8,8 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/common/path.hpp>
 
+#include <array>
+
 namespace ossia
 {
 struct OSSIA_EXPORT port
@@ -245,12 +247,6 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
 
 struct audio_outlet;
 
-OSSIA_EXPORT
-void process_audio_out_mono(ossia::audio_outlet& audio_out);
-
-OSSIA_EXPORT
-void process_audio_out_general(ossia::audio_outlet& audio_out);
-
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
   audio_outlet() noexcept { init(); }
@@ -287,6 +283,8 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   void post_process() override;
 
+  //! Linear gain, and per-channel weights: channels past the end of pan
+  //! have a weight of 1. A mono signal ignores pan.
   double gain{1.};
   pan_weight pan{1., 1.};
 
@@ -296,6 +294,18 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   ossia::audio_port data;
 
 private:
+  // What post_process last applied, so that a change ramps over one buffer
+  // instead of clicking. Pan ramps on the first channels only. Nothing ramps
+  // before the first buffer carrying audio.
+  static constexpr std::size_t ramped_pan_channels = 16;
+  bool m_applied{};
+  double m_applied_gain{1.};
+  std::array<float, ramped_pan_channels> m_applied_pan = [] {
+    std::array<float, ramped_pan_channels> a;
+    a.fill(1.f);
+    return a;
+  }();
+
   void init() noexcept
   {
     this->child_inlets.resize(2);
