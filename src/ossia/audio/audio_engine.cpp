@@ -87,6 +87,22 @@ void audio_engine::sync()
   }
 }
 
+void audio_engine::run_parked(const std::function<void()>& f)
+{
+  if(stop_processing || !running())
+  {
+    f();
+    return;
+  }
+
+  // Past sync(), the callback that may have been running has returned and the
+  // next ones skip their tick until stop_processing is lowered.
+  stop_processing = true;
+  sync();
+  f();
+  stop_processing = false;
+}
+
 void audio_engine::gc()
 {
   // try to make deallocations happen in the main thread as far as possible
