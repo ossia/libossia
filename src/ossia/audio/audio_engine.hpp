@@ -6,6 +6,7 @@
 #include <smallfun.hpp>
 
 #include <atomic>
+#include <functional>
 
 #include <ossia-config.hpp>
 
@@ -23,6 +24,10 @@ public:
 
   void gc();
   void sync();
+
+  //! Runs f while the audio callback skips its tick, as it does when stopped:
+  //! f may change what the tick reads, such as the audio protocol's ports.
+  void run_parked(const std::function<void()>& f);
 
   using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
   void set_tick(fun_type&& t);
