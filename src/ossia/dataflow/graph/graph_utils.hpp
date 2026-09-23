@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/dataflow/bench_map.hpp>
+#include <ossia/dataflow/bench_state.hpp>
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/execution_state.hpp>

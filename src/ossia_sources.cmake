@@ -786,7 +786,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_lock.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_stretch_mode.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/bench_map.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/bench_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/control_inlets.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"

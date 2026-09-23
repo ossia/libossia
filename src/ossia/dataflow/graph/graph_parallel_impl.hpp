@@ -204,7 +204,7 @@ struct custom_parallel_update
 {
 public:
   std::shared_ptr<ossia::logger_type> logger;
-  std::shared_ptr<bench_map> perf_map;
+  std::shared_ptr<bench_state> perf_map;
 
   template <typename Graph_T>
   custom_parallel_update(Graph_T& g, const ossia::graph_setup_options& opt)
@@ -229,7 +229,6 @@ public:
             node_exec_logger_bench{cur_state, *perf_map, *logger});
         for(auto node : topo_order)
         {
-          (*perf_map)[node] = std::nullopt;
           flow_nodes[node] = flow_graph.emplace(*node);
         }
       }
@@ -240,6 +239,14 @@ public:
         {
           flow_nodes[node] = flow_graph.emplace(*node);
         }
+      }
+    }
+    else if(perf_map)
+    {
+      executor.set_task_executor(node_exec_bench{cur_state, *perf_map});
+      for(auto node : topo_order)
+      {
+        flow_nodes[node] = flow_graph.emplace(*node);
       }
     }
     else
