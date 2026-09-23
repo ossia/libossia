@@ -153,6 +153,11 @@ public:
   friend struct midi_outlet;
 };
 
+namespace telemetry
+{
+struct meter_tap;
+}
+
 struct OSSIA_EXPORT audio_inlet : public ossia::inlet
 {
   audio_inlet() noexcept = default;
@@ -181,7 +186,13 @@ struct OSSIA_EXPORT audio_inlet : public ossia::inlet
     return audio_port::which;
   }
 
+  void pre_process() override;
+
   ossia::audio_port data;
+
+  //! When set, pre_process feeds it what the inlet receives, once every
+  //! source has been mixed in. Swap it in and out from the audio thread only.
+  std::shared_ptr<ossia::telemetry::meter_tap> meter;
 };
 
 struct OSSIA_EXPORT midi_inlet : public ossia::inlet
@@ -247,11 +258,6 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
 };
 
 struct audio_outlet;
-namespace telemetry
-{
-struct meter_tap;
-}
-
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
   audio_outlet() noexcept { init(); }
