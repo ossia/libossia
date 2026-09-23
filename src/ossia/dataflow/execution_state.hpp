@@ -97,10 +97,6 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   void commit();
 
-  //! Drops everything the execution kept for a parameter about to be
-  //! destroyed; only while the graph does not run.
-  void forget(const ossia::net::parameter_base& p) noexcept;
-
   bool in_local_scope(ossia::net::parameter_base& other) const;
 
   int sampleRate{44100};

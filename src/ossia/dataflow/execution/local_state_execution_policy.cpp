@@ -46,7 +46,10 @@ void local_state_execution_policy::commit_common()
   // Why not just push to the audio address
   for(auto& elt : m_audioState)
   {
-    assert(elt.first);
+    // An entry stays once its parameter was written to, and the parameter may
+    // be gone since: only the ones written during this tick are touched.
+    if(elt.second.get().empty())
+      continue;
     elt.first->push_value(elt.second);
 
     for(auto& vec : elt.second.get())
@@ -339,24 +342,6 @@ bool local_state_execution_policy::in_local_scope(net::parameter_base& other) co
   return (
       is_in(other, m_valueState) || is_in(other, m_audioState)
       || is_in(other, m_midiState));
-}
-
-void local_state_execution_policy::forget(const net::parameter_base& p) noexcept
-{
-  auto param = const_cast<net::parameter_base*>(&p);
-  m_valueState.erase(param);
-  m_midiState.erase(param);
-#if defined(OSSIA_PROTOCOL_AUDIO)
-  if(auto audio = dynamic_cast<ossia::audio_parameter*>(param))
-  {
-    if(auto it = m_audioState.find(audio); it != m_audioState.end())
-    {
-      for(auto& vec : it->second.get())
-        ossia::audio_buffer_pool::instance().release(std::move(vec));
-      m_audioState.erase(it);
-    }
-  }
-#endif
 }
 
 void local_state_execution_policy::clear_local_state()

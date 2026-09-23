@@ -75,6 +75,21 @@ class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
 public:
   virtual_audio_parameter(int num_channels, ossia::net::node_base& n);
 
+  //! Buffers for another channel count, made off the audio thread.
+  struct channels
+  {
+    std::vector<ossia::float_vector> data;
+    ossia::small_vector<std::span<float>, 8> spans;
+  };
+  [[nodiscard]] channels make_channels(int num_channels) const;
+  //! Takes buffers made by make_channels, between two ticks; `c` gets the
+  //! previous ones, to be freed off the audio thread.
+  void swap_channels(channels& c) noexcept
+  {
+    std::swap(m_audio_data, c.data);
+    std::swap(audio, c.spans);
+  }
+
   //! Changes the channel count; only while the audio callback does not run.
   void set_channels(int num_channels)
   {
