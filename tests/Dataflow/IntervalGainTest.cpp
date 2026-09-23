@@ -137,3 +137,41 @@ TEST_CASE("A unity interval passes its input through", "[dataflow][interval][gai
   Chain c{{0.25, -0.75}};
   check_levels(c.tick(), {0.25, -0.75});
 }
+
+TEST_CASE("A gain change ramps over one buffer", "[dataflow][interval][gain]")
+{
+  Chain c{{1.}};
+  check_levels(c.tick(), {1.});
+
+  c.interval->audio_out.gain = 0.;
+  const auto& out = c.tick();
+  REQUIRE(out.size() == 1);
+  for(int i = 1; i < frames; i++)
+    CHECK(out[0][i] < out[0][i - 1]);
+  CHECK(out[0][frames - 1] == Catch::Approx(0.));
+
+  check_levels(c.tick(), {0.});
+}
+
+TEST_CASE("A pan change ramps over one buffer", "[dataflow][interval][pan]")
+{
+  Chain c{{1., 1.}};
+  c.tick();
+
+  c.interval->audio_out.pan = ossia::pan_weight{0., 1.};
+  const auto& out = c.tick();
+  REQUIRE(out.size() == 2);
+  CHECK(out[0][0] > 0.);
+  CHECK(out[0][frames - 1] == Catch::Approx(0.));
+  for(double s : out[1])
+    CHECK(s == Catch::Approx(1.));
+}
+
+TEST_CASE("Channels past the pan weights keep unity", "[dataflow][interval][pan]")
+{
+  Chain c{{1., 1., 1., 1.}};
+  c.interval->audio_out.pan = ossia::pan_weight{0.5, 0.5};
+  c.tick();
+  check_levels(c.tick(), {0.5, 0.5, 1., 1.});
+  CHECK(c.interval->audio_out.pan.size() == 2);
+}
