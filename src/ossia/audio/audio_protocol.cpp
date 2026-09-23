@@ -60,6 +60,7 @@ void audio_protocol::setup_tree(int inputs, int outputs)
     audio_ins.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/in/" + std::to_string(i + 1)));
     audio_ins.back()->stage = audio_parameter::gain_stage::pull;
+    audio_ins.back()->upstream = main_audio_in;
   }
   for(int i = 0; i < outputs; i++)
   {
@@ -72,6 +73,9 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   {
     audio_ins[i]->audio.resize(1);
   }
+
+  for(auto p : in_mappings)
+    p->upstream = main_audio_in;
 
   main_audio_out->audio.resize(outputs);
   for(int i = 0; i < outputs; i++)
@@ -225,9 +229,14 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
 {
   if(p.is_output)
+  {
     out_mappings.push_back(&p);
+  }
   else
+  {
+    p.upstream = main_audio_in;
     in_mappings.push_back(&p);
+  }
 }
 
 void audio_protocol::unregister_parameter(mapped_audio_parameter& p)

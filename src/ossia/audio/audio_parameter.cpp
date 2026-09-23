@@ -31,7 +31,9 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
     }
   }
 
-  const double g = stage == gain_stage::pull ? gain() : 1.;
+  double g = stage == gain_stage::pull ? gain() : 1.;
+  if(upstream)
+    g *= upstream->gain();
   auto min_chan = std::min(res_vec.size(), audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
   {
