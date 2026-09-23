@@ -53,10 +53,13 @@ void audio_protocol::setup_tree(int inputs, int outputs)
       = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/in/main");
   main_audio_out
       = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/out/main");
+  main_audio_in->stage = audio_parameter::gain_stage::pull;
+  main_audio_out->stage = audio_parameter::gain_stage::external;
   for(int i = 0; i < inputs; i++)
   {
     audio_ins.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/in/" + std::to_string(i + 1)));
+    audio_ins.back()->stage = audio_parameter::gain_stage::pull;
   }
   for(int i = 0; i < outputs; i++)
   {
@@ -74,6 +77,40 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   for(int i = 0; i < outputs; i++)
   {
     audio_outs[i]->audio.resize(1);
+  }
+}
+
+void audio_protocol::apply_main_gain(const audio_tick_state& state) noexcept
+{
+  const float start = m_main_gain;
+  const float target = main_audio_out ? main_audio_out->gain() : 1.f;
+  m_main_gain = target;
+
+  const auto frames = state.frames;
+  if(frames == 0)
+    return;
+
+  if(start == target)
+  {
+    if(target == 1.f)
+      return;
+
+    for(int c = 0; c < state.n_out; c++)
+    {
+      float* out = state.outputs[c];
+      for(std::size_t i = 0; i < frames; i++)
+        out[i] *= target;
+    }
+  }
+  else
+  {
+    const float step = (target - start) / float(frames);
+    for(int c = 0; c < state.n_out; c++)
+    {
+      float* out = state.outputs[c];
+      for(std::size_t i = 0; i < frames; i++)
+        out[i] *= start + step * float(i + 1);
+    }
   }
 }
 

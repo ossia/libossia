@@ -22,6 +22,11 @@ public:
   // Drops every span pointing into the driver's buffers.
   void clear_buffers() noexcept;
 
+  // Scales every hardware output by the gain of /out/main, once the whole
+  // tick has been summed into them: /out/main is the master, whichever address
+  // a signal was sent to. A gain change ramps over the buffer.
+  void apply_main_gain(const audio_tick_state& state) noexcept;
+
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
   bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
@@ -49,6 +54,9 @@ public:
 
 protected:
   ossia::net::device_base* m_dev{};
+
+private:
+  float m_main_gain{1.f};
 };
 
 }
