@@ -5,6 +5,7 @@
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/telemetry.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/protocols/midi/midi_parameter.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
@@ -279,7 +280,11 @@ void audio_outlet::post_process()
   // TODO pan inlet
   const std::size_t C = data.channels();
   if(C == 0)
+  {
+    if(meter)
+      meter->pending.accumulate(data.get());
     return;
+  }
 
   const bool ramp = m_applied;
   const double to_gain = gain;
@@ -318,6 +323,9 @@ void audio_outlet::post_process()
         samples[i] *= from + step * double(i + 1);
     }
   }
+
+  if(meter)
+    meter->pending.accumulate(data.get());
 }
 
 midi_inlet::~midi_inlet() = default;
