@@ -276,66 +276,52 @@ void audio_outlet::post_process()
   if(auto& gain_msg = std::as_const(gain_inlet).data.get_data(); !gain_msg.empty())
     gain = ossia::convert<float>(gain_msg.back().value);
 
-  // TODO pan
-  switch(data.channels())
+  // TODO pan inlet
+  const std::size_t C = data.channels();
+  if(C == 0)
+    return;
+
+  const bool ramp = m_applied;
+  const double to_gain = gain;
+  const double from_gain = ramp ? m_applied_gain : to_gain;
+  m_applied = true;
+  m_applied_gain = to_gain;
+
+  for(std::size_t c = 0; c < C; c++)
   {
-    case 0:
-      return;
+    const double to_pan = (C == 1 || c >= pan.size()) ? 1. : pan[c];
+    double from_pan = to_pan;
+    if(c < ramped_pan_channels)
+    {
+      if(ramp)
+        from_pan = m_applied_pan[c];
+      m_applied_pan[c] = float(to_pan);
+    }
 
-    case 1:
-      process_audio_out_mono(*this);
-      break;
+    const double from = from_gain * from_pan;
+    const double to = to_gain * to_pan;
 
-    default:
-      process_audio_out_general(*this);
-      break;
+    auto& chan = data.channel(c);
+    const std::size_t N = chan.size();
+    double* samples = chan.data();
+    if(from == to)
+    {
+      if(to == 1.)
+        continue;
+      for(std::size_t i = 0; i < N; i++)
+        samples[i] *= to;
+    }
+    else if(N > 0)
+    {
+      const double step = (to - from) / double(N);
+      for(std::size_t i = 0; i < N; i++)
+        samples[i] *= from + step * double(i + 1);
+    }
   }
 }
 
 midi_inlet::~midi_inlet() = default;
 
 midi_outlet::~midi_outlet() = default;
-
-void process_audio_out_mono(ossia::audio_outlet& audio_out)
-{
-  ossia::audio_port& o = *audio_out;
-
-  const double g = audio_out.gain;
-  if(g == 1.)
-    return;
-
-  const auto N = o.channel(0).size();
-  const auto o_ptr = o.channel(0).data();
-
-  for(std::size_t sample = 0; sample < N; sample++)
-  {
-    o_ptr[sample] *= g;
-  }
-}
-
-void process_audio_out_general(ossia::audio_outlet& audio_out)
-{
-  ossia::audio_port& o = *audio_out;
-  const auto C = o.channels();
-  const double g = audio_out.gain;
-
-  while(audio_out.pan.size() < C)
-    audio_out.pan.push_back(1.);
-
-  for(auto chan = 0U; chan < C; chan++)
-  {
-    auto N = o.channel(chan).size();
-
-    auto o_ptr = o.channel(chan).data();
-
-    const auto vol = audio_out.pan[chan] * g;
-    if(vol == 1.)
-      continue;
-    for(std::size_t sample = 0; sample < N; sample++)
-    {
-      o_ptr[sample] *= vol;
-    }
-  }
-}
 
 }
