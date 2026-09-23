@@ -313,10 +313,10 @@ TEST_CASE("A virtual port meters what the graph writes to it", "[telemetry][audi
   CHECK(tap.pending.ticks == 1);
 }
 
-TEST_CASE("A forgotten parameter is not written to again", "[telemetry][audio]")
+TEST_CASE("A parameter not written to during a tick is not touched", "[telemetry][audio]")
 {
-  // The execution keeps an entry per parameter it ever wrote to, and writes
-  // to it at every commit: a parameter about to be destroyed must be dropped.
+  // The execution keeps an entry per parameter it ever wrote to; a parameter
+  // may be destroyed since, so only the ones written this tick are pushed.
   ossia::audio_protocol* proto{};
   ossia::net::generic_device dev{
       [&] {
@@ -341,10 +341,11 @@ TEST_CASE("A forgotten parameter is not written to again", "[telemetry][audio]")
   st.insert(param, port);
   st.commit();
   CHECK(tap.pending.ticks == 1);
-  st.commit();
-  CHECK(tap.pending.ticks == 2);
 
-  st.forget(param);
+  st.commit();
+  CHECK(tap.pending.ticks == 1);
+
+  st.insert(param, port);
   st.commit();
   CHECK(tap.pending.ticks == 2);
   param.meter = nullptr;

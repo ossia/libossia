@@ -42,12 +42,31 @@ public:
   void register_parameter(virtual_audio_parameter& p);
   void unregister_parameter(virtual_audio_parameter& p);
 
+  //! The mapped and virtual ports that the audio callback walks.
+  struct ports
+  {
+    std::vector<ossia::mapped_audio_parameter*> in_mappings;
+    std::vector<ossia::mapped_audio_parameter*> out_mappings;
+    std::vector<ossia::virtual_audio_parameter*> virtaudio;
+  };
+
+  //! By default the callback walks the lists below as they are changed. Once
+  //! deferred, it walks its own copy, which only changes through swap_ports:
+  //! the lists can then change while the audio runs.
+  void defer_port_changes(bool b);
+  //! A copy of the lists below, made off the audio thread.
+  [[nodiscard]] ports current_ports() const;
+  //! Hands the lists to the callback: call it between two ticks. `p` gets the
+  //! previous ones, to be freed off the audio thread.
+  void swap_ports(ports& p) noexcept;
+
   [[nodiscard]] ossia::net::device_base& get_device() const { return *m_dev; }
   ossia::audio_parameter* main_audio_in{};
   ossia::audio_parameter* main_audio_out{};
   std::vector<ossia::audio_parameter*> audio_ins;
   std::vector<ossia::audio_parameter*> audio_outs;
 
+  //! The mapped and virtual ports, as the interface sees them.
   std::vector<ossia::mapped_audio_parameter*> in_mappings;
   std::vector<ossia::mapped_audio_parameter*> out_mappings;
   std::vector<ossia::virtual_audio_parameter*> virtaudio;
@@ -56,6 +75,8 @@ protected:
   ossia::net::device_base* m_dev{};
 
 private:
+  ports m_live;
+  bool m_deferred{};
   float m_main_gain{1.f};
 };
 
