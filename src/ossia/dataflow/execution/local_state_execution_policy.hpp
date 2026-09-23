@@ -21,6 +21,7 @@ struct OSSIA_TEST_EXPORT local_state_execution_policy : execution_state_policy
 
   bool find_and_copy(net::parameter_base& addr, inlet& in) override;
   void clear_local_state() override;
+  void forget(const net::parameter_base& p) noexcept override;
 
   void commit_common();
 
