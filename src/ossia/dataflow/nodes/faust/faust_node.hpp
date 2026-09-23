@@ -1,17 +1,58 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/faust/faust_utils.hpp>
+#include <ossia/detail/triple_buffer.hpp>
+
+#include <optional>
+#include <vector>
 
 namespace ossia::nodes
 {
 using faust_port_array
     = ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8>;
+
+//! The values of the controls then of the displays of a Faust node, as of its
+//! latest tick, for the interface: reading the zones directly would race with
+//! the DSP writing them.
+struct faust_ui_values
+{
+  std::optional<ossia::triple_buffer<std::vector<float>>> buffer;
+
+  //! Once the zones are known; every slot gets its size, so that publishing
+  //! never allocates.
+  void init(const faust_port_array& controls, const faust_port_array& displays)
+  {
+    buffer.emplace(std::vector<float>(controls.size() + displays.size()));
+  }
+
+  void publish(const faust_port_array& controls, const faust_port_array& displays) noexcept
+  {
+    if(!buffer)
+      return;
+    auto& w = buffer->write_buffer();
+    std::size_t i = 0;
+    for(auto& c : controls)
+      w[i++] = *c.second;
+    for(auto& d : displays)
+      w[i++] = *d.second;
+    buffer->publish();
+  }
+
+  //! The latest values, or nullptr when there are none since the previous call.
+  const std::vector<float>* consume() noexcept
+  {
+    if(!buffer || !buffer->consume())
+      return nullptr;
+    return &buffer->read_buffer();
+  }
+};
 class faust_mono_fx final : public ossia::graph_node
 {
 public:
   std::shared_ptr<dsp> m_dsp{};
   faust_port_array controls;
   faust_port_array displays;
+  faust_ui_values ui;
   int generation{};
 
   struct clone
@@ -90,6 +131,7 @@ public:
     // Initialize the controls
     faust_exec_ui<faust_mono_fx, false> ex{*this};
     m_dsp->buildUserInterface(&ex);
+    ui.init(controls, displays);
 
     // Preallocate for the most common case, two channels
     clones.emplace_back(m_dsp.get(), controls, displays);
@@ -99,6 +141,7 @@ public:
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     faust_node_utils{}.exec_mono_fx(*this, *m_dsp, tk, e);
+    ui.publish(controls, displays);
   }
 
   [[nodiscard]] std::string label() const noexcept override { return "Faust"; }
@@ -125,6 +168,7 @@ class faust_fx final : public ossia::graph_node
 public:
   faust_port_array controls;
   faust_port_array displays;
+  faust_ui_values ui;
   int generation{};
   faust_fx(std::shared_ptr<dsp> dsp)
       : m_dsp{std::move(dsp)}
@@ -133,12 +177,14 @@ public:
     m_outlets.push_back(new ossia::audio_outlet);
     faust_exec_ui<faust_fx, false> ex{*this};
     m_dsp->buildUserInterface(&ex);
+    ui.init(controls, displays);
   }
 
   void set_control(int i, float v) noexcept { *controls[i].second = v; }
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     faust_node_utils{}.exec(*this, *m_dsp, tk, e);
+    ui.publish(controls, displays);
   }
 
   [[nodiscard]] std::string label() const noexcept override { return "Faust"; }
@@ -158,6 +204,7 @@ class faust_synth final : public ossia::graph_node
 public:
   faust_port_array controls;
   faust_port_array displays;
+  faust_ui_values ui;
   int generation{};
 
   void set_control(int i, float v) noexcept { *controls[i].second = v; }
@@ -170,11 +217,13 @@ public:
     m_outlets.push_back(new ossia::audio_outlet);
     faust_exec_ui<faust_synth, true> ex{*this};
     m_dsp->buildUserInterface(&ex);
+    ui.init(controls, displays);
   }
 
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     faust_node_utils{}.exec_synth(*this, *m_dsp, tk, e);
+    ui.publish(controls, displays);
   }
 
   [[nodiscard]] std::string label() const noexcept override { return "Faust Synth"; }
