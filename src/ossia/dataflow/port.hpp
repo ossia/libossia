@@ -9,6 +9,7 @@
 #include <ossia/network/common/path.hpp>
 
 #include <array>
+#include <memory>
 
 namespace ossia
 {
@@ -246,6 +247,10 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
 };
 
 struct audio_outlet;
+namespace telemetry
+{
+struct meter_tap;
+}
 
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
@@ -292,6 +297,10 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   ossia::value_inlet pan_inlet;
 
   ossia::audio_port data;
+
+  //! When set, post_process feeds it what the outlet carries after gain and
+  //! pan. Swap it in and out from the audio thread only.
+  std::shared_ptr<ossia::telemetry::meter_tap> meter;
 
 private:
   // What post_process last applied, so that a change ramps over one buffer
