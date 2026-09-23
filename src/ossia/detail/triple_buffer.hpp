@@ -13,8 +13,6 @@ namespace ossia
 template <typename T>
 class triple_buffer
 {
-  static_assert(std::is_nothrow_swappable_v<T>, "T must be nothrow swappable");
-
   // State encoding (packed into one atomic uint8_t):
   //   bits [0:1] - middle buffer index (0, 1, or 2)
   //   bit  [2]   - dirty flag (1 = producer has written new data)
@@ -65,6 +63,7 @@ public:
   }
 
   void produce(T& value) noexcept
+    requires std::is_nothrow_swappable_v<T>
   {
     using std::swap;
     swap(m_buffers[m_write_idx].data, value);
@@ -83,9 +82,36 @@ public:
     m_write_idx = old_mid & index_mask;
   }
 
+  // The producer's slot, to be written in place and then published. It holds
+  // whatever was written into it two publications ago, so containers in it
+  // keep their capacity and assigning to them does not allocate.
+  T& write_buffer() noexcept { return m_buffers[m_write_idx].data; }
+
+  void publish() noexcept
+  {
+    const uint8_t new_mid = static_cast<uint8_t>(m_write_idx | dirty_bit);
+    const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
+    m_write_idx = old_mid & index_mask;
+  }
+
+  // Makes the latest published value the one read_buffer() gives, if there
+  // is a new one; the consumer reads it in place.
+  bool consume() noexcept
+  {
+    const uint8_t state = m_mid_state.load(std::memory_order_acquire);
+    if(!(state & dirty_bit))
+      return false;
+
+    const uint8_t new_mid = m_read_idx;
+    const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
+    m_read_idx = old_mid & index_mask;
+    return true;
+  }
+
   // Consume latest data if available.  Returns true and updates `result`
   // if new data was produced since the last consume(); false otherwise.
   bool consume(T& result) noexcept
+    requires std::is_nothrow_swappable_v<T>
   {
     const uint8_t state = m_mid_state.load(std::memory_order_acquire);
     if(!(state & dirty_bit))
