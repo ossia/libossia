@@ -9,6 +9,11 @@
 
 #include <atomic>
 
+namespace ossia::telemetry
+{
+struct meter_tap;
+}
+
 namespace ossia
 {
 class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
@@ -90,6 +95,11 @@ public:
   }
 
   void push_value(const audio_port& port) override;
+
+  //! Meters what the graph writes here. Set by the interface thread; the
+  //! telemetry arena owns the tap and keeps it alive until the audio thread
+  //! can no longer be writing to it.
+  std::atomic<ossia::telemetry::meter_tap*> meter{};
 
   virtual ~virtual_audio_parameter();
 };
