@@ -251,12 +251,6 @@ void process_audio_out_mono(ossia::audio_outlet& audio_out);
 OSSIA_EXPORT
 void process_audio_out_general(ossia::audio_outlet& audio_out);
 
-OSSIA_EXPORT
-void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out);
-
-OSSIA_EXPORT
-void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_out);
-
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
   audio_outlet() noexcept { init(); }
@@ -300,7 +294,6 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   ossia::value_inlet pan_inlet;
 
   ossia::audio_port data;
-  bool has_gain{};
 
 private:
   void init() noexcept
