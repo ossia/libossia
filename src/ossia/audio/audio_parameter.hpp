@@ -25,6 +25,10 @@ public:
     external, //!< by whoever owns the buffers, after the sum (/out/main)
   } stage{gain_stage::push};
 
+  //! A parameter whose gain also applies to this one: /in/main for the
+  //! inputs.
+  const audio_parameter* upstream{};
+
   explicit audio_parameter(ossia::net::node_base& n);
 
   //! Linear gain, readable from any thread.
