@@ -86,6 +86,21 @@ struct bench_tap
   bench_levels pending;
 };
 
+//! Where something that runs in time is: written by the tick, the latest
+//! value wins.
+struct playhead_tap
+{
+  int64_t date{};
+  bool running{};
+};
+
+struct playhead_slot
+{
+  uint32_t generation{};
+  int64_t date{};
+  bool running{};
+};
+
 enum class tap_kind : uint8_t
 {
   none,
@@ -116,6 +131,7 @@ struct frame
   int32_t sample_rate{};
   std::vector<meter_slot> meters;
   std::vector<bench_slot> benches;
+  std::vector<playhead_slot> playheads;
 
   //! Share of the real time a bench slot's node took to run, 1 being all of
   //! it.
@@ -131,7 +147,9 @@ class OSSIA_EXPORT arena
 {
 public:
   //! Allocates everything the audio thread will ever touch.
-  explicit arena(std::size_t meter_capacity, std::size_t bench_capacity = 0);
+  explicit arena(
+      std::size_t meter_capacity, std::size_t bench_capacity = 0,
+      std::size_t playhead_capacity = 0);
   ~arena();
 
   arena(const arena&) = delete;
@@ -141,6 +159,10 @@ public:
   [[nodiscard]] std::size_t bench_capacity() const noexcept
   {
     return m_benchSources.size();
+  }
+  [[nodiscard]] std::size_t playhead_capacity() const noexcept
+  {
+    return m_playheadSources.size();
   }
 
   // Audio thread //
@@ -153,6 +175,10 @@ public:
   //! Same, for a timed node.
   void attach_bench(
       std::size_t index, uint32_t generation, std::shared_ptr<bench_tap>& tap) noexcept;
+  //! Same, for a playhead.
+  void attach_playhead(
+      std::size_t index, uint32_t generation,
+      std::shared_ptr<playhead_tap>& tap) noexcept;
 
   //! Feeds the hardware taps from the driver's buffers. Call after the mix.
   void accumulate_hardware(const ossia::audio_tick_state& st) noexcept;
@@ -195,6 +221,13 @@ private:
   std::vector<meter_slot> m_unread;
   std::vector<bench_source> m_benchSources;
   std::vector<bench_slot> m_benchUnread;
+
+  struct playhead_source
+  {
+    std::shared_ptr<playhead_tap> tap;
+    uint32_t generation{};
+  };
+  std::vector<playhead_source> m_playheadSources;
   uint64_t m_unreadFrames{};
   frame m_staging;
   uint64_t m_frames{};

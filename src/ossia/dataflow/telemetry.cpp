@@ -104,23 +104,27 @@ float meter_levels::rms(std::size_t chan) const noexcept
 
 namespace
 {
-frame make_frame(std::size_t meters, std::size_t benches)
+frame make_frame(std::size_t meters, std::size_t benches, std::size_t playheads)
 {
   frame f;
   f.meters.resize(meters);
   f.benches.resize(benches);
+  f.playheads.resize(playheads);
   return f;
 }
 }
 
-arena::arena(std::size_t meter_capacity, std::size_t bench_capacity)
+arena::arena(
+    std::size_t meter_capacity, std::size_t bench_capacity,
+    std::size_t playhead_capacity)
     : m_sources(meter_capacity)
     , m_unread(meter_capacity)
     , m_benchSources(bench_capacity)
     , m_benchUnread(bench_capacity)
-    , m_staging{make_frame(meter_capacity, bench_capacity)}
-    , m_buffer{make_frame(meter_capacity, bench_capacity)}
-    , m_read{make_frame(meter_capacity, bench_capacity)}
+    , m_playheadSources(playhead_capacity)
+    , m_staging{make_frame(meter_capacity, bench_capacity, playhead_capacity)}
+    , m_buffer{make_frame(meter_capacity, bench_capacity, playhead_capacity)}
+    , m_read{make_frame(meter_capacity, bench_capacity, playhead_capacity)}
 {
 }
 
@@ -152,6 +156,17 @@ void arena::attach_bench(
   src.generation = generation;
   m_benchUnread[index].generation = generation;
   m_benchUnread[index].levels.clear();
+}
+
+void arena::attach_playhead(
+    std::size_t index, uint32_t generation, std::shared_ptr<playhead_tap>& tap) noexcept
+{
+  if(index >= m_playheadSources.size())
+    return;
+
+  auto& src = m_playheadSources[index];
+  std::swap(src.tap, tap);
+  src.generation = generation;
 }
 
 void arena::accumulate_hardware(const ossia::audio_tick_state& st) noexcept
@@ -217,6 +232,15 @@ void arena::publish() noexcept
     }
     m_staging.meters[i].generation = m_unread[i].generation;
     m_staging.meters[i].levels = acc;
+  }
+
+  for(std::size_t i = 0; i < m_playheadSources.size(); i++)
+  {
+    const auto& src = m_playheadSources[i];
+    auto& slot = m_staging.playheads[i];
+    slot.generation = src.generation;
+    slot.date = src.tap ? src.tap->date : 0;
+    slot.running = src.tap && src.tap->running;
   }
 
   m_staging.publish_seq = ++m_seq;
