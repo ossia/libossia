@@ -477,6 +477,12 @@ void execution_state::insert(
 {
   m_policy->insert(dest, std::move(v));
 }
+void execution_state::forget(const ossia::net::parameter_base& p) noexcept
+{
+  if(m_policy)
+    m_policy->forget(p);
+}
+
 void execution_state::insert(ossia::audio_parameter& dest, const ossia::audio_port& v)
 {
   m_policy->insert(dest, std::move(v));

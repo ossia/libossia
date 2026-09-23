@@ -43,5 +43,8 @@ struct OSSIA_TEST_EXPORT execution_state_policy
   virtual void insert(ossia::net::parameter_base& dest, const ossia::value_port& v) = 0;
   virtual void insert(ossia::audio_parameter& dest, const audio_port& v) = 0;
   virtual void insert(ossia::net::midi::midi_parameter& dest, const midi_port& v) = 0;
+
+  //! Drops everything kept for a parameter that is about to be destroyed.
+  virtual void forget(const net::parameter_base& p) noexcept { }
 };
 }
