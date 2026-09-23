@@ -3,8 +3,12 @@
 
 #include <ossia/detail/config.hpp>
 
+#include <ossia/audio/audio_parameter.hpp>
+#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/telemetry.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -270,4 +274,78 @@ TEST_CASE("A playhead publishes its latest position", "[telemetry][playhead]")
   CHECK(p.running);
   CHECK(p.date == 250);
   CHECK(!a.latest().playheads[0].running);
+}
+
+TEST_CASE("A virtual port meters what the graph writes to it", "[telemetry][audio]")
+{
+  ossia::audio_protocol* proto{};
+  ossia::net::generic_device dev{
+      [&] {
+    auto p = std::make_unique<ossia::audio_protocol>();
+    proto = p.get();
+    return p;
+  }(),
+      "audio"};
+  auto& node = ossia::net::create_node(dev.get_root_node(), "/bus");
+  node.set_parameter(std::make_unique<ossia::virtual_audio_parameter>(2, node));
+  auto& param = static_cast<ossia::virtual_audio_parameter&>(*node.get_parameter());
+  proto->setup_buffers(
+      {.inputs = nullptr, .outputs = nullptr, .n_in = 0, .n_out = 0, .frames = frames});
+
+  ossia::audio_port port;
+  port.set_channels(2);
+  port.channel(0).assign(frames, 0.5);
+  port.channel(1).assign(frames, -0.75);
+
+  // Nothing is metered without a tap.
+  param.push_value(port);
+
+  meter_tap tap;
+  param.meter = &tap;
+  param.push_value(port);
+  CHECK(tap.pending.ticks == 1);
+  CHECK(tap.pending.channels == 2);
+  CHECK(tap.pending.peak[0] == Catch::Approx(0.5));
+  CHECK(tap.pending.peak[1] == Catch::Approx(0.75));
+
+  param.meter = nullptr;
+  param.push_value(port);
+  CHECK(tap.pending.ticks == 1);
+}
+
+TEST_CASE("A forgotten parameter is not written to again", "[telemetry][audio]")
+{
+  // The execution keeps an entry per parameter it ever wrote to, and writes
+  // to it at every commit: a parameter about to be destroyed must be dropped.
+  ossia::audio_protocol* proto{};
+  ossia::net::generic_device dev{
+      [&] {
+    auto p = std::make_unique<ossia::audio_protocol>();
+    proto = p.get();
+    return p;
+  }(),
+      "audio"};
+  auto& node = ossia::net::create_node(dev.get_root_node(), "/bus");
+  node.set_parameter(std::make_unique<ossia::virtual_audio_parameter>(1, node));
+  auto& param = static_cast<ossia::virtual_audio_parameter&>(*node.get_parameter());
+  proto->setup_buffers(
+      {.inputs = nullptr, .outputs = nullptr, .n_in = 0, .n_out = 0, .frames = frames});
+
+  meter_tap tap;
+  param.meter = &tap;
+
+  ossia::execution_state st;
+  ossia::audio_port port;
+  port.set_channels(1);
+  port.channel(0).assign(frames, 0.5);
+  st.insert(param, port);
+  st.commit();
+  CHECK(tap.pending.ticks == 1);
+  st.commit();
+  CHECK(tap.pending.ticks == 2);
+
+  st.forget(param);
+  st.commit();
+  CHECK(tap.pending.ticks == 2);
+  param.meter = nullptr;
 }
