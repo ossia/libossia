@@ -57,6 +57,35 @@ struct meter_tap
   meter_levels pending;
 };
 
+//! Time a node spent running over a span of frames.
+struct bench_levels
+{
+  uint64_t ns{};
+  uint64_t max_ns{};
+  uint32_t runs{};
+
+  void clear() noexcept { *this = {}; }
+  void add(int64_t t) noexcept
+  {
+    const auto n = uint64_t(t > 0 ? t : 0);
+    ns += n;
+    max_ns = n > max_ns ? n : max_ns;
+    runs++;
+  }
+  void merge(const bench_levels& o) noexcept
+  {
+    ns += o.ns;
+    max_ns = o.max_ns > max_ns ? o.max_ns : max_ns;
+    runs += o.runs;
+  }
+};
+
+//! One timed node, fed by the graph's executors.
+struct bench_tap
+{
+  bench_levels pending;
+};
+
 enum class tap_kind : uint8_t
 {
   none,
@@ -71,26 +100,48 @@ struct meter_slot
   meter_levels levels;
 };
 
+struct bench_slot
+{
+  uint32_t generation{};
+  bench_levels levels;
+};
+
 struct frame
 {
   uint64_t publish_seq{};
   //! Frames executed since the arena started.
   uint64_t frames{};
+  //! Frames the slots cover: since the previous frame that was read.
+  uint64_t window_frames{};
   int32_t sample_rate{};
   std::vector<meter_slot> meters;
+  std::vector<bench_slot> benches;
+
+  //! Share of the real time a bench slot's node took to run, 1 being all of
+  //! it.
+  [[nodiscard]] double load(const bench_slot& b) const noexcept
+  {
+    if(window_frames == 0 || sample_rate <= 0)
+      return 0.;
+    return double(b.levels.ns) * sample_rate / (1e9 * double(window_frames));
+  }
 };
 
 class OSSIA_EXPORT arena
 {
 public:
   //! Allocates everything the audio thread will ever touch.
-  explicit arena(std::size_t meter_capacity);
+  explicit arena(std::size_t meter_capacity, std::size_t bench_capacity = 0);
   ~arena();
 
   arena(const arena&) = delete;
   arena& operator=(const arena&) = delete;
 
   [[nodiscard]] std::size_t meter_capacity() const noexcept { return m_sources.size(); }
+  [[nodiscard]] std::size_t bench_capacity() const noexcept
+  {
+    return m_benchSources.size();
+  }
 
   // Audio thread //
 
@@ -99,6 +150,9 @@ public:
   void attach(
       std::size_t index, uint32_t generation, tap_kind kind,
       std::shared_ptr<meter_tap>& tap) noexcept;
+  //! Same, for a timed node.
+  void attach_bench(
+      std::size_t index, uint32_t generation, std::shared_ptr<bench_tap>& tap) noexcept;
 
   //! Feeds the hardware taps from the driver's buffers. Call after the mix.
   void accumulate_hardware(const ossia::audio_tick_state& st) noexcept;
@@ -130,9 +184,18 @@ private:
     tap_kind kind{};
   };
 
+  struct bench_source
+  {
+    std::shared_ptr<bench_tap> tap;
+    uint32_t generation{};
+  };
+
   // Audio thread only.
   std::vector<source> m_sources;
   std::vector<meter_slot> m_unread;
+  std::vector<bench_source> m_benchSources;
+  std::vector<bench_slot> m_benchUnread;
+  uint64_t m_unreadFrames{};
   frame m_staging;
   uint64_t m_frames{};
   uint64_t m_frames_since_publish{};

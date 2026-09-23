@@ -206,3 +206,47 @@ TEST_CASE("An outlet meters what it carries after its gain", "[telemetry][datafl
   out.post_process();
   CHECK(tap->pending.ticks == 2);
 }
+
+TEST_CASE("A timed node's share of the real time comes back", "[telemetry][bench]")
+{
+  arena a{0, 2};
+  a.set_publish_interval(frames);
+  auto tap = std::make_shared<bench_tap>();
+  std::weak_ptr<bench_tap> weak = tap;
+  a.attach_bench(1, 3, tap);
+  REQUIRE(!tap);
+
+  // Half of a buffer of `frames` frames at 48 kHz, in two runs.
+  const int64_t buffer_ns = int64_t(1e9 * frames / 48000);
+  weak.lock()->pending.add(buffer_ns / 4);
+  weak.lock()->pending.add(buffer_ns / 4);
+  a.tick(frames, 48000);
+
+  REQUIRE(a.consume());
+  const auto& f = a.latest();
+  const auto& s = f.benches[1];
+  CHECK(s.generation == 3);
+  CHECK(s.levels.runs == 2);
+  CHECK(s.levels.max_ns == uint64_t(buffer_ns / 4));
+  CHECK(f.window_frames == frames);
+  CHECK(f.load(s) == Catch::Approx(0.5).epsilon(0.01));
+}
+
+TEST_CASE("Time not read yet is folded into the next frame", "[telemetry][bench]")
+{
+  arena a{0, 1};
+  a.set_publish_interval(frames);
+  auto tap = std::make_shared<bench_tap>();
+  auto* t = tap.get();
+  a.attach_bench(0, 1, tap);
+
+  t->pending.add(100);
+  a.tick(frames, 48000);
+  t->pending.add(300);
+  a.tick(frames, 48000);
+
+  REQUIRE(a.consume());
+  CHECK(a.latest().benches[0].levels.ns == 400);
+  CHECK(a.latest().benches[0].levels.max_ns == 300);
+  CHECK(a.latest().window_frames == 2 * frames);
+}
