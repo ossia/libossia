@@ -250,3 +250,24 @@ TEST_CASE("Time not read yet is folded into the next frame", "[telemetry][bench]
   CHECK(a.latest().benches[0].levels.max_ns == 300);
   CHECK(a.latest().window_frames == 2 * frames);
 }
+
+TEST_CASE("A playhead publishes its latest position", "[telemetry][playhead]")
+{
+  arena a{0, 0, 2};
+  a.set_publish_interval(frames);
+  auto tap = std::make_shared<playhead_tap>();
+  auto* t = tap.get();
+  a.attach_playhead(1, 4, tap);
+
+  t->running = true;
+  t->date = 100;
+  t->date = 250;
+  a.tick(frames, 48000);
+
+  REQUIRE(a.consume());
+  const auto& p = a.latest().playheads[1];
+  CHECK(p.generation == 4);
+  CHECK(p.running);
+  CHECK(p.date == 250);
+  CHECK(!a.latest().playheads[0].running);
+}
