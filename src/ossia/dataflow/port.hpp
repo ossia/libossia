@@ -9,6 +9,7 @@
 #include <ossia/network/common/path.hpp>
 
 #include <array>
+#include <cstdint>
 #include <memory>
 
 namespace ossia
@@ -293,6 +294,17 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   }
 
   void post_process() override;
+
+  //! How a signal narrower than upmix_channels is widened, before gain and
+  //! pan apply.
+  enum class upmix_mode : uint8_t
+  {
+    none,
+    repeat, //!< channel c takes input channel c modulo the input width
+    pad,    //!< silent channels are added
+  };
+  upmix_mode upmix{upmix_mode::none};
+  uint16_t upmix_channels{};
 
   //! Linear gain, and per-channel weights: channels past the end of pan
   //! have a weight of 1. A mono signal ignores pan.
