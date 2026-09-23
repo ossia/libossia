@@ -104,20 +104,23 @@ float meter_levels::rms(std::size_t chan) const noexcept
 
 namespace
 {
-frame make_frame(std::size_t capacity)
+frame make_frame(std::size_t meters, std::size_t benches)
 {
   frame f;
-  f.meters.resize(capacity);
+  f.meters.resize(meters);
+  f.benches.resize(benches);
   return f;
 }
 }
 
-arena::arena(std::size_t meter_capacity)
+arena::arena(std::size_t meter_capacity, std::size_t bench_capacity)
     : m_sources(meter_capacity)
     , m_unread(meter_capacity)
-    , m_staging{make_frame(meter_capacity)}
-    , m_buffer{make_frame(meter_capacity)}
-    , m_read{make_frame(meter_capacity)}
+    , m_benchSources(bench_capacity)
+    , m_benchUnread(bench_capacity)
+    , m_staging{make_frame(meter_capacity, bench_capacity)}
+    , m_buffer{make_frame(meter_capacity, bench_capacity)}
+    , m_read{make_frame(meter_capacity, bench_capacity)}
 {
 }
 
@@ -136,6 +139,19 @@ void arena::attach(
   src.kind = src.tap ? kind : tap_kind::none;
   m_unread[index].generation = generation;
   m_unread[index].levels.clear();
+}
+
+void arena::attach_bench(
+    std::size_t index, uint32_t generation, std::shared_ptr<bench_tap>& tap) noexcept
+{
+  if(index >= m_benchSources.size())
+    return;
+
+  auto& src = m_benchSources[index];
+  std::swap(src.tap, tap);
+  src.generation = generation;
+  m_benchUnread[index].generation = generation;
+  m_benchUnread[index].levels.clear();
 }
 
 void arena::accumulate_hardware(const ossia::audio_tick_state& st) noexcept
@@ -167,11 +183,26 @@ void arena::tick(std::size_t frames, int sample_rate) noexcept
 
 void arena::publish() noexcept
 {
-  m_frames_since_publish = 0;
-
   // A frame still waiting in the buffer has not been read: fold what came
   // since into it rather than replace it.
   const bool unread = m_buffer.has_new_data();
+
+  m_unreadFrames = (unread ? m_unreadFrames : 0) + m_frames_since_publish;
+  m_frames_since_publish = 0;
+
+  for(std::size_t i = 0; i < m_benchSources.size(); i++)
+  {
+    auto& src = m_benchSources[i];
+    auto& acc = m_benchUnread[i].levels;
+    if(!unread)
+      acc.clear();
+    if(src.tap)
+    {
+      acc.merge(src.tap->pending);
+      src.tap->pending.clear();
+    }
+    m_staging.benches[i] = m_benchUnread[i];
+  }
 
   for(std::size_t i = 0; i < m_sources.size(); i++)
   {
@@ -190,6 +221,7 @@ void arena::publish() noexcept
 
   m_staging.publish_seq = ++m_seq;
   m_staging.frames = m_frames;
+  m_staging.window_frames = m_unreadFrames;
   m_staging.sample_rate = m_sample_rate;
   m_buffer.produce(m_staging);
 }
