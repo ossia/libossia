@@ -263,6 +263,12 @@ value_inlet::~value_inlet() = default;
 value_outlet::~value_outlet() = default;
 audio_inlet::~audio_inlet() = default;
 
+void audio_inlet::pre_process()
+{
+  if(meter)
+    meter->pending.accumulate(data.get());
+}
+
 audio_outlet::~audio_outlet() = default;
 
 texture_inlet::~texture_inlet() = default;
