@@ -6,7 +6,9 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph_edge_helpers.hpp>
+#include <ossia/dataflow/bench_state.hpp>
 #include <ossia/dataflow/nodes/forward_node.hpp>
+#include <ossia/dataflow/telemetry.hpp>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -46,8 +48,7 @@ private:
 // outlet propagates to the enclosing scenario.
 struct Chain
 {
-  std::shared_ptr<ossia::graph_interface> g
-      = ossia::make_graph(ossia::graph_setup_options{});
+  std::shared_ptr<ossia::graph_interface> g;
   ossia::execution_state e;
   std::shared_ptr<constant_source> source;
   std::shared_ptr<ossia::nodes::interval> interval
@@ -55,8 +56,9 @@ struct Chain
   std::shared_ptr<ossia::nodes::forward_node> parent
       = std::make_shared<ossia::nodes::forward_node>();
 
-  explicit Chain(std::vector<double> levels)
-      : source{std::make_shared<constant_source>(std::move(levels))}
+  explicit Chain(std::vector<double> levels, const ossia::graph_setup_options& opt = {})
+      : g{ossia::make_graph(opt)}
+      , source{std::make_shared<constant_source>(std::move(levels))}
   {
     g->add_node(source);
     g->add_node(interval);
@@ -174,4 +176,25 @@ TEST_CASE("Channels past the pan weights keep unity", "[dataflow][interval][pan]
   c.tick();
   check_levels(c.tick(), {0.5, 0.5, 1., 1.});
   CHECK(c.interval->audio_out.pan.size() == 2);
+}
+
+TEST_CASE("A benchmarked graph times the nodes that have a tap", "[dataflow][bench]")
+{
+  auto bench = std::make_shared<ossia::bench_state>();
+  bench->measure = true;
+  ossia::graph_setup_options opt;
+  opt.bench = bench;
+
+  Chain c{{1.}, opt};
+
+  auto tap = std::make_shared<ossia::telemetry::bench_tap>();
+  c.source->bench_tap = tap;
+
+  check_levels(c.tick(), {1.});
+  CHECK(tap->pending.runs == 1);
+  CHECK(!c.interval->bench_tap);
+
+  bench->measure = false;
+  check_levels(c.tick(), {1.});
+  CHECK(tap->pending.runs == 1);
 }

@@ -93,9 +93,9 @@ edge_ptr graph_interface::allocate_edge(
       pool, c, pout, pin, pout_node, pin_node);
 }
 
-std::shared_ptr<bench_map> bench_ptr()
+std::shared_ptr<bench_state> bench_ptr()
 {
-  static std::shared_ptr<bench_map> b = std::make_shared<bench_map>();
+  static std::shared_ptr<bench_state> b = std::make_shared<bench_state>();
   return b;
 }
 template <typename T>
