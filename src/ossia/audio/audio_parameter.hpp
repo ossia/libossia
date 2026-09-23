@@ -7,6 +7,8 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
+#include <atomic>
+
 namespace ossia
 {
 class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
@@ -14,9 +16,22 @@ class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
 
 public:
   ossia::small_vector<std::span<float>, 8> audio;
-  double m_gain{1.};
+
+  //! Where gain() is applied, so that it is applied exactly once.
+  enum class gain_stage : uint8_t
+  {
+    push,     //!< on what the graph writes (outputs, virtual ports)
+    pull,     //!< on what the graph reads (inputs)
+    external, //!< by whoever owns the buffers, after the sum (/out/main)
+  } stage{gain_stage::push};
 
   explicit audio_parameter(ossia::net::node_base& n);
+
+  //! Linear gain, readable from any thread.
+  [[nodiscard]] float gain() const noexcept
+  {
+    return m_gain.load(std::memory_order_relaxed);
+  }
 
   virtual ~audio_parameter();
 
@@ -38,6 +53,9 @@ public:
   net::parameter_base& set_domain(const domain&) override;
   bounding_mode get_bounding() const noexcept override;
   net::parameter_base& set_bounding(bounding_mode) override;
+
+protected:
+  std::atomic<float> m_gain{1.f};
 };
 
 class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
