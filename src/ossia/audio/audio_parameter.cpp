@@ -3,7 +3,10 @@
 #include "audio_protocol.hpp"
 
 #include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/telemetry.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
+#include <array>
 
 namespace ossia
 {
@@ -168,6 +171,15 @@ void virtual_audio_parameter::push_value(const audio_port& port)
       // Important: here we must not mix
       dst[i] = float(src[i] * g);
     }
+  }
+
+  if(auto m = meter.load(std::memory_order_acquire))
+  {
+    std::array<const float*, ossia::telemetry::max_meter_channels> chans;
+    const auto n = std::min(audio.size(), chans.size());
+    for(std::size_t c = 0; c < n; c++)
+      chans[c] = audio[c].data();
+    m->pending.accumulate(chans.data(), int(n), n > 0 ? audio[0].size() : 0);
   }
 }
 
