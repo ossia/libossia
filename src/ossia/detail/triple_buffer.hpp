@@ -83,6 +83,32 @@ public:
     m_write_idx = old_mid & index_mask;
   }
 
+  // The producer's slot, to be written in place and then published. It holds
+  // whatever was written into it two publications ago, so containers in it
+  // keep their capacity and assigning to them does not allocate.
+  T& write_buffer() noexcept { return m_buffers[m_write_idx].data; }
+
+  void publish() noexcept
+  {
+    const uint8_t new_mid = static_cast<uint8_t>(m_write_idx | dirty_bit);
+    const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
+    m_write_idx = old_mid & index_mask;
+  }
+
+  // Makes the latest published value the one read_buffer() gives, if there
+  // is a new one; the consumer reads it in place.
+  bool consume() noexcept
+  {
+    const uint8_t state = m_mid_state.load(std::memory_order_acquire);
+    if(!(state & dirty_bit))
+      return false;
+
+    const uint8_t new_mid = m_read_idx;
+    const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
+    m_read_idx = old_mid & index_mask;
+    return true;
+  }
+
   // Consume latest data if available.  Returns true and updates `result`
   // if new data was produced since the last consume(); false otherwise.
   bool consume(T& result) noexcept
