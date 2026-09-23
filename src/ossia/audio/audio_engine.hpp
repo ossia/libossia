@@ -6,6 +6,7 @@
 #include <smallfun.hpp>
 
 #include <atomic>
+#include <functional>
 
 #include <ossia-config.hpp>
 
@@ -28,6 +29,10 @@ public:
   //! False when it did not in time (or, on WASM, cannot be waited for): the
   //! previous tick may still be running.
   bool sync();
+
+  //! Runs f while the audio callback skips its tick, as it does when stopped:
+  //! f may change what the tick reads, such as the audio protocol's ports.
+  void run_parked(const std::function<void()>& f);
 
   using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
   //! The audio thread runs `t` from its next buffer on; true once it does.

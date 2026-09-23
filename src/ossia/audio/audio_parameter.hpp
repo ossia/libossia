@@ -70,6 +70,14 @@ class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
 public:
   virtual_audio_parameter(int num_channels, ossia::net::node_base& n);
 
+  //! Changes the channel count; only while the audio callback does not run.
+  void set_channels(int num_channels)
+  {
+    const auto bs = m_audio_data.empty() ? 0 : m_audio_data.front().size();
+    m_audio_data.resize(std::max(num_channels, 0));
+    set_buffer_size(int(bs));
+  }
+
   void set_buffer_size(int bs)
   {
     const auto chan = m_audio_data.size();
