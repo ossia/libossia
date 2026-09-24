@@ -12,6 +12,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 
+#include <functional>
 #include <mutex>
 #include <span>
 
@@ -146,5 +147,17 @@ public:
 
   void removeNode(QString address, QString type);
   W_SLOT(removeNode)
+
+  //! When set, addNode()/removeNode() hand their edit to this instead of
+  //! performing it on the script's thread, e.g. to post it to the thread that
+  //! owns the tree. The edit re-checks that the device is still enabled when
+  //! it eventually runs. Set before the script runs.
+  using tree_editor = std::function<void(std::function<void()>)>;
+  void setTreeEditor(tree_editor);
+
+private:
+  void editTree(std::function<void(ossia::net::node_base& root)> edit);
+
+  tree_editor m_tree_editor;
 };
 }
