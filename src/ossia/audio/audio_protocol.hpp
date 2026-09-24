@@ -3,6 +3,8 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <atomic>
+
 namespace ossia
 {
 class audio_parameter;
@@ -26,6 +28,9 @@ public:
   // tick has been summed into them: /out/main is the master, whichever address
   // a signal was sent to. A gain change ramps over the buffer.
   void apply_main_gain(const audio_tick_state& state) noexcept;
+  //! The next apply_main_gain starts at the gain of /out/main instead of
+  //! ramping from the one of its previous call, which may be long ago.
+  void reset_main_gain_ramp() noexcept { m_main_gain_reset = true; }
 
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
@@ -78,6 +83,7 @@ private:
   ports m_live;
   bool m_deferred{};
   float m_main_gain{1.f};
+  std::atomic_bool m_main_gain_reset{true};
 };
 
 }
