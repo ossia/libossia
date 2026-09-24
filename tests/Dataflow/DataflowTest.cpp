@@ -958,6 +958,82 @@ TEST_CASE("feedback_cycle_executes", "feedback_cycle_executes")
   REQUIRE((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}, {10, 0}}));
 }
 
+// Two immediate edges closing a cycle cannot be sorted: nothing runs, and the
+// report names the nodes of the cycle so that the user knows which cable to
+// make delayed.
+TEST_CASE("immediate_cycle_is_reported", "immediate_cycle_is_reported")
+{
+  using namespace ossia;
+  TestDevice test;
+
+  feedback_cycle_graph g(
+      test, immediate_glutton_connection{}, immediate_glutton_connection{});
+  debug_mock::messages.clear();
+
+  g.n1->request(simple_token_request{0_tv, 0_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
+
+  g.state();
+  REQUIRE(debug_mock::messages.empty());
+
+  const auto report = graph_util::describe_immediate_cycle(g.g.m_graph);
+  REQUIRE(report.find("n1 -> n2 -> n1") != std::string::npos);
+}
+
+TEST_CASE("delayed_cycle_is_not_reported", "delayed_cycle_is_not_reported")
+{
+  using namespace ossia;
+  TestDevice test;
+
+  feedback_cycle_graph g(
+      test, immediate_glutton_connection{}, delayed_glutton_connection{});
+  REQUIRE(
+      graph_util::describe_immediate_cycle(g.g.m_graph)
+      == "no immediate cycle found");
+}
+
+// A long chain closed by one immediate edge: the search is iterative (no call
+// stack depth proportional to the chain) and linear in the graph size.
+TEST_CASE("immediate_cycle_in_a_large_graph", "immediate_cycle_in_a_large_graph")
+{
+  using namespace ossia;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
+  graph_t gr;
+
+  constexpr int count = 10000;
+  std::vector<std::shared_ptr<node_mock>> nodes;
+  nodes.reserve(count);
+  for(int i = 0; i < count; i++)
+  {
+    auto n = std::make_shared<node_mock>(
+        inlets{new value_inlet}, outlets{new value_outlet});
+    n->lbl = i == 0 ? "first" : i == count - 1 ? "last" : "middle";
+    boost::add_vertex(n, gr);
+    nodes.push_back(std::move(n));
+  }
+
+  auto link = [&](int from, int to, connection c) {
+    auto& a = nodes[from];
+    auto& b = nodes[to];
+    boost::add_edge(
+        from, to,
+        g.allocate_edge(c, a->root_outputs()[0], b->root_inputs()[0], a, b), gr);
+  };
+  for(int i = 0; i + 1 < count; i++)
+    link(i, i + 1, immediate_glutton_connection{});
+
+  link(count - 1, 0, delayed_glutton_connection{});
+  REQUIRE(graph_util::describe_immediate_cycle(gr) == "no immediate cycle found");
+
+  link(count - 1, 0, immediate_glutton_connection{});
+  const auto report = graph_util::describe_immediate_cycle(gr);
+  REQUIRE(report.starts_with("immediate cables form a cycle: first -> middle"));
+  REQUIRE(report.find("-> (9984 more) -> middle") != std::string::npos);
+  REQUIRE(report.find("-> last -> first;") != std::string::npos);
+  REQUIRE(report.size() < 512);
+}
+
 TEST_CASE("reduced_implicit_relationship", "reduced_implicit_relationship") { }
 
 TEST_CASE("reduced_explicit_relationship", "reduced_explicit_relationship")

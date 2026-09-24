@@ -436,6 +436,88 @@ void graph_util::check_outputs(
 
   for_each_outlet(n, [&](auto& out) { out.visit(vis); });
 }
+std::string graph_util::describe_immediate_cycle(const graph_t& gr)
+{
+  enum color : uint8_t
+  {
+    white,
+    grey,
+    black
+  };
+  struct frame
+  {
+    graph_vertex_t vertex;
+    boost::graph_traits<graph_t>::out_edge_iterator it, end;
+  };
+
+  const auto n = boost::num_vertices(gr);
+  std::vector<color> colors(n, white);
+  std::vector<frame> stack;
+
+  auto label = [&](graph_vertex_t v) {
+    const auto& node = gr[v];
+    return node ? node->label() : std::string{"<null>"};
+  };
+
+  for(graph_vertex_t root = 0; root < n; ++root)
+  {
+    if(colors[root] != white)
+      continue;
+    colors[root] = grey;
+    auto [b, e] = boost::out_edges(root, gr);
+    stack.push_back({root, b, e});
+    while(!stack.empty())
+    {
+      auto& f = stack.back();
+      if(f.it == f.end)
+      {
+        colors[f.vertex] = black;
+        stack.pop_back();
+        continue;
+      }
+      const auto edge = *f.it++;
+      if(gr[edge]->delayed())
+        continue;
+      const auto target = boost::target(edge, gr);
+      if(colors[target] == white)
+      {
+        colors[target] = grey;
+        auto [tb, te] = boost::out_edges(target, gr);
+        stack.push_back({target, tb, te});
+      }
+      else if(colors[target] == grey)
+      {
+        // The grey vertices are exactly the stack: the cycle is its tail.
+        // A long cycle is elided in its middle to keep the report short.
+        constexpr std::ptrdiff_t shown_at_each_end = 8;
+        auto it = ossia::find_if(
+            stack, [target](const frame& fr) { return fr.vertex == target; });
+        const auto length = std::distance(it, stack.end());
+        std::string res = "immediate cables form a cycle: ";
+        for(std::ptrdiff_t i = 0; i < length; ++i, ++it)
+        {
+          if(length > 2 * shown_at_each_end && i == shown_at_each_end)
+          {
+            const auto elided = length - 2 * shown_at_each_end;
+            res += '(';
+            res += std::to_string(elided);
+            res += " more) -> ";
+            i += elided - 1;
+            it += elided - 1;
+            continue;
+          }
+          res += label(it->vertex);
+          res += " -> ";
+        }
+        res += label(target);
+        res += "; make one of these cables delayed";
+        return res;
+      }
+    }
+  }
+  return "no immediate cycle found";
+}
+
 void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
 {
 #if !defined(OSSIA_FREESTANDING)
