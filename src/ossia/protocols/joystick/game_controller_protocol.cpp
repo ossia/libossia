@@ -14,11 +14,11 @@ game_controller_protocol::game_controller_protocol(
     , m_processor{joystick_event_processor::instance(m_manager)}
     , m_ctx{ptr}
     , m_joystick_id{joystick_id}
-    , m_joystick_index{joystick_index}
 {
   //  Check That (ID, Index) is a valid combination
   //  Could happen if a joystick is unplugged between settings and here
-  if(joystick_id != SDL_JoystickGetDeviceInstanceID(joystick_index))
+  const SDL_JoystickID sdl_id = sdl_joystick_ids{}[joystick_index];
+  if(sdl_id == 0 || joystick_id != static_cast<int32_t>(sdl_id))
     throw std::runtime_error("Invalid Settings");
 
   //  Check that this ID is not already registered
@@ -26,10 +26,10 @@ game_controller_protocol::game_controller_protocol(
     throw std::runtime_error("This Joystick is already open");
 
   //  Open The Joystick
-  if(!SDL_IsGameController(joystick_index))
+  if(!SDL_IsGamepad(sdl_id))
     throw std::runtime_error("This Joystick is not a game controller");
 
-  m_joystick = SDL_GameControllerOpen(joystick_index);
+  m_joystick = SDL_OpenGamepad(sdl_id);
 
   if(m_joystick == nullptr)
     throw std::runtime_error("Failed to open Joystick");
@@ -49,17 +49,15 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
   auto& root = dev.get_root_node();
-  switch(SDL_GameControllerTypeForIndex(m_joystick_index))
+  switch(SDL_GetGamepadTypeForID(static_cast<SDL_JoystickID>(m_joystick_id)))
   {
-    case SDL_CONTROLLER_TYPE_XBOX360:
-    case SDL_CONTROLLER_TYPE_XBOXONE:
+    case SDL_GAMEPAD_TYPE_XBOX360:
+    case SDL_GAMEPAD_TYPE_XBOXONE:
       SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_XBOX, "1");
       break;
-    case SDL_CONTROLLER_TYPE_PS4:
-      SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE, "1");
-      break;
-    case SDL_CONTROLLER_TYPE_PS5:
-      SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE, "1");
+    case SDL_GAMEPAD_TYPE_PS4:
+    case SDL_GAMEPAD_TYPE_PS5:
+      SDL_SetHint(SDL_HINT_JOYSTICK_ENHANCED_REPORTS, "1");
       break;
     default:
       // TODO
@@ -102,24 +100,22 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
   // clang-format on
 
   using namespace std::literals;
-  for(int i = SDL_CONTROLLER_AXIS_LEFTX; i <= SDL_CONTROLLER_AXIS_TRIGGERRIGHT; i++)
+  for(int i = SDL_GAMEPAD_AXIS_LEFTX; i <= SDL_GAMEPAD_AXIS_RIGHT_TRIGGER; i++)
   {
-    if(SDL_GameControllerHasAxis(m_joystick, static_cast<SDL_GameControllerAxis>(i))
-       == SDL_TRUE)
+    if(SDL_GamepadHasAxis(m_joystick, static_cast<SDL_GamepadAxis>(i)))
     {
       // Triggers range from 0 to 1, while sticks range from -1 to 1.
-      const bool is_trigger = (i == SDL_CONTROLLER_AXIS_TRIGGERLEFT
-                               || i == SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+      const bool is_trigger = (i == SDL_GAMEPAD_AXIS_LEFT_TRIGGER
+                               || i == SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
       m_axis_parameters[i] = device_parameter::create_device_parameter(
           root, axes[i], 0.0, val_type::FLOAT, bounding_mode::CLIP, access_mode::GET,
           is_trigger ? make_domain(0.0f, 1.0f) : make_domain(-1.0f, 1.0f));
     }
   }
 
-  for(int i = SDL_CONTROLLER_BUTTON_A; i <= SDL_CONTROLLER_BUTTON_TOUCHPAD; i++)
+  for(int i = SDL_GAMEPAD_BUTTON_SOUTH; i <= SDL_GAMEPAD_BUTTON_TOUCHPAD; i++)
   {
-    if(SDL_GameControllerHasButton(m_joystick, static_cast<SDL_GameControllerButton>(i))
-       == SDL_TRUE)
+    if(SDL_GamepadHasButton(m_joystick, static_cast<SDL_GamepadButton>(i)))
     {
       m_button_parameters[i] = device_parameter::create_device_parameter(
           root, buttons[i], false, val_type::BOOL, bounding_mode::CLIP, access_mode::GET,
@@ -127,32 +123,21 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
     }
   }
 
-  const int max_sensor =
-#if SDL_VERSION_ATLEAST(2, 26, 0)
-      SDL_SENSOR_GYRO_R
-#else
-      SDL_SENSOR_GYRO
-#endif
-      ;
-
-  for(int i = SDL_SENSOR_UNKNOWN; i <= max_sensor; i++)
+  for(int i = SDL_SENSOR_UNKNOWN; i <= SDL_SENSOR_GYRO_R; i++)
   {
-    if(SDL_GameControllerHasSensor(m_joystick, static_cast<SDL_SensorType>(i))
-       == SDL_TRUE)
+    if(SDL_GamepadHasSensor(m_joystick, static_cast<SDL_SensorType>(i)))
     {
-      if(SDL_GameControllerSetSensorEnabled(
-             m_joystick, static_cast<SDL_SensorType>(i), SDL_TRUE)
-         >= 0)
+      if(SDL_SetGamepadSensorEnabled(m_joystick, static_cast<SDL_SensorType>(i), true))
         m_sensor_parameters[i] = device_parameter::create_device_parameter(
             root, sensors[i], ossia::vec3f{}, val_type::VEC3F, bounding_mode::CLIP,
             access_mode::GET, make_domain(-1.0f, 1.0f));
     }
   }
 
-  for(int i = 0, N = SDL_GameControllerGetNumTouchpads(m_joystick); i < N; i++)
+  for(int i = 0, N = SDL_GetNumGamepadTouchpads(m_joystick); i < N; i++)
   {
     touchpad tp;
-    const int fingers = SDL_GameControllerGetNumTouchpadFingers(m_joystick, i);
+    const int fingers = SDL_GetNumGamepadTouchpadFingers(m_joystick, i);
     tp.fingers.resize(fingers);
     for(int f = 0; f < fingers; f++)
     {
@@ -171,7 +156,9 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
     m_touchpads[i] = tp;
   }
 
-  if(SDL_GameControllerHasRumble(m_joystick))
+  const SDL_PropertiesID props = SDL_GetGamepadProperties(m_joystick);
+
+  if(SDL_GetBooleanProperty(props, SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN, false))
   {
     // Gamepads have two motors : a low-frequency one (left) and a high-frequency one (right)
     rumble.lo_freq = device_parameter::create_device_parameter(
@@ -185,7 +172,7 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
         access_mode::SET, make_domain(10.0f, 1000000.0f));
   }
 
-  if(SDL_GameControllerHasRumbleTriggers(m_joystick))
+  if(SDL_GetBooleanProperty(props, SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN, false))
   {
     rumble_triggers.left = device_parameter::create_device_parameter(
         root, "/rumble/triggers/left", 0.0f, val_type::FLOAT, bounding_mode::CLIP,
@@ -216,7 +203,7 @@ bool game_controller_protocol::push(
     uint16_t hi
         = std::clamp(ossia::convert<float>(rumble.hi_freq->value()), 0.f, 1.f) * 65535;
     uint32_t dur = ossia::convert<float>(rumble.duration->value());
-    SDL_GameControllerRumble(m_joystick, lo, hi, dur);
+    SDL_RumbleGamepad(m_joystick, lo, hi, dur);
   }
 
   if(&param == rumble_triggers.duration)
@@ -228,7 +215,7 @@ bool game_controller_protocol::push(
         = std::clamp(ossia::convert<float>(rumble_triggers.right->value()), 0.f, 1.f)
           * 65535;
     uint32_t dur = ossia::convert<float>(rumble_triggers.duration->value());
-    SDL_GameControllerRumbleTriggers(m_joystick, left, right, dur);
+    SDL_RumbleGamepadTriggers(m_joystick, left, right, dur);
   }
   return true;
 }
@@ -253,7 +240,7 @@ void game_controller_protocol::stop()
   if(m_joystick != nullptr)
   {
     m_manager.unregister_protocol(*this);
-    SDL_GameControllerClose(m_joystick);
+    SDL_CloseGamepad(m_joystick);
     m_joystick = nullptr;
   }
 }
