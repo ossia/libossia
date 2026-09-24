@@ -428,6 +428,7 @@ void qml_device_engine_functions::editTree(
   if(!m_tree_editor)
   {
     edit(m_own_device->get_root_node());
+    clear_address_cache();
     return;
   }
 
@@ -438,6 +439,10 @@ void qml_device_engine_functions::editTree(
     if(!m_enabled || !m_own_device)
       return;
     edit(m_own_device->get_root_node());
+    // The cache holds raw parameter pointers: removeNode() may just have
+    // destroyed one of them, and a later read() or write() of that address
+    // would use it.
+    clear_address_cache();
   });
 }
 
