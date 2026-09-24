@@ -124,6 +124,10 @@ private:
   ossia::value_port m_port_cache;
 
 protected:
+  //! Requires m_mutex. For a change of the tree that the device list does not
+  //! see: a removed node's parameter may be in the cache.
+  void clear_address_cache() { m_address_cache.clear(); }
+
   //! Guards m_devices, m_own_device, m_address_cache and m_enabled. Recursive:
   //! a script write re-enters write() through the push callbacks.
   std::recursive_mutex m_mutex;
