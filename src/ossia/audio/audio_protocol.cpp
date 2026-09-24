@@ -86,8 +86,10 @@ void audio_protocol::setup_tree(int inputs, int outputs)
 
 void audio_protocol::apply_main_gain(const audio_tick_state& state) noexcept
 {
-  const float start = m_main_gain;
   const float target = main_audio_out ? main_audio_out->gain() : 1.f;
+  if(m_main_gain_reset.exchange(false, std::memory_order_relaxed))
+    m_main_gain = target;
+  const float start = m_main_gain;
   m_main_gain = target;
 
   const auto frames = state.frames;
