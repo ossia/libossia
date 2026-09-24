@@ -412,25 +412,49 @@ QVariant qml_engine_functions::asArray(QVariant v) const noexcept
 }
 
 qml_device_engine_functions::~qml_device_engine_functions() = default;
-void qml_device_engine_functions::addNode(QString address, QString type)
+void qml_device_engine_functions::setTreeEditor(tree_editor f)
+{
+  std::lock_guard g{m_mutex};
+  m_tree_editor = std::move(f);
+}
+
+void qml_device_engine_functions::editTree(
+    std::function<void(ossia::net::node_base& root)> edit)
 {
   std::lock_guard g{m_mutex};
   if(!m_enabled || !m_own_device)
     return;
 
-  ossia::net::find_or_create_parameter(
-      m_own_device->get_root_node(), address.toStdString(), type.toStdString());
+  if(!m_tree_editor)
+  {
+    edit(m_own_device->get_root_node());
+    return;
+  }
+
+  // The editor may run the edit later, on another thread: it checks again,
+  // under the lock, that the device it edits has not been dropped meanwhile.
+  m_tree_editor([this, edit = std::move(edit)] {
+    std::lock_guard g{m_mutex};
+    if(!m_enabled || !m_own_device)
+      return;
+    edit(m_own_device->get_root_node());
+  });
+}
+
+void qml_device_engine_functions::addNode(QString address, QString type)
+{
+  editTree([address = address.toStdString(),
+            type = type.toStdString()](ossia::net::node_base& root) {
+    ossia::net::find_or_create_parameter(root, address, type);
+  });
 }
 
 void qml_device_engine_functions::removeNode(QString address, QString type)
 {
-  std::lock_guard g{m_mutex};
-  if(!m_enabled || !m_own_device)
-    return;
-
-  if(auto res
-     = ossia::net::find_node(m_own_device->get_root_node(), address.toStdString()))
-    if(auto p = res->get_parent())
-      p->remove_child(*res);
+  editTree([address = address.toStdString()](ossia::net::node_base& root) {
+    if(auto res = ossia::net::find_node(root, address))
+      if(auto p = res->get_parent())
+        p->remove_child(*res);
+  });
 }
 }
