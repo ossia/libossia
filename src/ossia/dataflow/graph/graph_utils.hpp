@@ -592,6 +592,10 @@ struct OSSIA_EXPORT graph_util
     } while(!disabled_cache.empty());
   }
 
+  //! Names the nodes of a cycle made of non-delayed edges, if there is one.
+  //! Iterative DFS: O(V + E), no recursion depth bound on large graphs.
+  static std::string describe_immediate_cycle(const graph_t& gr);
+
   static void log_inputs(const graph_node&, ossia::logger_type& logger);
   static void log_outputs(const graph_node&, ossia::logger_type& logger);
 

@@ -5,6 +5,7 @@
 #include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/transitive_closure.hpp>
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
 
 #include <boost/circular_buffer.hpp>
@@ -79,13 +80,22 @@ public:
         }
       }
     }
+    catch(const boost::not_a_dag&)
+    {
+      m_all_nodes.clear();
+      ossia::logger().error(
+          "Execution graph is not a DAG, nothing will execute: {}",
+          graph_util::describe_immediate_cycle(gr));
+    }
+    catch(const std::exception& e)
+    {
+      m_all_nodes.clear();
+      ossia::logger().error("Execution graph could not be sorted: {}", e.what());
+    }
     catch(...)
     {
-#if 0
-      std::cout << "Error: graph isn't a DAG: ";
-      print_graph(gr, std::cout);
-      std::cout << std::endl;
-#endif
+      m_all_nodes.clear();
+      ossia::logger().error("Execution graph could not be sorted");
     }
   }
 
