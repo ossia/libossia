@@ -176,7 +176,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }
@@ -188,7 +188,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }
@@ -200,7 +200,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }

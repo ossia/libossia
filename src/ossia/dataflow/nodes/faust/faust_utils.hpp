@@ -427,9 +427,12 @@ struct faust_node_utils
         = self.root_outputs()[0]->template cast<ossia::audio_port>();
 
     const int64_t n_in = audio_in.channels();
-    // One clone per incoming channel; a generator has none to follow and
-    // makes one.
-    const int64_t n_chans = dsp.getNumInputs() == 0 ? 1 : n_in;
+    // One clone per incoming channel; a generator with nothing plugged in has
+    // none to follow and makes one.
+    const auto& inlet = *self.root_inputs()[0];
+    const bool plugged = !inlet.sources.empty() || bool(inlet.address);
+    const int64_t n_chans
+        = dsp.getNumInputs() == 0 ? (plugged ? std::max<int64_t>(1, n_in) : 1) : n_in;
     audio_out.set_channels(n_chans);
     while(self.clones.size() < n_chans)
     {

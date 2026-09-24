@@ -36,11 +36,15 @@ struct OSSIA_EXPORT meter_levels
   uint32_t ticks{};
   uint64_t frames{};
   std::array<float, max_meter_channels> peak{};
-  std::array<float, max_meter_channels> sum_squares{};
+  //! Per channel, over the frames that channel was there for.
+  std::array<double, max_meter_channels> sum_squares{};
+  std::array<uint32_t, max_meter_channels> channel_frames{};
   std::array<uint32_t, max_meter_channels / 32> clipped{};
 
   void clear() noexcept;
   void merge(const meter_levels& other) noexcept;
+  //! Copies what is in use of `other`: its channels, not the whole capacity.
+  void assign(const meter_levels& other) noexcept;
   void accumulate(const ossia::audio_vector& chans) noexcept;
   void accumulate(const float* const* chans, int count, std::size_t frames) noexcept;
 
@@ -202,6 +206,9 @@ public:
 
 private:
   void publish() noexcept;
+  //! Fills the buffer's write slot with what came since the previous
+  //! publication, plus what was not read yet if `with_unread`.
+  void stage(bool with_unread) noexcept;
 
   struct source
   {
@@ -216,11 +223,14 @@ private:
     uint32_t generation{};
   };
 
-  // Audio thread only.
+  // Audio thread only. What came since the previous publication, and what the
+  // interface has not read yet besides.
   std::vector<source> m_sources;
   std::vector<meter_slot> m_unread;
+  std::vector<meter_levels> m_delta;
   std::vector<bench_source> m_benchSources;
   std::vector<bench_slot> m_benchUnread;
+  std::vector<bench_levels> m_benchDelta;
 
   struct playhead_source
   {
@@ -229,7 +239,6 @@ private:
   };
   std::vector<playhead_source> m_playheadSources;
   uint64_t m_unreadFrames{};
-  frame m_staging;
   uint64_t m_frames{};
   uint64_t m_frames_since_publish{};
   uint64_t m_seq{};

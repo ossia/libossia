@@ -6,6 +6,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -62,4 +63,36 @@ TEST_CASE("Writing in place stops allocating once every slot is warm", "[triple_
   std::sort(seen.begin(), seen.end());
   seen.erase(std::unique(seen.begin(), seen.end()), seen.end());
   CHECK(seen.size() <= 3);
+}
+
+TEST_CASE("A trivially copyable value is written and read in place too", "[triple_buffer]")
+{
+  ossia::triple_buffer<std::array<float, 4>> b;
+  CHECK(!b.consume());
+  b.write_buffer() = {1.f, 2.f, 3.f, 4.f};
+  b.publish();
+  b.write_buffer() = {5.f, 6.f, 7.f, 8.f};
+  b.publish();
+  REQUIRE(b.consume());
+  CHECK(b.read_buffer()[0] == 5.f);
+  CHECK(b.read_buffer()[3] == 8.f);
+  CHECK(!b.consume());
+  CHECK(b.read_buffer()[1] == 6.f);
+}
+
+TEST_CASE("A value replaces the previous one only if it was not read", "[triple_buffer]")
+{
+  ossia::triple_buffer<value> b;
+  write(b, 1.f, 1);
+
+  // Not read yet: replaced.
+  std::get<0>(b.write_buffer()) = 2.f;
+  CHECK(b.publish_if_unread());
+  REQUIRE(b.consume());
+  CHECK(std::get<0>(b.read_buffer()) == 2.f);
+
+  // Read: nothing is published.
+  std::get<0>(b.write_buffer()) = 3.f;
+  CHECK(!b.publish_if_unread());
+  CHECK(!b.consume());
 }
