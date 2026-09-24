@@ -139,6 +139,16 @@ TEST_CASE("A signal that widens and narrows keeps its widest count", "[telemetry
   CHECK(f.slot().levels.peak[2] == Catch::Approx(0.3));
 }
 
+TEST_CASE("A channel that appears mid-way reads its own level", "[telemetry]")
+{
+  Fixture f;
+  f.tick(constant({0.5}));
+  f.tick(constant({0.5, 0.5}));
+  REQUIRE(f.a.consume());
+  CHECK(f.slot().levels.rms(0) == Catch::Approx(0.5));
+  CHECK(f.slot().levels.rms(1) == Catch::Approx(0.5));
+}
+
 TEST_CASE("A tap that did not run reads as not running", "[telemetry]")
 {
   Fixture f;

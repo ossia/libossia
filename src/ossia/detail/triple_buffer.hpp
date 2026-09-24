@@ -84,8 +84,8 @@ public:
   }
 
   // The producer's slot, to be written in place and then published. It holds
-  // whatever was written into it two publications ago, so containers in it
-  // keep their capacity and assigning to them does not allocate.
+  // an older value, so containers in it keep the capacity they had and
+  // assigning to them does not allocate once every slot was written.
   T& write_buffer() noexcept { return m_buffers[m_write_idx].data; }
 
   void publish() noexcept
@@ -93,6 +93,22 @@ public:
     const uint8_t new_mid = static_cast<uint8_t>(m_write_idx | dirty_bit);
     const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
     m_write_idx = old_mid & index_mask;
+  }
+
+  // Publishes the write buffer only if the value published before it was not
+  // consumed yet, which it then replaces. Returns false, publishing nothing,
+  // when it was consumed: the producer can then publish something else.
+  bool publish_if_unread() noexcept
+  {
+    uint8_t expected = m_mid_state.load(std::memory_order_acquire);
+    if(!(expected & dirty_bit))
+      return false;
+    const uint8_t desired = static_cast<uint8_t>(m_write_idx | dirty_bit);
+    if(!m_mid_state.compare_exchange_strong(
+           expected, desired, std::memory_order_acq_rel, std::memory_order_acquire))
+      return false;
+    m_write_idx = expected & index_mask;
+    return true;
   }
 
   // Makes the latest published value the one read_buffer() gives, if there
@@ -212,6 +228,24 @@ public:
 
   // Always valid
   T read() const noexcept { return m_last_read; }
+
+  // The same in-place interface as the general case.
+  T& write_buffer() noexcept { return m_buffers[m_write_idx].data; }
+
+  void publish() noexcept
+  {
+    const uint8_t new_mid = static_cast<uint8_t>(m_write_idx | dirty_bit);
+    const uint8_t old_mid = m_mid_state.exchange(new_mid, std::memory_order_acq_rel);
+    m_write_idx = old_mid & index_mask;
+  }
+
+  bool consume() noexcept
+  {
+    T v;
+    return consume(v);
+  }
+
+  const T& read_buffer() const noexcept { return m_last_read; }
 
   bool has_new_data() const noexcept
   {

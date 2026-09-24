@@ -116,6 +116,21 @@ TEST_CASE("A main gain change ramps over one buffer", "[audio][main][gain]")
     CHECK(s == Catch::Approx(0.));
 }
 
+TEST_CASE("A new run starts at the main gain, without a ramp", "[audio][main][gain]")
+{
+  Card c;
+  auto write = [&] { c.proto->main_audio_out->push_value(Card::constant(1, 1.)); };
+  c.tick(write);
+  CHECK(c.out_buffers[0][0] == Catch::Approx(1.));
+
+  // Changed while nothing played, then a new run.
+  c.proto->main_audio_out->set_value(0.f);
+  c.proto->reset_main_gain_ramp();
+  c.tick(write);
+  for(float s : c.out_buffers[0])
+    CHECK(s == Catch::Approx(0.));
+}
+
 TEST_CASE("/in/main scales every input read", "[audio][main][gain]")
 {
   ossia::audio_protocol* proto{};
