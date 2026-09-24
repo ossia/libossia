@@ -6,6 +6,7 @@
 #include <smallfun.hpp>
 
 #include <atomic>
+#include <functional>
 
 #include <ossia-config.hpp>
 
@@ -23,6 +24,14 @@ public:
 
   void gc();
   void sync();
+
+  //! Runs f on the audio thread at the start of the next callback, before
+  //! its tick, and returns once it ran: f may change what the tick reads, such
+  //! as the audio protocol's ports. The audio does not stop; the caller waits
+  //! for about one buffer. f must neither allocate nor free, nor block.
+  //! When no callback comes, f runs on the calling thread. Never call it from
+  //! the audio thread.
+  void run_between_ticks(const std::function<void()>& f);
 
   using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
   void set_tick(fun_type&& t);
@@ -52,6 +61,10 @@ private:
   std::shared_ptr<audio_engine> self;
   std::atomic_int64_t request{-1};
   std::atomic_int64_t reply{-1};
+
+  // What run_between_ticks hands to the callback, and whether it ran.
+  std::atomic<const std::function<void()>*> m_between{};
+  std::atomic_bool m_betweenDone{};
 };
 
 OSSIA_EXPORT
