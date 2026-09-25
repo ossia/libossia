@@ -20,7 +20,6 @@ static const constexpr auto create_plan_c2r = ::fftwf_plan_dft_c2r_1d;
 static const constexpr auto run_plan_c2r = ::fftwf_execute_dft_c2r;
 static const constexpr auto destroy_plan = ::fftwf_destroy_plan;
 static const constexpr auto cleanup = ::fftwf_cleanup;
-static const constexpr auto alignment_of = ::fftwf_alignment_of;
 
 #elif defined(OSSIA_FFTW_DOUBLE_ONLY)
 static const constexpr auto alloc_real = ::fftw_alloc_real;
@@ -32,7 +31,6 @@ static const constexpr auto create_plan_c2r = ::fftw_plan_dft_c2r_1d;
 static const constexpr auto run_plan_c2r = ::fftw_execute_dft_c2r;
 static const constexpr auto destroy_plan = ::fftw_destroy_plan;
 // static const constexpr auto cleanup = ::fftw_cleanup;
-// static const constexpr auto alignment_of = ::fftw_alignment_of;
 #else
 #define FFTW_DESTROY_INPUT 0
 #define FFTW_MEASURE 0
@@ -99,44 +97,12 @@ void fft::reset(std::size_t newSize)
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
 {
-  const bool sz_ok = sz >= m_size;
-
-#if defined(FFTW_SINGLE_ONLY)
-  const bool align_ok = alignment_of(input) == alignment_of(m_input);
-  if(align_ok && sz_ok)
-  {
-    run_plan_r2c(m_fw, input, m_output);
-  }
-  else if(!align_ok && sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
-  else
-  {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.f;
-    }
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
-#else
-  if(sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
-  else
-  {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.;
-    }
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
-#endif
+  // The plan destroys its input and covers the power-of-two storage: always
+  // transform a zero-padded copy.
+  const std::size_t n = std::min(sz, m_size);
+  std::copy_n(input, n, m_input);
+  std::fill(m_input + n, m_input + m_storage_size, 0);
+  run_plan_r2c(m_fw, m_input, m_output);
 
   return m_output;
 }
@@ -246,7 +212,6 @@ static const constexpr auto run_plan_c2r
 };
 static const constexpr auto destroy_plan = [](auto&& p) { delete(fftw_plan_s*)p; };
 static const constexpr auto cleanup = [] {};
-static const constexpr auto alignment_of = [] {};
 static const constexpr auto FFTW_DESTROY_INPUT = 0;
 static const constexpr auto FFTW_MEASURE = 0;
 fft::fft(std::size_t newSize) noexcept
@@ -286,22 +251,10 @@ void fft::reset(std::size_t newSize)
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
 {
-  const bool sz_ok = sz >= m_size;
-
-  if(sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output, m_storage);
-  }
-  else
-  {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.;
-    }
-    run_plan_r2c(m_fw, m_input, m_output, m_storage);
-  }
+  const std::size_t n = std::min(sz, m_size);
+  std::copy_n(input, n, m_input);
+  std::fill(m_input + n, m_input + m_storage_size, 0);
+  run_plan_r2c(m_fw, m_input, m_output, m_storage);
 
   return m_output;
 }
@@ -451,14 +404,16 @@ void fft::reset(std::size_t newSize)
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
 {
-  std::copy_n(input, m_size, m_input);
-  do_fft(m_input, reinterpret_cast<std::complex<double>*>(m_output), sz);
+  const std::size_t n = std::min(sz, m_size);
+  std::copy_n(input, n, m_input);
+  std::fill(m_input + n, m_input + m_storage_size, 0);
+  do_fft(m_input, reinterpret_cast<std::complex<double>*>(m_output), m_storage_size);
   return m_output;
 }
 
 fft_complex* fft::execute() noexcept
 {
-  do_fft(m_input, reinterpret_cast<std::complex<double>*>(m_output), m_size);
+  do_fft(m_input, reinterpret_cast<std::complex<double>*>(m_output), m_storage_size);
   return m_output;
 }
 
