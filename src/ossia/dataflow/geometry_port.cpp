@@ -2,6 +2,7 @@
 
 #include <ossia/detail/ptr_set.hpp>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cctype>
@@ -358,6 +359,9 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
   const std::shared_ptr<const std::vector<animation_component_ptr>>*
       single_animations = nullptr;
   int animations_contributors = 0;
+  const std::shared_ptr<const std::vector<skeleton_component_ptr>>*
+      single_skeletons = nullptr;
+  int skeletons_contributors = 0;
   const std::shared_ptr<const std::vector<camera_component_ptr>>*
       single_cameras = nullptr;
   int cameras_contributors = 0;
@@ -366,8 +370,15 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
   int collections_contributors = 0;
 
   int64_t max_version = 0;
+  int64_t max_dirty_index = 0;
   double max_time = 0.0;
   scene_node_id active_camera_id{};
+  int32_t active_variant_index = -1;
+  const ossia::small_vector<std::string, 0>* variant_names = nullptr;
+
+  shadow_cascades_info merged_cascades{};
+  ossia::small_vector<aux_inject_buffer, 4> merged_inject_buffers;
+  ossia::small_vector<aux_inject_texture, 4> merged_inject_textures;
 
   scene_environment merged_env{};  // start from defaults
 
@@ -379,6 +390,7 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
   ossia::ptr_set<const scene_node*> seen_roots;
   ossia::ptr_set<const material_component*> seen_materials;
   ossia::ptr_set<const animation_component*> seen_animations;
+  ossia::ptr_set<const skeleton_component*> seen_skeletons;
   ossia::ptr_set<const camera_component*> seen_cameras;
   ossia::ptr_set<const scene_collection*> seen_collections;
 
@@ -429,6 +441,36 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
       merged_env.params_set |= scene_environment::params_render_target_size;
     }
 
+    const auto& sc = s.state->shadow_cascades;
+    if(sc.shadow_map_array.native_handle)
+      merged_cascades.shadow_map_array = sc.shadow_map_array;
+    if(sc.cascade_count > 0)
+    {
+      auto handle = merged_cascades.shadow_map_array;
+      merged_cascades = sc;
+      if(!sc.shadow_map_array.native_handle)
+        merged_cascades.shadow_map_array = handle;
+    }
+
+    for(const auto& ib : s.state->inject_buffers)
+    {
+      merged_inject_buffers.erase(
+          std::remove_if(
+              merged_inject_buffers.begin(), merged_inject_buffers.end(),
+              [&](const aux_inject_buffer& b) { return b.name == ib.name; }),
+          merged_inject_buffers.end());
+      merged_inject_buffers.push_back(ib);
+    }
+    for(const auto& it : s.state->inject_textures)
+    {
+      merged_inject_textures.erase(
+          std::remove_if(
+              merged_inject_textures.begin(), merged_inject_textures.end(),
+              [&](const aux_inject_texture& t) { return t.name == it.name; }),
+          merged_inject_textures.end());
+      merged_inject_textures.push_back(it);
+    }
+
     // Dedup roots by shared_ptr identity. Two contributors that share a
     // root (Y-shaped wiring of the same upstream into multiple cables,
     // or a SceneGroup that received the same scene on more than one of
@@ -452,6 +494,12 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
       single_animations = &s.state->animations;
     }
 
+    if(s.state->skeletons && !s.state->skeletons->empty())
+    {
+      skeletons_contributors++;
+      single_skeletons = &s.state->skeletons;
+    }
+
     if(s.state->cameras && !s.state->cameras->empty())
     {
       cameras_contributors++;
@@ -467,7 +515,13 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     if(active_camera_id.value == 0 && s.state->active_camera_id.value != 0)
       active_camera_id = s.state->active_camera_id;
 
+    if(active_variant_index == -1 && s.state->active_variant_index != -1)
+      active_variant_index = s.state->active_variant_index;
+    if(!variant_names && !s.state->variant_names.empty())
+      variant_names = &s.state->variant_names;
+
     max_version = std::max(max_version, s.state->version);
+    max_dirty_index = std::max(max_dirty_index, s.state->dirty_index);
     max_time = std::max(max_time, s.state->time_seconds);
   }
 
@@ -514,6 +568,26 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     merged->animations = std::move(merged_animations);
   }
 
+  if(skeletons_contributors == 0)
+  {
+    merged->skeletons = nullptr;
+  }
+  else if(skeletons_contributors == 1)
+  {
+    merged->skeletons = *single_skeletons;
+  }
+  else
+  {
+    auto merged_skeletons
+        = std::make_shared<std::vector<skeleton_component_ptr>>();
+    for(auto& s : scenes)
+      if(s.state && s.state->skeletons)
+        for(auto& sk : *s.state->skeletons)
+          if(sk && seen_skeletons.insert(sk.get()).second)
+            merged_skeletons->push_back(sk);
+    merged->skeletons = std::move(merged_skeletons);
+  }
+
   if(cameras_contributors == 0)
   {
     merged->cameras = nullptr;
@@ -555,7 +629,14 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
 
   merged->active_camera_id = active_camera_id;
   merged->environment = std::move(merged_env);
+  merged->shadow_cascades = merged_cascades;
+  merged->inject_buffers = std::move(merged_inject_buffers);
+  merged->inject_textures = std::move(merged_inject_textures);
+  merged->active_variant_index = active_variant_index;
+  if(variant_names)
+    merged->variant_names = *variant_names;
   merged->version = max_version + 1;
+  merged->dirty_index = max_dirty_index + 1;
   merged->time_seconds = max_time;
 
   return scene_spec{std::move(merged)};
