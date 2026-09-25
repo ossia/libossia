@@ -56,6 +56,7 @@ struct render_target_spec
   std::optional<texture_size> size;
 
   texture_format format = RGBA8;
+  bool format_set = false;
 
   texture_filter mag_filter : 2 = texture_filter::LINEAR;
   texture_filter min_filter : 2 = texture_filter::LINEAR;

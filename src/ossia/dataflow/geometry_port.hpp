@@ -880,6 +880,8 @@ struct camera_component
 
   float yfov{0.7853981f}; // 45° in radians
   float aspect_ratio{1.0f};
+  // false: the projection follows the aspect of the target it renders into.
+  bool aspect_ratio_set{false};
 
   float xmag{1.0f};
   float ymag{1.0f};

@@ -5,6 +5,7 @@
 #include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/transitive_closure.hpp>
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
 
 #include <boost/circular_buffer.hpp>
@@ -79,14 +80,88 @@ public:
         }
       }
     }
+    catch(const boost::not_a_dag&)
+    {
+      m_all_nodes.clear();
+      ossia::logger().error(
+          "Execution graph is not a DAG, nothing will execute: {}",
+          describe_immediate_cycle(gr));
+    }
+    catch(const std::exception& e)
+    {
+      m_all_nodes.clear();
+      ossia::logger().error("Execution graph could not be sorted: {}", e.what());
+    }
     catch(...)
     {
-#if 0
-      std::cout << "Error: graph isn't a DAG: ";
-      print_graph(gr, std::cout);
-      std::cout << std::endl;
-#endif
+      m_all_nodes.clear();
+      ossia::logger().error("Execution graph could not be sorted");
     }
+  }
+
+  static std::string describe_immediate_cycle(const graph_t& gr)
+  {
+    const auto n = boost::num_vertices(gr);
+    enum color : uint8_t
+    {
+      white,
+      grey,
+      black
+    };
+    std::vector<color> colors(n, white);
+    struct frame
+    {
+      graph_vertex_t vertex;
+      boost::graph_traits<graph_t>::out_edge_iterator it, end;
+    };
+    std::vector<frame> stack;
+
+    auto label = [&](graph_vertex_t v) {
+      const auto& node = gr[v];
+      return node ? node->label() : std::string{"<null>"};
+    };
+
+    for(graph_vertex_t root = 0; root < n; ++root)
+    {
+      if(colors[root] != white)
+        continue;
+      colors[root] = grey;
+      auto [b, e] = boost::out_edges(root, gr);
+      stack.push_back({root, b, e});
+      while(!stack.empty())
+      {
+        auto& f = stack.back();
+        if(f.it == f.end)
+        {
+          colors[f.vertex] = black;
+          stack.pop_back();
+          continue;
+        }
+        const auto edge = *f.it++;
+        if(gr[edge]->delayed())
+          continue;
+        const auto target = boost::target(edge, gr);
+        if(colors[target] == white)
+        {
+          colors[target] = grey;
+          auto [tb, te] = boost::out_edges(target, gr);
+          stack.push_back({target, tb, te});
+        }
+        else if(colors[target] == grey)
+        {
+          std::string res = "immediate cables form a cycle: ";
+          auto it = std::find_if(stack.begin(), stack.end(), [&](const frame& fr) {
+            return fr.vertex == target;
+          });
+          for(; it != stack.end(); ++it)
+            res += label(it->vertex) + " -> ";
+          res += label(target);
+          res += "; make one of these cables delayed";
+          return res;
+        }
+      }
+    }
+    return "no immediate cycle found";
   }
 
   void state(execution_state& e) override

@@ -107,35 +107,18 @@ fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   {
     run_plan_r2c(m_fw, input, m_output);
   }
-  else if(!align_ok && sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
   else
   {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.f;
-    }
+    const std::size_t n = sz_ok ? m_size : sz;
+    std::copy_n(input, n, m_input);
+    std::fill(m_input + n, m_input + m_storage_size, 0.f);
     run_plan_r2c(m_fw, m_input, m_output);
   }
 #else
-  if(sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
-  else
-  {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.;
-    }
-    run_plan_r2c(m_fw, m_input, m_output);
-  }
+  const std::size_t n = sz_ok ? m_size : sz;
+  std::copy_n(input, n, m_input);
+  std::fill(m_input + n, m_input + m_storage_size, 0.);
+  run_plan_r2c(m_fw, m_input, m_output);
 #endif
 
   return m_output;
@@ -286,22 +269,10 @@ void fft::reset(std::size_t newSize)
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
 {
-  const bool sz_ok = sz >= m_size;
-
-  if(sz_ok)
-  {
-    std::copy_n(input, m_size, m_input);
-    run_plan_r2c(m_fw, m_input, m_output, m_storage);
-  }
-  else
-  {
-    std::copy_n(input, sz, m_input);
-    for(int i = sz; i < m_size; i++)
-    {
-      m_input[i] = 0.;
-    }
-    run_plan_r2c(m_fw, m_input, m_output, m_storage);
-  }
+  const std::size_t n = std::min(sz, m_size);
+  std::copy_n(input, n, m_input);
+  std::fill(m_input + n, m_input + m_storage_size, 0.);
+  run_plan_r2c(m_fw, m_input, m_output, m_storage);
 
   return m_output;
 }
