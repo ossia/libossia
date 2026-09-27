@@ -159,3 +159,42 @@ TEST_CASE("test_value_conversion", "test_value_conversion")
     }
   }
 }
+
+// A property the script leaves out stays absent: an undefined max is not a nan
+// bound, an undefined value is not the string "undefined".
+TEST_CASE("make_parameter_data_absent_properties", "make_parameter_data")
+{
+  int argc{};
+  char** argv{};
+  QCoreApplication app{argc, argv};
+  QJSEngine e;
+
+  auto make = [&](auto&&... props) {
+    QJSValue obj = e.newObject();
+    obj.setProperty("name", "p");
+    obj.setProperty("type", int(ossia::val_type::FLOAT));
+    (obj.setProperty(props.first, props.second), ...);
+    auto dat = ossia::qt::make_parameter_data(obj);
+    REQUIRE(dat.domain);
+    return dat;
+  };
+  using prop = std::pair<QString, QJSValue>;
+
+  {
+    auto dat = make(prop{"min", 2.});
+    REQUIRE(ossia::get_min(*dat.domain) == ossia::value(2.f));
+    REQUIRE_FALSE(ossia::get_max(*dat.domain).valid());
+    REQUIRE(dat.value == ossia::value(0.f));
+  }
+  {
+    auto dat = make(prop{"max", 10.}, prop{"min", QJSValue{QJSValue::NullValue}});
+    REQUIRE_FALSE(ossia::get_min(*dat.domain).valid());
+    REQUIRE(ossia::get_max(*dat.domain) == ossia::value(10.f));
+  }
+  {
+    auto dat = make(prop{"value", 3.});
+    REQUIRE(dat.value == ossia::value(3.f));
+    REQUIRE_FALSE(ossia::get_min(*dat.domain).valid());
+    REQUIRE_FALSE(ossia::get_max(*dat.domain).valid());
+  }
+}
