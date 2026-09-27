@@ -289,13 +289,15 @@ net::parameter_data make_parameter_data(const QJSValue& js)
         set_values(domain, *vec);
     }
 
-    if(js.hasProperty("min") || js.hasProperty("max"))
-    {
-      set_min(domain, value_from_js(base_v, js.property("min")));
-      set_max(domain, value_from_js(base_v, js.property("max")));
-    }
-
-    dat.value = value_from_js(base_v, js.property("value"));
+    // A property the script leaves out is undefined in JS: converted, that is
+    // a nan float or the string "undefined", not an absent value.
+    auto given = [](const QJSValue& v) { return !v.isUndefined() && !v.isNull(); };
+    if(auto v = js.property("min"); given(v))
+      set_min(domain, value_from_js(base_v, v));
+    if(auto v = js.property("max"); given(v))
+      set_max(domain, value_from_js(base_v, v));
+    if(auto v = js.property("value"); given(v))
+      dat.value = value_from_js(base_v, v);
     if(!dat.value.valid())
       dat.value = base_v;
 
