@@ -38,14 +38,28 @@ struct faust_exec_ui final : UI
         return;
     }
 
-    fx.root_inputs().push_back(new ossia::value_inlet);
-    fx.controls.push_back(
-        {fx.root_inputs().back()->template target<ossia::value_port>(), zone});
+    addControl(zone);
+    // A button is pressed while held: an event port, so that an impulse (a
+    // cable, a message) can press it for one tick (see copy_controls).
+    fx.controls.back().first->is_event = true;
   }
 
   void addCheckButton(const char* label, FAUSTFLOAT* zone) override
   {
-    addButton(label, zone);
+    if constexpr(Synth)
+    {
+      using namespace std::literals;
+      if(label == "Panic"sv || label == "gate"sv)
+        return;
+    }
+    addControl(zone);
+  }
+
+  void addControl(FAUSTFLOAT* zone)
+  {
+    fx.root_inputs().push_back(new ossia::value_inlet);
+    fx.controls.push_back(
+        {fx.root_inputs().back()->template target<ossia::value_port>(), zone});
   }
 
   void addVerticalSlider(
@@ -171,6 +185,17 @@ struct faust_exec_ui_clone final : ::UI
 
 struct faust_node_utils
 {
+  //! An impulse on a button (an event port, see faust_exec_ui::addButton)
+  //! converts to 0 and would never press it: it presses it for this tick
+  //! instead, and release_pressed_buttons lets go after the compute.
+  static bool pressed_by_impulse(const ossia::value_port& port) noexcept
+  {
+    if(!port.is_event)
+      return false;
+    auto& dat = port.get_data();
+    return !dat.empty() && dat.back().value.target<ossia::impulse>();
+  }
+
   template <typename Node>
   static void copy_controls(Node& self)
   {
@@ -179,9 +204,32 @@ struct faust_node_utils
       auto& dat = ctrl.first->get_data();
       if(!dat.empty())
       {
-        *ctrl.second = ossia::convert<float>(dat.back().value);
+        if(pressed_by_impulse(*ctrl.first))
+          *ctrl.second = 1.f;
+        else
+          *ctrl.second = ossia::convert<float>(dat.back().value);
       }
     }
+  }
+
+  //! Returns whether a button was released.
+  template <typename Node>
+  static bool release_pressed_buttons(Node& self) noexcept
+  {
+    bool released = false;
+    for(std::size_t k = 0, n = self.controls.size(); k < n; ++k)
+    {
+      if(pressed_by_impulse(*self.controls[k].first))
+      {
+        // faust_mono_fx also has to release the zones of its clones.
+        if constexpr(requires { self.set_control(k, 0.f); })
+          self.set_control(k, 0.f);
+        else
+          *self.controls[k].second = 0.f;
+        released = true;
+      }
+    }
+    return released;
   }
 
   template <typename Node>
@@ -406,8 +454,12 @@ struct faust_node_utils
       copy_controls(self);
 
       if(d == 0)
+      {
+        release_pressed_buttons(self);
         return;
+      }
       do_exec(self, dsp, tk, e);
+      release_pressed_buttons(self);
       copy_displays(self, st);
     }
   }
@@ -438,11 +490,12 @@ struct faust_node_utils
       {
         auto ctrl = self.controls[k];
         auto& dat = ctrl.first->get_data();
-        if(!dat.empty())
-        {
-          if(dat.back().value.valid())
-            ossia::apply_nonnull([k,&self] (const auto& vv){ self.set_control(k, vv); }, dat.back().value.v);
-        }
+        if(pressed_by_impulse(*ctrl.first))
+          self.set_control(k, 1.f);
+        else if(!dat.empty() && dat.back().value.valid())
+          ossia::apply_nonnull(
+              [k, &self](const auto& vv) { self.set_control(k, vv); },
+              dat.back().value.v);
       }
     }
 
@@ -511,6 +564,7 @@ struct faust_node_utils
       if(d == 0)
         return;
       do_exec_mono_fx(self, dsp, tk, e);
+      release_pressed_buttons(self);
       copy_displays(self, st);
     }
   }
@@ -531,10 +585,12 @@ struct faust_node_utils
       dsp.updateAllZones();
       copy_midi(self, dsp, midi_in);
 
-      if(d == 0)
-        return;
-      do_exec(self, dsp, tk, e);
-      copy_displays(self, st);
+      if(d > 0)
+        do_exec(self, dsp, tk, e);
+      if(release_pressed_buttons(self))
+        dsp.updateAllZones();
+      if(d > 0)
+        copy_displays(self, st);
     }
   }
 };

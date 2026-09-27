@@ -119,6 +119,13 @@ if(OSSIA_DATAFLOW)
   ossia_add_test(BackwardAudioTest           "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/BackwardAudioTest.cpp")
   ossia_add_test(TimingInvariantsTest        "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TimingInvariantsTest.cpp")
   ossia_add_test(MergeScenesTest             "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MergeScenesTest.cpp")
+
+  # The Faust nodes are header-only: only the Faust architecture headers are needed.
+  find_path(OSSIA_TEST_FAUST_INCLUDE_DIR faust/dsp/poly-llvm-dsp.h)
+  if(OSSIA_TEST_FAUST_INCLUDE_DIR)
+    ossia_add_test(FaustButtonTest           "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/FaustButtonTest.cpp")
+    target_include_directories(ossia_FaustButtonTest PRIVATE "${OSSIA_TEST_FAUST_INCLUDE_DIR}")
+  endif()
   if(TARGET rubberband AND TARGET samplerate)
     target_link_libraries(ossia_SoundTest PRIVATE rubberband samplerate)
     target_link_libraries(ossia_BackwardPlaybackTest PRIVATE rubberband samplerate)
