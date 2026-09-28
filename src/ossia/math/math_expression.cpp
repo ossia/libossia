@@ -384,17 +384,26 @@ bool math_expression::has_variable(std::string_view var) const noexcept
   if(impl->cur_expr_txt.find(var) == std::string::npos)
     return false;
 
-  // exprtk::collect_variables works on the expression *text*, so this answers
-  // for expressions that failed to compile too - which matters, as the nodes
-  // use it to decide which code path (and thus which vector sizes) to set up.
+  // Answered from the tokens of the text, so for expressions that do not
+  // compile too: the nodes use it to decide which code path (and thus which
+  // vector sizes) to set up. exprtk::collect_variables would also leave out
+  // function names, but it compiles the text twice, taking unknown symbols
+  // for scalars first: each `xv[i]` then becomes an implied multiplication
+  // inserted into the token vector, quadratic in the text. It also fails on a
+  // vector indexed past 0.
   if(!impl->variables)
   {
-    impl->variables.emplace();
-    if(!exprtk::collect_variables(impl->cur_expr_txt, *impl->variables))
+    auto& symbols = impl->variables.emplace();
+    exprtk::lexer::generator lexer;
+    if(!lexer.process(impl->cur_expr_txt))
       return false;
+    for(std::size_t i = 0; i < lexer.size(); ++i)
+      if(lexer[i].type == exprtk::lexer::token::e_symbol)
+        symbols.push_back(lexer[i].value);
+    std::sort(symbols.begin(), symbols.end());
+    symbols.erase(std::unique(symbols.begin(), symbols.end()), symbols.end());
   }
 
-  // collect_variables returns its symbols sorted.
   return std::binary_search(impl->variables->begin(), impl->variables->end(), var);
 }
 
