@@ -6,6 +6,7 @@
 
 #include "include_catch.hpp"
 
+#include <cmath>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -260,4 +261,35 @@ TEST_CASE("quantification_dates_are_ordered_and_inside_the_tick", "quantificatio
       previous = q.date.impl;
     }
   }
+}
+
+TEST_CASE("musical_to_frame_grid_point_is_not_one_sample_early", "musical_to_frame")
+{
+  // 1 kHz, 120 BPM: an eighth note is 250 frames. The positions come out of
+  // divisions that round them a few ulps below the grid point.
+  CHECK(ossia::musical_to_frame(0.5, 0.384, 0.512, 64) == 58);
+  CHECK(ossia::musical_to_frame(0.5, 0., 0.666, 333) == 250);
+  CHECK(ossia::musical_to_frame(1.5, 1.4000000000000001, 1.6, 100) == 50);
+
+  // Engine-style ticks: every grid point that falls exactly on a sample lands on it.
+  for(double rate : {44100., 48000., 96000.})
+    for(double tempo : {97.3, 120., 133.7})
+      for(int buffer : {1, 7, 64, 333, 512})
+      {
+        const double frames_per_quarter = rate * 60. / tempo;
+        for(int64_t t = 0; t < 500; t++)
+        {
+          const double a = t * buffer / frames_per_quarter;
+          const double b = (t + 1) * buffer / frames_per_quarter;
+          for(auto k = int64_t(std::ceil(a / 0.5)); k * 0.5 < b; k++)
+          {
+            const double exact = k * 0.5 * frames_per_quarter - double(t * buffer);
+            const double nearest = std::round(exact);
+            if(std::abs(exact - nearest) > 1e-6 || nearest < 0 || nearest >= buffer)
+              continue;
+            INFO(rate << " " << tempo << " " << buffer << " " << t << " " << k);
+            CHECK(ossia::musical_to_frame(k * 0.5, a, b, buffer) == int64_t(nearest));
+          }
+        }
+      }
 }
