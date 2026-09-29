@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 #include <complex>
 #include <cstdio>
 #include <cstdlib>
@@ -238,6 +239,61 @@ struct perlin<T, 1> : public exprtk::ifunction<T>
 
 static thread_local exprtk::parser<double> g_exprtk_parser
     = exprtk::parser<double>{exprtk::parser<double>::settings_store{}};
+
+// Bounds the work of one evaluation over all of its loops together: exprtk's
+// own count is per loop and restarts on every entry, so nested or successive
+// loops would multiply it. A tripped check makes every enclosing loop exit on
+// its next test instead of throwing through the evaluating (audio) thread.
+struct loop_budget final : exprtk::loop_runtime_check
+{
+  // A full pass over 15 vectors of max_vector_view_size elements; a runaway
+  // loop with a scalar body stops within milliseconds.
+  static constexpr uint64_t max_iterations = 1'000'000;
+  // Backstop for bodies that are themselves expensive: vector operations run
+  // inside a single iteration.
+  static constexpr std::chrono::milliseconds max_duration{100};
+  static constexpr uint64_t clock_period = 256;
+
+  loop_budget() noexcept
+  {
+    loop_set = e_all_loops;
+    max_loop_iterations = max_iterations;
+  }
+
+  void reset() noexcept
+  {
+    iterations = 0;
+    exceeded = false;
+  }
+
+  bool check() override
+  {
+    if(exceeded)
+      return false;
+
+    const uint64_t n = iterations++;
+    if(n >= max_iterations)
+      return false;
+
+    // Loops shorter than clock_period, like most per-sample ones, never read
+    // the clock.
+    if(n != 0 && n % clock_period == 0)
+    {
+      const auto now = std::chrono::steady_clock::now();
+      if(n == clock_period)
+        deadline = now + max_duration;
+      else if(now > deadline)
+        return false;
+    }
+    return true;
+  }
+
+  void handle_runtime_violation(const violation_context&) override { exceeded = true; }
+
+  uint64_t iterations{};
+  std::chrono::steady_clock::time_point deadline{};
+  bool exceeded{};
+};
 }
 struct math_expression::impl
 {
@@ -246,6 +302,8 @@ struct math_expression::impl
   boost::container::flat_map<std::string, std::shared_ptr<exprtk::vector_view<double>>>
       vector_views;
   exprtk::symbol_table<double> syms;
+  // The compiled loop nodes point to it: it must outlive expr.
+  loop_budget loops;
   exprtk::expression<double> expr;
   std::string cur_expr_txt;
   std::optional<std::vector<std::string>> variables;
@@ -420,7 +478,9 @@ bool math_expression::recompile()
     return false;
   }
 
+  g_exprtk_parser.register_loop_runtime_check(impl->loops);
   impl->valid = g_exprtk_parser.compile(impl->cur_expr_txt, impl->expr);
+  g_exprtk_parser.clear_loop_runtime_check();
   if(!impl->valid)
   {
     impl->last_error = g_exprtk_parser.error();
@@ -443,9 +503,18 @@ double math_expression::value()
 {
   // On a failed compilation exprtk leaves the previously compiled tree in
   // place: evaluating it would silently give the *old* expression's result.
+  impl->loops.reset();
   if(!impl->valid)
     return std::numeric_limits<double>::quiet_NaN();
-  return impl->expr.value();
+  const double v = impl->expr.value();
+  if(impl->loops.exceeded)
+    return std::numeric_limits<double>::quiet_NaN();
+  return v;
+}
+
+bool math_expression::interrupted() const noexcept
+{
+  return impl->loops.exceeded;
 }
 
 static std::vector<ossia::value> result_to_vec(auto& r)
@@ -515,10 +584,13 @@ static ossia::value result_to_value(auto& r)
 
 ossia::value math_expression::result()
 {
+  impl->loops.reset();
   if(!impl->valid)
     return ossia::value{};
 
   const double v = impl->expr.value();
+  if(impl->loops.exceeded)
+    return ossia::value{};
   if(!ossia::safe_isnan(v))
     return v;
 
