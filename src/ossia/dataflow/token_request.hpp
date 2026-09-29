@@ -5,8 +5,10 @@
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <limits>
 #include <optional>
 #include <type_traits>
 
@@ -17,6 +19,24 @@
 #endif
 namespace ossia
 {
+//! The frame, counted from the start of a span of `frames` frames covering the
+//! musical positions [start; end[ (]end; start] rewinding), a musical position
+//! falls in. Not clamped. Kept identical to halp::musical_to_frame.
+[[nodiscard]] constexpr int64_t musical_to_frame(
+    double position, double start, double end, int64_t frames) noexcept
+{
+  const auto abs = [](double x) { return x < 0. ? -x : x; };
+  const double duration = end - start;
+  const double r = (position - start) / duration;
+  // The positions are exact only to the few ulps of their magnitude the
+  // arithmetic that made them rounds off: a point that close below a sample
+  // boundary is on it, not one sample early.
+  const double tolerance = 16. * std::numeric_limits<double>::epsilon()
+                           * std::max({abs(position), abs(start), abs(end)})
+                           / abs(duration);
+  return constexpr_floor((r + tolerance) * double(frames));
+}
+
 using quarter_note = double;
 
 //! One quantification point inside a tick: when it happens, where it happens
@@ -288,9 +308,8 @@ struct token_request
 
     // Positive in both directions: rewinding, the distance to the position and
     // the duration of the tick are both negative.
-    const double r
-        = (musical_position - musical_start_position) / musical_tick_duration;
-    const int64_t s = constexpr_floor(r * len);
+    const int64_t s = musical_to_frame(
+        musical_position, musical_start_position, musical_end_position, len);
     return s < 0 ? int64_t(0) : (s >= len ? len - 1 : s);
   }
 
