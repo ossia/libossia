@@ -5,6 +5,7 @@
 #include "include_catch.hpp"
 
 #include <chrono>
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -107,5 +108,54 @@ TEST_CASE("hostile_expressions", "math_expression")
     if(text.find("xv") == std::string::npos)
       REQUIRE_FALSE(has);
     CHECK(elapsed < std::chrono::seconds(5));
+  }
+}
+
+// A runaway loop is cut short instead of hanging the evaluating thread, and
+// the next evaluation starts with a fresh budget.
+TEST_CASE("runaway_loop_is_interrupted", "math_expression")
+{
+  double a{1e12};
+  ossia::math_expression e;
+  e.add_variable("a", a);
+  e.register_symbol_table();
+  REQUIRE(e.set_expression("var i := 0; while(i < a) { i += 1; }; i"));
+
+  const auto t0 = std::chrono::steady_clock::now();
+  CHECK_FALSE(e.result().valid());
+  CHECK(e.interrupted());
+  CHECK(std::chrono::steady_clock::now() - t0 < std::chrono::seconds(5));
+
+  a = 1000.;
+  CHECK(e.value() == 1000.);
+  CHECK_FALSE(e.interrupted());
+}
+
+TEST_CASE("nested_runaway_loops_share_one_budget", "math_expression")
+{
+  ossia::math_expression e;
+  e.register_symbol_table();
+  REQUIRE(e.set_expression(
+      "var s := 0;"
+      "for(var i := 0; i >= 0; i += 1) {"
+      "  for(var j := 0; j >= 0; j += 1) { for(var k := 0; k >= 0; k += 1) { s += 1; } }"
+      "};"
+      "s"));
+
+  const auto t0 = std::chrono::steady_clock::now();
+  CHECK(std::isnan(e.value()));
+  CHECK(e.interrupted());
+  CHECK(std::chrono::steady_clock::now() - t0 < std::chrono::seconds(5));
+}
+
+TEST_CASE("bounded_loop_runs_to_completion", "math_expression")
+{
+  ossia::math_expression e;
+  e.register_symbol_table();
+  REQUIRE(e.set_expression("var s := 0; for(var i := 0; i < 100000; i += 1) { s += i; }; s"));
+  for(int n = 0; n < 16; n++)
+  {
+    CHECK(e.value() == 4999950000.);
+    CHECK_FALSE(e.interrupted());
   }
 }

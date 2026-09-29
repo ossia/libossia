@@ -35,9 +35,15 @@ public:
   //! The error of the last compilation of this expression; empty if it compiled.
   std::string error() const;
 
+  //! NaN if the expression is not valid or its evaluation was interrupted.
   double value();
 
+  //! No value if the expression is not valid or its evaluation was interrupted.
   ossia::value result();
+
+  //! Whether the last evaluation ran out of its loop budget and was cut short.
+  //! Its effects on the variables up to that point stay.
+  bool interrupted() const noexcept;
 
 private:
   math_expression(const math_expression&) = delete;
