@@ -76,7 +76,7 @@ option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidgets library
-option(OSSIA_PROTOCOL_JOYSTICK "Enable Joystick protocol" ON)  # Requires SDL2 library
+option(OSSIA_PROTOCOL_JOYSTICK "Enable Joystick protocol" ON)  # Requires SDL3 library
 option(OSSIA_PROTOCOL_WIIMOTE "Enable Wiimote Protocol" ON) #use wiiuse
 option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON)
 option(OSSIA_PROTOCOL_LIBMAPPER "Enable libmapper protocol" OFF) #use external libmapper
@@ -111,8 +111,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJEC
 set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
 set(CMAKE_PREFIX_PATH
-  "${OSSIA_SDK}/SDL2"
-  "${OSSIA_SDK}/SDL2/cmake"
+  "${OSSIA_SDK}/SDL3"
   "${OSSIA_SDK}/portaudio/lib/cmake"
   "${CMAKE_PREFIX_PATH}"
 )

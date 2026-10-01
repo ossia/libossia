@@ -8,7 +8,7 @@
 
 #include <vector>
 
-typedef struct _SDL_Joystick SDL_Joystick;
+typedef struct SDL_Joystick SDL_Joystick;
 
 namespace ossia::net
 {
