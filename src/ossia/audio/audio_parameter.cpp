@@ -3,7 +3,10 @@
 #include "audio_protocol.hpp"
 
 #include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/telemetry.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
+#include <array>
 
 namespace ossia
 {
@@ -31,6 +34,9 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
     }
   }
 
+  double g = stage == gain_stage::pull ? gain() : 1.;
+  if(upstream)
+    g *= upstream->gain();
   auto min_chan = std::min(res_vec.size(), audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
   {
@@ -43,12 +49,13 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
       res.resize(N);
 
     for(std::size_t i = 0; i < N; i++)
-      res[i] += double(src[i]);
+      res[i] += double(src[i]) * g;
   }
 }
 
 void audio_parameter::push_value(const audio_port& port)
 {
+  const double g = stage == gain_stage::push ? gain() : 1.;
   auto min_chan = std::min(port.channels(), (std::size_t)audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
   {
@@ -57,7 +64,7 @@ void audio_parameter::push_value(const audio_port& port)
     const auto N = std::min(src.size(), (std::size_t)dst.size());
     for(std::size_t i = 0; i < N; i++)
     {
-      dst[i] += float(src[i] * m_gain);
+      dst[i] += float(src[i] * g);
     }
   }
 }
@@ -83,19 +90,16 @@ net::parameter_base& audio_parameter::push_value()
 
 value audio_parameter::value() const
 {
-  return m_gain;
+  return gain();
 }
 
 ossia::value audio_parameter::set_value(const ossia::value& v)
 {
   auto flt = ossia::convert<float>(v);
   auto vol = ossia::clamp(flt, 0.f, 1.f);
-  if(m_gain != vol)
-  {
-    m_gain = vol;
+  if(m_gain.exchange(vol, std::memory_order_relaxed) != vol)
     send(vol);
-  }
-  return m_gain;
+  return vol;
 }
 
 ossia::value audio_parameter::set_value(ossia::value&& v)
@@ -153,8 +157,21 @@ virtual_audio_parameter::virtual_audio_parameter(int num_channels, net::node_bas
   proto.register_parameter(*this);
 }
 
+auto virtual_audio_parameter::make_channels(int num_channels) const -> channels
+{
+  const auto bs = m_audio_data.empty() ? std::size_t(512) : m_audio_data.front().size();
+  channels c;
+  c.data.resize(std::max(num_channels, 0));
+  for(auto& d : c.data)
+    d.resize(bs);
+  for(auto& d : c.data)
+    c.spans.push_back(d);
+  return c;
+}
+
 void virtual_audio_parameter::push_value(const audio_port& port)
 {
+  const double g = gain();
   auto min_chan = std::min(port.channels(), (std::size_t)audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
   {
@@ -164,8 +181,17 @@ void virtual_audio_parameter::push_value(const audio_port& port)
     for(std::size_t i = 0; i < N; i++)
     {
       // Important: here we must not mix
-      dst[i] = float(src[i] * m_gain);
+      dst[i] = float(src[i] * g);
     }
+  }
+
+  if(auto m = meter.load(std::memory_order_acquire))
+  {
+    std::array<const float*, ossia::telemetry::max_meter_channels> chans;
+    const auto n = std::min(audio.size(), chans.size());
+    for(std::size_t c = 0; c < n; c++)
+      chans[c] = audio[c].data();
+    m->pending.accumulate(chans.data(), int(n), n > 0 ? audio[0].size() : 0);
   }
 }
 
@@ -182,6 +208,7 @@ mapped_audio_parameter::mapped_audio_parameter(
     , mapping(std::move(m))
     , is_output{output}
 {
+  stage = output ? gain_stage::push : gain_stage::pull;
   auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
   proto.register_parameter(*this);
 }

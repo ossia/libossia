@@ -3,6 +3,7 @@
 #include <ossia/detail/thread.hpp>
 
 #include <thread>
+#include <vector>
 
 namespace ossia
 {
@@ -12,12 +13,21 @@ class dummy_engine final : public audio_engine
   std::atomic_bool m_active;
 
 public:
-  dummy_engine(int rate, int bs)
+  //! Silent inputs and discarded outputs, so that a graph can be routed and
+  //! metered without a sound card.
+  dummy_engine(int rate, int bs, int inputs = 0, int outputs = 0)
   {
     effective_sample_rate = rate;
     effective_buffer_size = bs;
-    effective_inputs = 0;
-    effective_outputs = 0;
+    effective_inputs = std::max(inputs, 0);
+    effective_outputs = std::max(outputs, 0);
+
+    m_inputs.resize(effective_inputs, std::vector<float>(bs));
+    m_outputs.resize(effective_outputs, std::vector<float>(bs));
+    for(auto& c : m_inputs)
+      m_inputPtrs.push_back(c.data());
+    for(auto& c : m_outputs)
+      m_outputPtrs.push_back(c.data());
 
     setup_thread();
   }
@@ -92,8 +102,9 @@ public:
         if(samples < 0)
           samples = 0;
 
-        ossia::audio_tick_state ts{nullptr, nullptr,           0,
-                                   0,       (uint64_t)samples, ns_total / 1e9};
+        ossia::audio_tick_state ts{
+            m_inputPtrs.data(), m_outputPtrs.data(), effective_inputs,
+            effective_outputs, (uint64_t)samples,    ns_total / 1e9};
         audio_tick(ts);
 
         start = clk::now();
@@ -117,6 +128,10 @@ public:
   ~dummy_engine() override { stop(); }
 
 private:
+  std::vector<std::vector<float>> m_inputs;
+  std::vector<std::vector<float>> m_outputs;
+  std::vector<float*> m_inputPtrs;
+  std::vector<float*> m_outputPtrs;
   std::thread m_runThread;
 };
 }
