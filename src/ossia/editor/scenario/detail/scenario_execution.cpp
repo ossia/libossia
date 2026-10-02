@@ -386,11 +386,15 @@ void scenario::state_impl(const ossia::token_request& tk)
       auto [itv, ratio] = *it;
       if(auto date = tk.get_quantification_date(ratio))
       {
-        if(itv->running())
+        // An interval an offset put in the middle of its run ticks without
+        // having been started.
+        if(itv->running() || m_runningIntervals.contains(itv))
         {
           mark_end_discontinuous{}(*itv);
           itv->stop();
         }
+        // The play button plays the interval from its beginning
+        itv->set_offset(0_tv);
         itv->set_parent_speed(tk.speed);
         itv->start();
         // itv->tick_current(*date, tk);
@@ -427,7 +431,7 @@ void scenario::state_impl(const ossia::token_request& tk)
       auto [itv, ratio] = *it;
       if(auto date = tk.get_quantification_date(ratio))
       {
-        if(itv->running())
+        if(itv->running() || m_runningIntervals.contains(itv))
         {
           // mark_end_discontinuous{}(*itv);
           itv->stop();

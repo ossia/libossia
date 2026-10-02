@@ -467,6 +467,9 @@ void time_interval::stop()
     timeProcess->stop();
   }
 
+  // The date an offset or transport put it at only holds for that run: started
+  // again, it starts from its beginning.
+  m_offset = Zero;
   m_date = Zero;
   m_date_residue = 0.;
   m_running = false;
