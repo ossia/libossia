@@ -161,7 +161,18 @@ public:
 
 private:
   void stop_all_intervals();
+  void prepare_offset();
+  void make_rigid(time_interval& itv, time_value min, time_value max);
+  void restore_durations();
   ossia::time_value m_last_date{ossia::Infinite};
+
+  //! The durations an offset changed, given back on the next offset or stop.
+  struct saved_durations
+  {
+    time_value min;
+    time_value max;
+  };
+  ossia::flat_map<time_interval*, saved_durations> m_offset_durations;
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario

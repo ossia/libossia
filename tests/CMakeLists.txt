@@ -85,6 +85,7 @@ if(OSSIA_EDITOR)
     # TODO : investigate why this one does not pass on CI
     ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
     ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
+    ossia_add_test(ScenarioTransportTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTransportTest.cpp")
   endif()
 
   ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")

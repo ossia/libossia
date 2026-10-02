@@ -120,6 +120,14 @@ void process_offset(
     }
   }
 }
+//! An interval that ran before the offset and does not after it stops.
+static void stop_no_longer_running(const interval_set& before, const interval_set& after)
+{
+  for(time_interval* itv : before)
+    if(after.find(itv) == after.end())
+      itv->stop();
+}
+
 void scenario::transport_impl(ossia::time_value offset)
 {
   if(offset == 0_tv)
@@ -138,7 +146,8 @@ void scenario::transport_impl(ossia::time_value offset)
   ossia::flat_set<ossia::time_event*> seen_events;
   seen_events.reserve(pastEvents.size());
 
-  m_runningIntervals.clear();
+  const auto previouslyRunning = m_runningIntervals;
+  prepare_offset();
 
   // Precompute the default date of every timesync.
   ossia::ptr_map<time_sync*, ossia::time_value> time_map;
@@ -159,8 +168,7 @@ void scenario::transport_impl(ossia::time_value offset)
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
-          cst.set_min_duration(dur);
-          cst.set_max_duration(dur);
+          make_rigid(cst, dur, dur);
         }
       }
     }
@@ -181,7 +189,7 @@ void scenario::transport_impl(ossia::time_value offset)
               auto dur = cst.get_nominal_duration();
               auto dur_min = cst.get_min_duration();
               if(dur_min < dur)
-                cst.set_min_duration(offset - start_date);
+                make_rigid(cst, offset - start_date, cst.get_max_duration());
             }
           }
         }
@@ -222,6 +230,7 @@ void scenario::transport_impl(ossia::time_value offset)
     }
   }
 
+  stop_no_longer_running(previouslyRunning, m_runningIntervals);
   m_last_date = offset;
 }
 
@@ -236,7 +245,8 @@ void scenario::offset_impl(ossia::time_value offset)
   ossia::flat_set<ossia::time_event*> seen_events;
   seen_events.reserve(pastEvents.size());
 
-  m_runningIntervals.clear();
+  const auto previouslyRunning = m_runningIntervals;
+  prepare_offset();
 
   // Precompute the default date of every timesync.
   ossia::ptr_map<time_sync*, ossia::time_value> time_map;
@@ -257,8 +267,7 @@ void scenario::offset_impl(ossia::time_value offset)
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
-          cst.set_min_duration(dur);
-          cst.set_max_duration(dur);
+          make_rigid(cst, dur, dur);
         }
       }
     }
@@ -279,7 +288,7 @@ void scenario::offset_impl(ossia::time_value offset)
               auto dur = cst.get_nominal_duration();
               auto dur_min = cst.get_min_duration();
               if(dur_min < dur)
-                cst.set_min_duration(offset - start_date);
+                make_rigid(cst, offset - start_date, cst.get_max_duration());
             }
           }
         }
@@ -344,6 +353,42 @@ void scenario::offset_impl(ossia::time_value offset)
     }
   }
 
+  stop_no_longer_running(previouslyRunning, m_runningIntervals);
   m_last_date = offset;
+}
+
+void scenario::prepare_offset()
+{
+  // Every status, pending trigger and duration below is computed again from
+  // the new date: nothing a previous offset or the execution left may remain.
+  restore_durations();
+  for(const auto& node : m_nodes)
+    node->reset();
+
+  m_runningIntervals.clear();
+  m_itv_to_start.clear();
+  m_itv_to_stop.clear();
+  m_pendingEvents.clear();
+  m_maxReachedEvents.clear();
+  m_overticks.clear();
+  m_itv_end_map.clear();
+}
+
+void scenario::make_rigid(time_interval& itv, time_value min, time_value max)
+{
+  m_offset_durations.insert(
+      {&itv, saved_durations{itv.get_min_duration(), itv.get_max_duration()}});
+  itv.set_min_duration(min);
+  itv.set_max_duration(max);
+}
+
+void scenario::restore_durations()
+{
+  for(auto& [itv, durations] : m_offset_durations)
+  {
+    itv->set_min_duration(durations.min);
+    itv->set_max_duration(durations.max);
+  }
+  m_offset_durations.clear();
 }
 }
