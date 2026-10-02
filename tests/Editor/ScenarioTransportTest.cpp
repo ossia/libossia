@@ -140,3 +140,22 @@ TEST_CASE("transport forward again after going back", "[scenario][transport]")
   f.tick_to(750);
   CHECK(f.C->get_date() > time_value{124});
 }
+
+TEST_CASE("an interval stopped after an offset starts again from its beginning", "[scenario][transport]")
+{
+  transport_fixture f;
+
+  // Play from here inside B
+  f.root->start();
+  f.root->offset(time_value{400});
+  f.tick_to(450);
+  REQUIRE(f.B->get_date() > time_value{100});
+
+  // Its stop then play buttons, while the rest keeps playing
+  f.sc->request_stop_interval(*f.B);
+  f.tick_to(460);
+  f.sc->request_start_interval(*f.B);
+  f.tick_to(470);
+  CHECK(f.B->running());
+  CHECK(f.B->get_date() < time_value{50});
+}
