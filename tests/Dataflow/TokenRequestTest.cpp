@@ -121,6 +121,29 @@ TEST_CASE("test_loops_mid", "test_loops_mid")
   REQUIRE(expected == vec);
 }
 
+TEST_CASE("test_loops_still", "test_loops_still")
+{
+  // Speed 0: the tick does not advance. A looping process still runs once, at
+  // its position in the loop, as a process that does not loop runs: a video
+  // that did not run would leave its output without a frame for the tick.
+  using namespace ossia;
+
+  token_request r;
+  r.prev_date = 35_tv;
+  r.date = 35_tv;
+
+  token_request_vec vec;
+  int transports = 0;
+  r.loop(
+      5_tv, 20_tv, [&](auto& req) { vec.push_back(req); },
+      [&](const auto&) { transports++; });
+
+  simple_token_request_vec expected{{.prev_date = 20_tv, .date = 20_tv, .offset = 0_tv}};
+
+  REQUIRE(expected == vec);
+  REQUIRE(transports == 0);
+}
+
 TEST_CASE("test_musical_quantization", "test_musical_quantization")
 {
   using namespace ossia;
