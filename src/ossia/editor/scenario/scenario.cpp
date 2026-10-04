@@ -343,9 +343,10 @@ void scenario::mute_impl(bool m)
   }
 }
 
-void scenario::request_start_interval(time_interval& itv, double ratio)
+void scenario::request_start_interval(
+    time_interval& itv, double ratio, ossia::time_value from)
 {
-  m_itv_to_start.emplace_back(quantized_interval{&itv, ratio});
+  m_itv_to_start.emplace_back(quantized_interval{&itv, ratio, from});
 }
 void scenario::request_stop_interval(time_interval& itv, double ratio)
 {
