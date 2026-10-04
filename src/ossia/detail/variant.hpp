@@ -2,7 +2,10 @@
 
 #include <ossia/detail/config.hpp>
 
-#if defined(__clang__)
+// Only when optimizing: unoptimized, flatten keeps every inlined callee's
+// locals side by side in one frame (5 MB for an avendish node's run(), over
+// the 512 kB of a macOS secondary thread's stack).
+#if defined(__clang__) && defined(__OPTIMIZE__)
 #define OSSIA_MAXIMUM_INLINE OSSIA_INLINE __attribute__((flatten))
 #else
 #define OSSIA_MAXIMUM_INLINE OSSIA_INLINE
