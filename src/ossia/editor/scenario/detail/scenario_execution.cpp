@@ -383,7 +383,7 @@ void scenario::state_impl(const ossia::token_request& tk)
     // (the little play / stop buttons)
     for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end();)
     {
-      auto [itv, ratio] = *it;
+      auto [itv, ratio, from] = *it;
       if(auto date = tk.get_quantification_date(ratio))
       {
         // An interval an offset put in the middle of its run ticks without
@@ -393,10 +393,22 @@ void scenario::state_impl(const ossia::token_request& tk)
           mark_end_discontinuous{}(*itv);
           itv->stop();
         }
-        // The play button plays the interval from its beginning
-        itv->set_offset(0_tv);
+        // The play button plays the interval from its beginning, play from
+        // here from the date it asks for. A date at or past the nominal end
+        // would make start() stop the interval at once: the interval then
+        // starts on its last instant.
+        auto start_from = from;
+        const auto& nominal = itv->get_nominal_duration();
+        if(start_from.impl < 0)
+          start_from.impl = 0;
+        else if(start_from >= nominal && nominal.impl > 0)
+          start_from.impl = nominal.impl - 1;
+        itv->set_offset(start_from);
         itv->set_parent_speed(tk.speed);
         itv->start();
+        // The processes start from their beginning: put them where it starts.
+        if(start_from.impl > 0)
+          itv->transport(start_from);
         // itv->tick_current(*date, tk);
         // mark_start_discontinuous{}(*itv);
 
@@ -428,7 +440,8 @@ void scenario::state_impl(const ossia::token_request& tk)
     }
     for(auto it = m_itv_to_stop.begin(); it != m_itv_to_stop.end();)
     {
-      auto [itv, ratio] = *it;
+      auto* itv = it->interval;
+      const double ratio = it->quantization_ratio;
       if(auto date = tk.get_quantification_date(ratio))
       {
         if(itv->running() || m_runningIntervals.contains(itv))

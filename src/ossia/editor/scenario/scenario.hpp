@@ -140,7 +140,9 @@ public:
    *  e.g. this is used when pressing the "play" button on a random interval in
    * score.
    */
-  void request_start_interval(ossia::time_interval&, double ratio = 0.0);
+  //! Starts the interval at the next point of the `ratio` grid, `from` into it.
+  void request_start_interval(
+      ossia::time_interval&, double ratio = 0.0, ossia::time_value from = {});
   /*! Used to stop an interval,
    *  disregarding all the rules of the scenario.
    *  e.g. this is used when pressing the "stop" button on a random interval in
@@ -203,6 +205,7 @@ private:
   {
     ossia::time_interval* interval{};
     double quantization_ratio{};
+    ossia::time_value from{};
     operator ossia::time_interval*() const noexcept { return interval; }
   };
 
