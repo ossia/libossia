@@ -2,6 +2,7 @@
 #include "ext.h"
 #include "ext_obex.h"
 
+#include <ossia/detail/json.hpp>
 #include <rapidjson/stringbuffer.h>
 
 namespace ossia

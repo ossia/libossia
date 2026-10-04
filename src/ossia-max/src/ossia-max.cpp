@@ -10,6 +10,7 @@
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 
+#include <ossia/detail/json.hpp>
 #include <rapidjson/istreamwrapper.h>
 
 #include <commonsyms.h>
