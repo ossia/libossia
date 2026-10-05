@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia/detail/json_fwd.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
@@ -190,7 +191,7 @@ private:
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
-  std::thread m_wsThread;
+  ossia::thread m_wsThread;
   std::string m_queryHost;
   std::string m_queryPort;
   std::string m_httpHost;

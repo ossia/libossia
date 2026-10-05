@@ -14,6 +14,7 @@ get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
 ### Tests ###
 ossia_add_test(SafeMathTest "${CMAKE_CURRENT_SOURCE_DIR}/Math/SafeMathTest.cpp")
 ossia_add_test(FiltersTest  "${CMAKE_CURRENT_SOURCE_DIR}/Math/FiltersTest.cpp")
+ossia_add_test(ThreadStackTest "${CMAKE_CURRENT_SOURCE_DIR}/Misc/ThreadStackTest.cpp")
 if(OSSIA_MATH_EXPRESSION)
   ossia_add_test(MathExpressionTest "${CMAKE_CURRENT_SOURCE_DIR}/Math/MathExpressionTest.cpp")
 endif()

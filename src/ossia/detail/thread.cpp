@@ -8,6 +8,7 @@
 #include <boost/predef.h>
 
 #include <optional>
+#include <system_error>
 #include <string>
 #include <vector>
 
@@ -57,6 +58,31 @@ void set_thread_name(std::string_view name)
   }
   SetThreadDescription(hdl, wname.data());
 }
+void set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
+{
+  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
+  auto err = SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
+  if(err == 0)
+    SetThreadPriority(hdl, THREAD_PRIORITY_HIGHEST);
+}
+
+void set_thread_name(ossia::thread& t, std::string_view name)
+{
+  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
+  std::wstring wname;
+  if(!name.empty())
+  {
+    const int sizeNeeded
+        = MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), nullptr, 0);
+    if(sizeNeeded > 0)
+    {
+      wname.resize(sizeNeeded);
+      MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), wname.data(), sizeNeeded);
+    }
+  }
+  SetThreadDescription(hdl, wname.data());
+}
+
 void set_thread_pinned(std::thread& t, int cpu) { }
 void set_thread_pinned(int cpu) { }
 
@@ -108,6 +134,31 @@ void set_thread_name(std::string_view name)
 #elif (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
     && !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)
   pthread_setname_np(pthread_self(), name.data());
+#endif
+}
+
+void set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
+{
+#if !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)              \
+    && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
+        || BOOST_LIB_C_GNU)
+  sched_param sch_params;
+  sch_params.sched_priority = 99;
+  pthread_setschedparam(
+      t.native_handle(), algo_fifo ? SCHED_FIFO : SCHED_RR, &sch_params);
+
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
+#endif
+}
+
+void set_thread_name(ossia::thread& t, std::string_view name)
+{
+#if BOOST_OS_MACOS
+  // macOS only names the calling thread.
+  pthread_setname_np(name.data());
+#elif (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
+    && !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)
+  pthread_setname_np(t.native_handle(), name.data());
 #endif
 }
 
@@ -579,4 +630,140 @@ const thread_specs& get_thread_specs() noexcept
   }();
   return specs;
 }
+}
+
+namespace ossia
+{
+#if defined(OSSIA_THREAD_PTHREAD)
+namespace
+{
+struct thread_start
+{
+  void (*fun)(void*);
+  void* arg;
+};
+
+void* thread_entry(void* p)
+{
+  const thread_start s = *static_cast<thread_start*>(p);
+  delete static_cast<thread_start*>(p);
+  s.fun(s.arg);
+  return nullptr;
+}
+}
+
+void thread::start(void (*fun)(void*), void (*destroy)(void*), void* arg)
+{
+  std::size_t size = stack_size;
+#if defined(PTHREAD_STACK_MIN)
+  if(size < std::size_t(PTHREAD_STACK_MIN))
+    size = PTHREAD_STACK_MIN;
+#endif
+
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  const bool sized = pthread_attr_setstacksize(&attr, size) == 0;
+
+  auto* s = new thread_start{fun, arg};
+  int err = pthread_create(&m_handle, sized ? &attr : nullptr, thread_entry, s);
+  // A system refusing that much stack still gets the thread, with its own.
+  if(err != 0 && sized)
+    err = pthread_create(&m_handle, nullptr, thread_entry, s);
+  pthread_attr_destroy(&attr);
+
+  if(err != 0)
+  {
+    delete s;
+    destroy(arg);
+    throw std::system_error(err, std::generic_category(), "ossia::thread");
+  }
+  m_joinable = true;
+}
+
+thread::thread(thread&& other) noexcept
+    : m_handle{other.m_handle}
+    , m_joinable{std::exchange(other.m_joinable, false)}
+{
+}
+
+thread& thread::operator=(thread&& other) noexcept
+{
+  if(m_joinable)
+    std::terminate();
+  m_handle = other.m_handle;
+  m_joinable = std::exchange(other.m_joinable, false);
+  return *this;
+}
+
+thread::~thread()
+{
+  if(m_joinable)
+    std::terminate();
+}
+
+bool thread::joinable() const noexcept
+{
+  return m_joinable;
+}
+
+void thread::join()
+{
+  if(!m_joinable)
+    throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+  if(int err = pthread_join(m_handle, nullptr))
+    throw std::system_error(err, std::generic_category());
+  m_joinable = false;
+}
+
+void thread::detach()
+{
+  if(!m_joinable)
+    throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+  if(int err = pthread_detach(m_handle))
+    throw std::system_error(err, std::generic_category());
+  m_joinable = false;
+}
+
+thread::native_handle_type thread::native_handle() noexcept
+{
+  return m_handle;
+}
+#else
+void thread::start(void (*fun)(void*), void (*destroy)(void*), void* arg)
+{
+  try
+  {
+    m_impl = std::thread{[fun, arg] { fun(arg); }};
+  }
+  catch(...)
+  {
+    destroy(arg);
+    throw;
+  }
+}
+
+thread::thread(thread&& other) noexcept = default;
+thread& thread::operator=(thread&& other) noexcept = default;
+thread::~thread() = default;
+
+bool thread::joinable() const noexcept
+{
+  return m_impl.joinable();
+}
+
+void thread::join()
+{
+  m_impl.join();
+}
+
+void thread::detach()
+{
+  m_impl.detach();
+}
+
+thread::native_handle_type thread::native_handle() noexcept
+{
+  return m_impl.native_handle();
+}
+#endif
 }

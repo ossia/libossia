@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <memory>
 #include <thread>
@@ -19,7 +20,7 @@ OSSIA_EXPORT
 void poll_network_context(ossia::net::network_context&);
 
 OSSIA_EXPORT
-std::thread run_threaded_network_context(ossia::net::network_context&);
+ossia::thread run_threaded_network_context(ossia::net::network_context&);
 
 OSSIA_EXPORT
 void stop_network_context(ossia::net::network_context&);

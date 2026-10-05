@@ -172,7 +172,7 @@ public:
     if(m_runThread.joinable())
       stop();
 
-    m_runThread = std::thread([this] {
+    m_runThread = ossia::thread([this] {
       ossia::set_thread_name("ossia osc");
       run_impl();
     });
@@ -260,7 +260,7 @@ private:
   std::unique_ptr<oscpack::OscPacketListener> m_impl;
   std::unique_ptr<oscpack::ReceiveSocket> m_socket;
 
-  std::thread m_runThread;
+  ossia::thread m_runThread;
   std::atomic_bool m_running = false;
 };
 }

@@ -235,7 +235,7 @@ private:
   std::atomic<bool> m_running{false};
   std::atomic_flag m_start = ATOMIC_FLAG_INIT;
 
-  ossia::small_vector<std::thread, 16> m_workers;
+  ossia::small_vector<ossia::thread, 16> m_workers;
 
   static inline thread_local bool t_is_worker = false;
   static inline thread_local int t_depth = 0;

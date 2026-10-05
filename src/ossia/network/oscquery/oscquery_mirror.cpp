@@ -47,7 +47,7 @@ using http_request = ossia::net::http_get_request<http_answer, http_error>;
 
 struct http_client_context
 {
-  std::thread thread;
+  ossia::thread thread;
   boost::asio::io_context context;
   std::shared_ptr<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> worker;
 };
@@ -595,7 +595,7 @@ void oscquery_mirror_protocol::init()
 
   m_hasWS = true;
   std::atomic_bool started{false};
-  m_wsThread = std::thread([this, &started] {
+  m_wsThread = ossia::thread([this, &started] {
     ossia::set_thread_name("ossia oscq ws");
     try
     {
@@ -636,7 +636,7 @@ void oscquery_mirror_protocol::init()
 void oscquery_mirror_protocol::start_http()
 {
   m_http->worker = std::make_shared<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(m_http->context.get_executor());
-  m_http->thread = std::thread([this] {
+  m_http->thread = ossia::thread([this] {
     ossia::set_thread_name("ossia oscq http");
     m_http->context.run();
   });
