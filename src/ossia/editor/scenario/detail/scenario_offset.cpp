@@ -120,7 +120,6 @@ void process_offset(
     }
   }
 }
-//! An interval that ran before the offset and does not after it stops.
 static void stop_no_longer_running(const interval_set& before, const interval_set& after)
 {
   for(time_interval* itv : before)
@@ -359,8 +358,8 @@ void scenario::offset_impl(ossia::time_value offset)
 
 void scenario::prepare_offset()
 {
-  // Every status, pending trigger and duration below is computed again from
-  // the new date: nothing a previous offset or the execution left may remain.
+  // The offset recomputes all of this from the new date: clear what the
+  // execution or a previous offset left.
   restore_durations();
   for(const auto& node : m_nodes)
     node->reset();

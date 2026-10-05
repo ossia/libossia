@@ -19,13 +19,9 @@
 namespace ossia
 {
 /**
- * A std::thread whose stack is 16 MB, as the main thread's, rather than the
- * default for secondary threads: 512 kB on macOS, where an unoptimized build
- * of a large avendish node overflows it on the audio thread.
- *
- * Same use as std::thread (start in the constructor, join or detach before
- * destruction). Windows and WebAssembly keep std::thread and their own stack
- * sizes.
+ * A std::thread with a 16 MB stack, like the main thread, instead of the
+ * platform default for secondary threads (512 kB on macOS).
+ * Windows and WebAssembly use std::thread with its default stack size.
  */
 class OSSIA_EXPORT thread
 {
