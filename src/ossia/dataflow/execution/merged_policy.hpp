@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <ossia/dataflow/execution/local_state_execution_policy.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
@@ -25,7 +26,7 @@ struct threaded_merged_execution_state_policy : local_state_execution_policy
   void commit() override;
   ossia::mono_state m_monoState;
 
-  std::thread m_valuesOutputThread;
+  ossia::thread m_valuesOutputThread;
 
   // FIXME make sure that the sequencing is preserved so
   // that we always get all the messages for commit N before all the messages for commit N+1

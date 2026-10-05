@@ -387,7 +387,7 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
       });
 
   m_websocketServer->listen(m_wsPort);
-  m_serverThread = std::thread{[&] {
+  m_serverThread = ossia::thread{[&] {
     ossia::set_thread_name("ossia oscq srv");
     try
     {

@@ -104,7 +104,7 @@ rate_limiting_protocol::rate_limiting_protocol(
   m_buffer.reserve(4096);
   m_threadMessages.reserve(4096);
   m_lastTime = clock::now();
-  m_thread = std::thread{rate_limiter{*this}};
+  m_thread = ossia::thread{rate_limiter{*this}};
 }
 
 rate_limiting_protocol::~rate_limiting_protocol()

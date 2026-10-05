@@ -45,7 +45,7 @@ public:
     effective_buffer_size = bs;
     effective_inputs = std::min(inputs, (int)m_client->ncapt());
     effective_outputs = std::min(outputs, (int)m_client->nplay());
-    m_thread = std::thread{[this] {
+    m_thread = ossia::thread{[this] {
       init_thread();
       thread_duplex();
     }};
@@ -179,7 +179,7 @@ private:
   }
 
   std::unique_ptr<Alsa_pcmi> m_client;
-  std::thread m_thread;
+  ossia::thread m_thread;
   using clk = std::chrono::steady_clock;
   clk::time_point m_start_time{};
   clk::time_point m_last_time{};

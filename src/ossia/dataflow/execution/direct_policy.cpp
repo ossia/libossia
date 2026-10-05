@@ -24,7 +24,7 @@ direct_execution_state_policy::direct_execution_state_policy()
 
   for(int i = 0, N = threads.at(thread_type::Net).num_threads; i < N; i++)
   {
-    m_threads[i].thread = std::thread{[this, i] {
+    m_threads[i].thread = ossia::thread{[this, i] {
       while(!m_startFlag)
         std::this_thread::yield();
 
@@ -36,7 +36,7 @@ direct_execution_state_policy::direct_execution_state_policy()
     }};
   }
 
-  m_midiThread = std::thread{[this] {
+  m_midiThread = ossia::thread{[this] {
     while(!m_startFlag)
       std::this_thread::yield();
 
