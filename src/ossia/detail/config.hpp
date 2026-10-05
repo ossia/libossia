@@ -1,9 +1,4 @@
 #pragma once
-// An include guard as well as #pragma once: GCC builds with a precompiled
-// header behind a compiler cache read this header twice, and the
-// RAPIDJSON_PARSE_DEFAULT_FLAGS check below must see it once.
-#ifndef OSSIA_DETAIL_CONFIG_HPP
-#define OSSIA_DETAIL_CONFIG_HPP
 #if __has_include(<ossia-config.hpp>)
 #include <ossia-config.hpp>
 #endif
@@ -162,6 +157,4 @@
 
 #if !defined(OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK)
 #define OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
-#endif
-
 #endif
