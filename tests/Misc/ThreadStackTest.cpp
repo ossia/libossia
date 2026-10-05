@@ -1,5 +1,3 @@
-// ossia::thread: threads get the main thread's 16 MB of stack, not the
-// default of the platform for secondary threads (512 kB on macOS).
 #include <ossia/detail/thread.hpp>
 
 #include <catch2/catch_test_macros.hpp>
@@ -37,7 +35,7 @@ TEST_CASE("ossia::thread has a 16 MB stack", "[thread]")
 
 TEST_CASE("ossia::thread uses that stack", "[thread]")
 {
-  // Far past 512 kB; a write per page so that every page is touched.
+  // Far past macOS's 512 kB default; touches every page.
   std::atomic_int sum{-1};
   ossia::thread t{[&] {
     volatile char buf[4 * 1024 * 1024];
@@ -61,7 +59,6 @@ TEST_CASE("ossia::thread moves, joins, detaches like std::thread", "[thread]")
   b.join();
   CHECK(!b.joinable());
 
-  // A move-only callable.
   auto owned = std::make_unique<int>(3);
   ossia::thread c{[p = std::move(owned), &runs] { runs += *p; }};
   c.join();

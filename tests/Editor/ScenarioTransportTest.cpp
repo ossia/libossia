@@ -95,21 +95,18 @@ void play_from_here_twice(bool transport)
   else
     f.root->offset(time_value{200});
 
-  // Nothing of the first offset is left
   CHECK(f.e2->get_status() == time_event::status::NONE);
   CHECK(f.e3->get_status() == time_event::status::NONE);
   CHECK(f.B->get_min_duration() == Zero);
   CHECK(f.B->get_max_duration() == Infinite);
   CHECK(f.C->get_max_duration() == Infinite);
 
-  // B starts at the end of A and runs
   f.tick_to(320);
   REQUIRE(f.B->running());
   const auto b_date = f.B->get_date();
   f.tick_to(400);
   CHECK(f.B->get_date() > b_date);
 
-  // Past its nominal end, B still waits for its trigger
   f.tick_to(700);
   CHECK(f.B->running());
   CHECK_FALSE(f.C->running());
@@ -134,7 +131,6 @@ TEST_CASE("transport forward again after going back", "[scenario][transport]")
   f.tick_to(250);
   f.root->transport(time_value{700});
 
-  // As for a first play from 7 s: A and B are behind, C runs
   CHECK(f.e1->get_status() == time_event::status::HAPPENED);
   CHECK(f.e2->get_status() == time_event::status::HAPPENED);
   f.tick_to(750);
@@ -151,7 +147,6 @@ TEST_CASE("an interval stopped after an offset starts again from its beginning",
   f.tick_to(450);
   REQUIRE(f.B->get_date() > time_value{100});
 
-  // Its stop then play buttons, while the rest keeps playing
   f.sc->request_stop_interval(*f.B);
   f.tick_to(460);
   f.sc->request_start_interval(*f.B);

@@ -168,7 +168,7 @@ private:
   void restore_durations();
   ossia::time_value m_last_date{ossia::Infinite};
 
-  //! The durations an offset changed, given back on the next offset or stop.
+  //! Durations overridden by an offset, restored on the next offset or stop.
   struct saved_durations
   {
     time_value min;

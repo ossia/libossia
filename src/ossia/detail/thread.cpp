@@ -666,7 +666,7 @@ void thread::start(void (*fun)(void*), void (*destroy)(void*), void* arg)
 
   auto* s = new thread_start{fun, arg};
   int err = pthread_create(&m_handle, sized ? &attr : nullptr, thread_entry, s);
-  // A system refusing that much stack still gets the thread, with its own.
+  // If that stack size is refused, fall back to the default one.
   if(err != 0 && sized)
     err = pthread_create(&m_handle, nullptr, thread_entry, s);
   pthread_attr_destroy(&attr);
