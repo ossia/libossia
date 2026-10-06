@@ -32,9 +32,15 @@ public:
       std::string card_in, std::string card_out, int inputs, int outputs, int rate,
       int bs)
   {
+    // A direction without channels is not opened at all: a capture device
+    // that is busy or missing would otherwise fail the whole engine. One of
+    // the two stays open, as it is the one that clocks the engine: playback
+    // when neither has channels.
+    const bool capture = inputs > 0;
+    const bool playback = outputs > 0 || !capture;
     m_client = std::make_unique<Alsa_pcmi>(
-        card_in.c_str(), card_out.c_str(), nullptr, rate, bs, 2, 2,
-        Alsa_pcmi::DEBUG_ALL);
+        playback ? card_out.c_str() : nullptr, capture ? card_in.c_str() : nullptr,
+        nullptr, rate, bs, 2, 2, Alsa_pcmi::DEBUG_ALL);
 
     if(m_client->state() != 0)
     {
