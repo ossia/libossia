@@ -559,6 +559,31 @@ QString js_string_unquoted_outbound_visitor::operator()(const std::string& val) 
   return QString::fromStdString(val);
 }
 
+//! Converts a QJSValue whose ossia type is *not* already known.
+/**
+ * A number becomes a float, and deliberately stays one even when it is
+ * integral.
+ *
+ * JavaScript has a single number type: `1`, `1.0` and `2/2` are the same
+ * value, and nothing in the language distinguishes "an index" from "a
+ * coordinate that happens to be on the grid". Returning an int for integral
+ * numbers here -- Number.isInteger(), or QV4's internal int32 tagging -- would
+ * therefore make the *type* of a value, and with it the OSC type tag of any
+ * message carrying it, depend on the data rather than on the protocol:
+ * `/spat/serv deg 1 -90 0 1 0.4 0.6` would be encoded "siiiiff" and the same
+ * message a moment later, with the source off the axes, "sifffff". A receiver
+ * with a fixed grammar would then work or not depending on where the source
+ * happens to be. That is worse than being consistently wrong, and it would
+ * silently change what every existing script puts on the wire.
+ *
+ * Where the type *is* known it is honoured, and that is the path to use:
+ *
+ *  * value_from_js(const ossia::value& cur, const QJSValue&) coerces to the
+ *    type the parameter already has -- what a device tree address does;
+ *  * the OSC sockets' `osc(address, values, typetags)` takes the type tags
+ *    from the script, which is the only thing that knows the grammar at the
+ *    other end (ossia-qt/protocols/utils.hpp).
+ */
 value value_from_js(const QJSValue& v)
 {
   if(v.isNumber())

@@ -47,6 +47,15 @@
  var sock = Protocols.outboundUDP({Transport: { Host: "127.0.0.1", Port: 1234 } });
  sock.write("/foo\0\0\0\0,\0\0\0");
 
+ // OSC. Two argument types a JavaScript number cannot express on its own -
+ // every number is a double, so every number goes out as a float:
+ sock.osc("/test/value", [1.25]);                       // ",f"
+
+ // ... so the type tags can be given explicitly, as with liblo's oscsend.
+ // Supported: i h f d s S c b T F I. This is what a receiver with a fixed
+ // grammar needs - here SpatGRIS, whose /spat/serv wants an int index:
+ sock.osc("/spat/serv", ["deg", 1, -90, 0, 1, 0.4, 0.6], "sifffff");
+
  var sock = Protocols.inboundUDP({
     Transport: { Bind: "127.0.0.1", Port: 1234 }
   , onMessage: function(bytes) { console.log(bytes); }
