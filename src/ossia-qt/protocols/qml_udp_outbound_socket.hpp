@@ -117,7 +117,16 @@ public:
     if(socket)
       this->send_osc(address, values);
   }
-  W_SLOT(osc)
+  W_SLOT(osc, (QByteArray, QJSValueList))
+
+  //! osc(address, values, "sifffff"): the argument types the receiver's
+  //! grammar requires. See write_osc_message() in protocols/utils.hpp.
+  void osc(QByteArray address, QJSValueList values, QByteArray typetags)
+  {
+    if(socket)
+      this->send_osc(address, values, typetags);
+  }
+  W_SLOT(osc, (QByteArray, QJSValueList, QByteArray))
 
   QJSValue onOpen;
   QJSValue onClose;
