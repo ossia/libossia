@@ -776,6 +776,7 @@ struct material_component
     float roughness_factor{0.0f};
     texture_ref roughness_texture;
     texture_ref normal_texture;
+    float normal_scale{1.0f};
   } clearcoat{};
 
   struct {
