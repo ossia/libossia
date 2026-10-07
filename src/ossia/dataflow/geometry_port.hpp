@@ -1242,6 +1242,9 @@ struct shadow_cascades_info
   uint32_t cascade_count{0};
   float shadow_distance{100.f};
   float light_direction[3]{0.f, -1.f, 0.f};
+  // RawLight slot of the directional light the cascades belong to; size 0
+  // when no such light was found.
+  gpu_slot_ref light_slot{};
 };
 
 struct aux_inject_buffer
