@@ -1228,7 +1228,7 @@ struct scene_environment
     float end{100.0f};
     enum class type : uint8_t { linear, exponential, exponential_squared } mode{};
   } fog{};
-  float ambient_color[3]{0.03f, 0.03f, 0.03f};
+  float ambient_color[3]{0.f, 0.f, 0.f};
   float ambient_intensity{1.0f};
   uint32_t render_target_size[2]{0, 0};
   gpu_slot_ref raw_slot;
