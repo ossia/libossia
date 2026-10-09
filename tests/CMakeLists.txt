@@ -36,6 +36,7 @@ endif()
 
 
 ossia_add_test(OSCTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCTest.cpp")
+ossia_add_test(OSCReceiverTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCReceiverTest.cpp")
 
 if(NOT WIN32)
   ossia_add_test(OSC_UnixTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_UnixTest.cpp")
