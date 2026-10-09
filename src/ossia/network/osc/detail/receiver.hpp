@@ -61,7 +61,27 @@ public:
   }
 };
 }
-using ReceiveSocket = detail::UdpListeningReceiveSocket<detail::Implementation>;
+class ReceiveSocket
+    : public detail::UdpListeningReceiveSocket<detail::Implementation>
+{
+public:
+  using UdpListeningReceiveSocket::UdpListeningReceiveSocket;
+
+  //! The port the socket is bound to: the one the system picked when it was
+  //! bound to port 0.
+  unsigned int BoundPort()
+  {
+    sockaddr_in addr{};
+#if defined(_WIN32)
+    int len = sizeof(addr);
+#else
+    socklen_t len = sizeof(addr);
+#endif
+    if(getsockname(this->impl_.Socket(), reinterpret_cast<sockaddr*>(&addr), &len) != 0)
+      return 0;
+    return ntohs(addr.sin_port);
+  }
+};
 }
 namespace osc
 {
@@ -183,14 +203,18 @@ public:
   void run_impl()
   {
     m_running = true;
-  osc_thread_run:
-    try
+    // Retried while running only: once stop() has begun, a failure is the
+    // socket being shut down under the loop.
+    while(m_running)
     {
-      m_socket->Run();
-    }
-    catch(...)
-    {
-      goto osc_thread_run;
+      try
+      {
+        m_socket->Run();
+        return;
+      }
+      catch(...)
+      {
+      }
     }
   }
 
@@ -201,20 +225,30 @@ public:
     {
       if(m_runThread.joinable())
       {
+        // The packet is a fallback wake-up only: the break pipe already ends
+        // the loop, and sending can fail (macOS refuses 127.0.0.1:0).
         try
         {
           oscpack::UdpTransmitSocket send_socket(
               oscpack::IpEndpointName("127.0.0.1", port()));
           send_socket.Send("__stop_", 8);
-          m_socket->AsynchronousBreak();
-          std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+        catch(...)
+        {
+        }
+        m_socket->AsynchronousBreak();
 
+        try
+        {
           m_runThread.join();
         }
-        catch(std::exception& e)
+        catch(...)
         {
-          if(m_runThread.joinable())
-            m_runThread.detach();
+          // The thread may still be in Run(): leak the socket rather than
+          // free it under the thread.
+          m_runThread.detach();
+          (void)m_socket.release();
+          return;
         }
       }
 
@@ -244,6 +278,8 @@ public:
         m_socket = std::make_unique<oscpack::ReceiveSocket>(
             oscpack::IpEndpointName(oscpack::IpEndpointName::ANY_ADDRESS, m_port),
             m_impl.get());
+        if(m_port == 0)
+          m_port = m_socket->BoundPort();
         ok = true;
       }
       catch(std::runtime_error&)
