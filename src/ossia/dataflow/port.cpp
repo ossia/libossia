@@ -5,6 +5,7 @@
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/telemetry.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/protocols/midi/midi_parameter.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
@@ -262,6 +263,12 @@ value_inlet::~value_inlet() = default;
 value_outlet::~value_outlet() = default;
 audio_inlet::~audio_inlet() = default;
 
+void audio_inlet::pre_process()
+{
+  if(meter)
+    meter->pending.accumulate(data.get());
+}
+
 audio_outlet::~audio_outlet() = default;
 
 texture_inlet::~texture_inlet() = default;
@@ -276,119 +283,78 @@ void audio_outlet::post_process()
   if(auto& gain_msg = std::as_const(gain_inlet).data.get_data(); !gain_msg.empty())
     gain = ossia::convert<float>(gain_msg.back().value);
 
-  // TODO pan
-  switch(data.channels())
+  if(upmix != upmix_mode::none)
   {
-    case 0:
-      return;
-
-    case 1:
-      process_audio_out_mono(*this);
-      break;
-
-    default:
-      process_audio_out_general(*this);
-      break;
+    const std::size_t in = data.channels();
+    const std::size_t out = upmix_channels;
+    if(in > 0 && in < out)
+    {
+      data.set_channels(out);
+      const std::size_t n = data.channel(0).size();
+      for(std::size_t c = in; c < out; c++)
+      {
+        auto& chan = data.channel(c);
+        if(upmix == upmix_mode::repeat)
+          chan.assign(data.channel(c % in).begin(), data.channel(c % in).end());
+        else
+          chan.assign(n, 0.);
+      }
+    }
   }
+
+  // TODO pan inlet
+  const std::size_t C = data.channels();
+  if(C == 0)
+  {
+    if(meter)
+      meter->pending.accumulate(data.get());
+    return;
+  }
+
+  const bool ramp = m_applied;
+  const double to_gain = gain;
+  const double from_gain = ramp ? m_applied_gain : to_gain;
+  m_applied = true;
+  m_applied_gain = to_gain;
+
+  for(std::size_t c = 0; c < C; c++)
+  {
+    const double to_pan = (C == 1 || c >= pan.size()) ? 1. : pan[c];
+    double from_pan = to_pan;
+    if(c < ramped_pan_channels)
+    {
+      if(ramp)
+        from_pan = m_applied_pan[c];
+      m_applied_pan[c] = float(to_pan);
+    }
+
+    const double from = from_gain * from_pan;
+    const double to = to_gain * to_pan;
+
+    auto& chan = data.channel(c);
+    const std::size_t N = chan.size();
+    double* samples = chan.data();
+    if(from == to)
+    {
+      if(to == 1.)
+        continue;
+      for(std::size_t i = 0; i < N; i++)
+        samples[i] *= to;
+    }
+    else if(N > 0)
+    {
+      const double step = (to - from) / double(N);
+      for(std::size_t i = 0; i < N; i++)
+        samples[i] *= from + step * double(i + 1);
+    }
+  }
+
+  if(meter)
+    meter->pending.accumulate(data.get());
 }
 
 midi_inlet::~midi_inlet() = default;
 
 midi_outlet::~midi_outlet() = default;
-
-void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out)
-{
-  ossia::audio_port& o = *audio_out;
-  const double g = audio_out.gain;
-
-  ensure_vector_sizes(i.get(), audio_out.data.get());
-
-  const auto N = i.channel(0).size();
-  const auto i_ptr = i.channel(0).data();
-  const auto o_ptr = o.channel(0).data();
-
-  for(std::size_t sample = 0; sample < N; sample++)
-  {
-    o_ptr[sample] = i_ptr[sample] * g;
-  }
-}
-
-void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_out)
-{
-  const auto C = i.channels();
-  ossia::audio_port& o = *audio_out;
-  const double g = audio_out.gain;
-
-  while(audio_out.pan.size() < C)
-    audio_out.pan.push_back(1.);
-
-  ensure_vector_sizes(i.get(), audio_out.data.get());
-
-  for(auto chan = 0U; chan < C; chan++)
-  {
-    auto N = i.channel(chan).size();
-
-    auto i_ptr = i.channel(chan).data();
-    auto o_ptr = o.channel(chan).data();
-
-    const auto vol = audio_out.pan[chan] * g;
-    if(vol == 1.)
-    {
-      for(std::size_t sample = 0; sample < N; sample++)
-      {
-        o_ptr[sample] = i_ptr[sample];
-      }
-    }
-    else
-    {
-      for(std::size_t sample = 0; sample < N; sample++)
-      {
-        o_ptr[sample] = i_ptr[sample] * vol;
-      }
-    }
-  }
-}
-
-void process_audio_out_mono(ossia::audio_outlet& audio_out)
-{
-  ossia::audio_port& o = *audio_out;
-
-  const double g = audio_out.gain;
-  if(g == 1.)
-    return;
-
-  const auto N = o.channel(0).size();
-  const auto o_ptr = o.channel(0).data();
-
-  for(std::size_t sample = 0; sample < N; sample++)
-  {
-    o_ptr[sample] *= g;
-  }
-}
-
-void process_audio_out_general(ossia::audio_outlet& audio_out)
-{
-  ossia::audio_port& o = *audio_out;
-  const auto C = o.channels();
-  const double g = audio_out.gain;
-
-  while(audio_out.pan.size() < C)
-    audio_out.pan.push_back(1.);
-
-  for(auto chan = 0U; chan < C; chan++)
-  {
-    auto N = o.channel(chan).size();
-
-    auto o_ptr = o.channel(chan).data();
-
-    const auto vol = audio_out.pan[chan] * g;
-    if(vol == 1.)
-      continue;
-    for(std::size_t sample = 0; sample < N; sample++)
-    {
-      o_ptr[sample] *= vol;
-    }
-  }
-}
 
 }

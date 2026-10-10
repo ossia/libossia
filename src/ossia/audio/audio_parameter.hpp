@@ -7,6 +7,13 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
+#include <atomic>
+
+namespace ossia::telemetry
+{
+struct meter_tap;
+}
+
 namespace ossia
 {
 class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
@@ -14,9 +21,26 @@ class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
 
 public:
   ossia::small_vector<std::span<float>, 8> audio;
-  double m_gain{1.};
+
+  //! Where gain() is applied, so that it is applied exactly once.
+  enum class gain_stage : uint8_t
+  {
+    push,     //!< on what the graph writes (outputs, virtual ports)
+    pull,     //!< on what the graph reads (inputs)
+    external, //!< by whoever owns the buffers, after the sum (/out/main)
+  } stage{gain_stage::push};
+
+  //! A parameter whose gain also applies to this one: /in/main for the
+  //! inputs.
+  const audio_parameter* upstream{};
 
   explicit audio_parameter(ossia::net::node_base& n);
+
+  //! Linear gain, readable from any thread.
+  [[nodiscard]] float gain() const noexcept
+  {
+    return m_gain.load(std::memory_order_relaxed);
+  }
 
   virtual ~audio_parameter();
 
@@ -38,6 +62,9 @@ public:
   net::parameter_base& set_domain(const domain&) override;
   bounding_mode get_bounding() const noexcept override;
   net::parameter_base& set_bounding(bounding_mode) override;
+
+protected:
+  std::atomic<float> m_gain{1.f};
 };
 
 class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
@@ -47,6 +74,29 @@ class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
 
 public:
   virtual_audio_parameter(int num_channels, ossia::net::node_base& n);
+
+  //! Buffers for another channel count, made off the audio thread.
+  struct channels
+  {
+    std::vector<ossia::float_vector> data;
+    ossia::small_vector<std::span<float>, 8> spans;
+  };
+  [[nodiscard]] channels make_channels(int num_channels) const;
+  //! Takes buffers made by make_channels, between two ticks; `c` gets the
+  //! previous ones, to be freed off the audio thread.
+  void swap_channels(channels& c) noexcept
+  {
+    std::swap(m_audio_data, c.data);
+    std::swap(audio, c.spans);
+  }
+
+  //! Changes the channel count; only while the audio callback does not run.
+  void set_channels(int num_channels)
+  {
+    const auto bs = m_audio_data.empty() ? 0 : m_audio_data.front().size();
+    m_audio_data.resize(std::max(num_channels, 0));
+    set_buffer_size(int(bs));
+  }
 
   void set_buffer_size(int bs)
   {
@@ -60,6 +110,11 @@ public:
   }
 
   void push_value(const audio_port& port) override;
+
+  //! Meters what the graph writes here. Set by the interface thread; the
+  //! telemetry arena owns the tap and keeps it alive until the audio thread
+  //! can no longer be writing to it.
+  std::atomic<ossia::telemetry::meter_tap*> meter{};
 
   virtual ~virtual_audio_parameter();
 };
