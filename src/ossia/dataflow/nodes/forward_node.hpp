@@ -22,30 +22,8 @@ public:
   {
     // OPTIMIZEME : we copy the ins & outs of the token more
     // than necessary
-    {
-      ossia::audio_port& i = *audio_in;
-      ossia::audio_port& o = *audio_out;
-      if(!audio_out.has_gain)
-      {
-        o = i;
-      }
-      else
-      {
-        switch(i.channels())
-        {
-          case 0:
-            return;
-
-          case 1:
-            process_audio_out_mono(i, audio_out);
-            break;
-
-          default:
-            process_audio_out_general(i, audio_out);
-            break;
-        }
-      }
-    }
+    // Gain and pan are applied by audio_outlet::post_process, after run().
+    *audio_out = *audio_in;
     // {
     //   auto i = midi_in.target<ossia::midi_port>();
     //   auto o = midi_out.target<ossia::midi_port>();

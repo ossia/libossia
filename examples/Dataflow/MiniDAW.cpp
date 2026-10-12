@@ -28,6 +28,7 @@ struct tick
   {
     proto.setup_buffers(st);
     (*this)(st.frames, st.seconds);
+    proto.apply_main_gain(st);
   }
 
   void operator()(unsigned long frameCount, double seconds)

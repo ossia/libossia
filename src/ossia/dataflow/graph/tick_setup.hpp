@@ -6,7 +6,7 @@ namespace ossia
 {
 class scenario;
 OSSIA_EXPORT
-std::shared_ptr<bench_map> bench_ptr();
+std::shared_ptr<bench_state> bench_ptr();
 
 OSSIA_EXPORT
 smallfun::function<void(unsigned long, double), 128> make_tick(
