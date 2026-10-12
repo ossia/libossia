@@ -42,6 +42,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   endif()
 endif()
 
+# PUBLIC: the inline version namespace is part of ossia's ABI.
+target_compile_definitions(ossia PUBLIC BOOST_ASIO_ENABLE_VERSION_NAMESPACE=1)
+
 if(WIN32)
   if(MSVC)
     target_compile_definitions(ossia PUBLIC
@@ -85,17 +88,6 @@ if(WIN32)
     # WINVER from _WIN32_WINNT and NTDDI_VERSION from the SDK, so setting them
     # by hand only creates a way for them to disagree.
     _WIN32_WINNT=0x0A00
-
-    # And the version namespace, for the reasons in the top-level CMakeLists.
-    #
-    # PUBLIC because it is part of our ABI, not just of how we are built: the
-    # namespace is an inline namespace, so it is baked into the mangled name of
-    # every Asio type we expose. resolve_sync_v4 is explicitly instantiated
-    # here for boost::asio::ip::udp and ::tcp, and a consumer that does not
-    # agree about the namespace names a different specialisation and fails to
-    # link. Anything including our headers has to be configured the way we
-    # were.
-    BOOST_ASIO_ENABLE_VERSION_NAMESPACE=1
   )
 
   target_compile_definitions(ossia PUBLIC
