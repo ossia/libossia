@@ -3,6 +3,8 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_functions.hpp>
 
+#include <utility>
+
 namespace ossia
 {
 audio_protocol::audio_protocol()
@@ -66,7 +68,11 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   {
     audio_outs.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/out/" + std::to_string(i + 1)));
+    audio_outs.back()->stage = audio_parameter::gain_stage::external;
   }
+  m_out_gains.assign(outputs, 1.f);
+  m_main_gain_reset = true;
+  main_audio_in->hardware_inputs = &audio_ins;
 
   main_audio_in->audio.resize(inputs);
   for(int i = 0; i < inputs; i++)
@@ -75,7 +81,12 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   }
 
   for(auto p : in_mappings)
+  {
     p->upstream = main_audio_in;
+    p->hardware_inputs = &audio_ins;
+  }
+  for(auto p : out_mappings)
+    p->hardware_inputs = &audio_ins;
 
   main_audio_out->audio.resize(outputs);
   for(int i = 0; i < outputs; i++)
@@ -84,39 +95,50 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   }
 }
 
-void audio_protocol::apply_main_gain(const audio_tick_state& state) noexcept
+namespace
 {
-  const float target = main_audio_out ? main_audio_out->gain() : 1.f;
-  if(m_main_gain_reset.exchange(false, std::memory_order_relaxed))
-    m_main_gain = target;
-  const float start = m_main_gain;
-  m_main_gain = target;
-
-  const auto frames = state.frames;
-  if(frames == 0)
-    return;
-
+void scale(float* out, std::size_t frames, float start, float target) noexcept
+{
   if(start == target)
   {
     if(target == 1.f)
       return;
-
-    for(int c = 0; c < state.n_out; c++)
-    {
-      float* out = state.outputs[c];
-      for(std::size_t i = 0; i < frames; i++)
-        out[i] *= target;
-    }
+    for(std::size_t i = 0; i < frames; i++)
+      out[i] *= target;
   }
   else
   {
     const float step = (target - start) / float(frames);
-    for(int c = 0; c < state.n_out; c++)
+    for(std::size_t i = 0; i < frames; i++)
+      out[i] *= start + step * float(i + 1);
+  }
+}
+}
+
+void audio_protocol::apply_main_gain(const audio_tick_state& state) noexcept
+{
+  const float main = main_audio_out ? main_audio_out->gain() : 1.f;
+  const std::size_t channels = std::min(audio_outs.size(), m_out_gains.size());
+  if(m_main_gain_reset.exchange(false, std::memory_order_relaxed))
+  {
+    m_main_gain = main;
+    for(std::size_t c = 0; c < channels; c++)
+      m_out_gains[c] = audio_outs[c]->gain();
+  }
+  const float main_start = std::exchange(m_main_gain, main);
+
+  for(int c = 0; c < state.n_out; c++)
+  {
+    float start = main_start;
+    float target = main;
+    if(std::size_t(c) < channels)
     {
-      float* out = state.outputs[c];
-      for(std::size_t i = 0; i < frames; i++)
-        out[i] *= start + step * float(i + 1);
+      const float g = audio_outs[c]->gain();
+      start *= std::exchange(m_out_gains[c], g);
+      target *= g;
     }
+    if(state.frames > 0)
+      scale(state.outputs[c], state.frames, start, target);
   }
 }
 
@@ -240,6 +262,7 @@ void erase_one(std::vector<T*>& v, T* p)
 
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
 {
+  p.hardware_inputs = &audio_ins;
   if(p.is_output)
   {
     out_mappings.push_back(&p);
