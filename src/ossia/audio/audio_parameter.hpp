@@ -8,6 +8,7 @@
 #include <ossia/network/value/value.hpp>
 
 #include <atomic>
+#include <vector>
 
 namespace ossia::telemetry
 {
@@ -27,12 +28,16 @@ public:
   {
     push,     //!< on what the graph writes (outputs, virtual ports)
     pull,     //!< on what the graph reads (inputs)
-    external, //!< by whoever owns the buffers, after the sum (/out/main)
+    external, //!< by whoever owns the buffers, after the sum (/out/main, /out/N)
   } stage{gain_stage::push};
 
   //! A parameter whose gain also applies to this one: /in/main for the
   //! inputs.
   const audio_parameter* upstream{};
+
+  const std::vector<audio_parameter*>* hardware_inputs{};
+  [[nodiscard]] virtual int hardware_channel(std::size_t chan) const noexcept;
+  [[nodiscard]] double read_gain(std::size_t chan) const noexcept;
 
   explicit audio_parameter(ossia::net::node_base& n);
 
@@ -126,6 +131,8 @@ public:
   audio_mapping mapping;
   bool is_output{false};
   mapped_audio_parameter(bool output, audio_mapping m, ossia::net::node_base& n);
+
+  [[nodiscard]] int hardware_channel(std::size_t chan) const noexcept override;
 
   virtual ~mapped_audio_parameter();
 };

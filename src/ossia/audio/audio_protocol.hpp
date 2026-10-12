@@ -24,11 +24,12 @@ public:
   // Drops every span pointing into the driver's buffers.
   void clear_buffers() noexcept;
 
-  // Scales every hardware output by the gain of /out/main, once the whole
-  // tick has been summed into them: /out/main is the master, whichever address
-  // a signal was sent to. A gain change ramps over the buffer.
+  // Scales every hardware output by the gain of /out/main and of its /out/N,
+  // once the whole tick has been summed into them: /out/main is the master and
+  // /out/N the channel, whichever address a signal was sent to. A gain change
+  // ramps over the buffer.
   void apply_main_gain(const audio_tick_state& state) noexcept;
-  //! The next apply_main_gain starts at the gain of /out/main instead of
+  //! The next apply_main_gain starts at the gains of /out/main and /out/N instead of
   //! ramping from the one of its previous call, which may be long ago.
   void reset_main_gain_ramp() noexcept { m_main_gain_reset = true; }
 
@@ -83,6 +84,7 @@ private:
   ports m_live;
   bool m_deferred{};
   float m_main_gain{1.f};
+  std::vector<float> m_out_gains;
   std::atomic_bool m_main_gain_reset{true};
 };
 

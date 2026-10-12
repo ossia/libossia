@@ -34,14 +34,12 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
     }
   }
 
-  double g = stage == gain_stage::pull ? gain() : 1.;
-  if(upstream)
-    g *= upstream->gain();
   auto min_chan = std::min(res_vec.size(), audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
   {
     auto& src = audio[chan];
     auto& res = res_vec[chan];
+    const double g = read_gain(chan);
 
     const std::size_t N = src.size();
 
@@ -51,6 +49,26 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
     for(std::size_t i = 0; i < N; i++)
       res[i] += double(src[i]) * g;
   }
+}
+
+int audio_parameter::hardware_channel(std::size_t chan) const noexcept
+{
+  return int(chan);
+}
+
+double audio_parameter::read_gain(std::size_t chan) const noexcept
+{
+  double g = stage == gain_stage::pull ? gain() : 1.;
+  if(upstream)
+    g *= upstream->gain();
+  if(hardware_inputs)
+  {
+    const int c = hardware_channel(chan);
+    if(c >= 0 && c < int(hardware_inputs->size()))
+      if(auto trim = (*hardware_inputs)[c]; trim && trim != this)
+        g *= trim->gain();
+  }
+  return g;
 }
 
 void audio_parameter::push_value(const audio_port& port)
@@ -211,6 +229,11 @@ mapped_audio_parameter::mapped_audio_parameter(
   stage = output ? gain_stage::push : gain_stage::pull;
   auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
   proto.register_parameter(*this);
+}
+
+int mapped_audio_parameter::hardware_channel(std::size_t chan) const noexcept
+{
+  return !is_output && chan < mapping.size() ? mapping[chan] : -1;
 }
 
 mapped_audio_parameter::~mapped_audio_parameter()

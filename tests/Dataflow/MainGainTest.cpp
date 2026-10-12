@@ -5,6 +5,7 @@
 
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/audio/audio_protocol.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
 #include <catch2/catch_approx.hpp>
@@ -12,6 +13,7 @@
 
 #include <array>
 #include <functional>
+#include <limits>
 #include <memory>
 
 namespace
@@ -78,24 +80,52 @@ TEST_CASE("/out/main scales the root's output once", "[audio][main][gain]")
       CHECK(s == Catch::Approx(0.5));
 }
 
-TEST_CASE("/out/main scales what is sent straight to /out/N", "[audio][main][gain]")
+TEST_CASE("/out/N scales everything its channel gets, after the sum", "[audio][main][gain]")
 {
   Card c;
   c.proto->main_audio_out->set_value(0.5f);
   c.proto->audio_outs[1]->set_value(0.5f);
 
+  auto& node = ossia::net::create_node(c.dev.get_root_node(), "/send");
+  auto send = std::make_unique<ossia::mapped_audio_parameter>(
+      true, ossia::audio_mapping{1}, node);
+  auto& mapped = *send;
+  node.set_parameter(std::move(send));
+  mapped.set_value(0.5f);
+
   auto write = [&] {
     c.proto->main_audio_out->push_value(Card::constant(2, 1.));
     c.proto->audio_outs[1]->push_value(Card::constant(1, 1.));
+    mapped.push_value(Card::constant(1, 1.));
   };
   c.tick(write);
   c.tick(write);
 
-  // left: 1 * main; right: (1 + 1 * 0.5) * main
   for(float s : c.out_buffers[0])
     CHECK(s == Catch::Approx(0.5));
   for(float s : c.out_buffers[1])
-    CHECK(s == Catch::Approx(0.75));
+    CHECK(s == Catch::Approx((1. + 1. + 0.5) * 0.5 * 0.5));
+}
+
+TEST_CASE("A channel gain change ramps over one buffer", "[audio][main][gain]")
+{
+  Card c;
+  auto write = [&] { c.proto->main_audio_out->push_value(Card::constant(2, 1.)); };
+  c.tick(write);
+
+  c.proto->audio_outs[0]->set_value(0.f);
+  c.tick(write);
+  for(int i = 1; i < frames; i++)
+    CHECK(c.out_buffers[0][i] < c.out_buffers[0][i - 1]);
+  CHECK(c.out_buffers[0][frames - 1] == Catch::Approx(0.));
+  for(float s : c.out_buffers[1])
+    CHECK(s == Catch::Approx(1.));
+
+  c.proto->audio_outs[0]->set_value(1.f);
+  c.proto->reset_main_gain_ramp();
+  c.tick(write);
+  for(float s : c.out_buffers[0])
+    CHECK(s == Catch::Approx(1.));
 }
 
 TEST_CASE("A main gain change ramps over one buffer", "[audio][main][gain]")
@@ -163,6 +193,7 @@ TEST_CASE("/in/main scales every input read", "[audio][main][gain]")
   const auto main = read(*proto->main_audio_in);
   REQUIRE(main.size() == 2);
   CHECK(main[0][0] == Catch::Approx(0.5));
+  CHECK(main[1][0] == Catch::Approx(0.25));
 
   const auto first = read(*proto->audio_ins[0]);
   REQUIRE(first.size() == 1);
@@ -170,4 +201,48 @@ TEST_CASE("/in/main scales every input read", "[audio][main][gain]")
 
   const auto second = read(*proto->audio_ins[1]);
   CHECK(second[0][0] == Catch::Approx(0.25));
+}
+
+TEST_CASE("/in/N trims its channel for every reader", "[audio][main][gain]")
+{
+  ossia::audio_protocol* proto{};
+  ossia::net::generic_device dev{
+      [&] {
+    auto p = std::make_unique<ossia::audio_protocol>();
+    proto = p.get();
+    return p;
+  }(),
+      "audio"};
+  proto->setup_tree(2, 0);
+
+  auto& node = ossia::net::create_node(dev.get_root_node(), "/mic");
+  auto mic = std::make_unique<ossia::mapped_audio_parameter>(
+      false, ossia::audio_mapping{1, 0, std::numeric_limits<int>::max()}, node);
+  auto& mapped = *mic;
+  node.set_parameter(std::move(mic));
+
+  std::array<float, frames> l{}, r{};
+  l.fill(1.f);
+  r.fill(1.f);
+  std::array<float*, 2> inputs{l.data(), r.data()};
+  proto->setup_buffers(
+      {.inputs = inputs.data(), .outputs = nullptr, .n_in = 2, .n_out = 0,
+       .frames = frames});
+
+  proto->audio_ins[1]->set_value(0.5f);
+  mapped.set_value(0.5f);
+
+  ossia::audio_vector v;
+  mapped.clone_value(v);
+  REQUIRE(v.size() == 3);
+  CHECK(v[0][0] == Catch::Approx(0.25));
+  CHECK(v[1][0] == Catch::Approx(0.5));
+  CHECK(mapped.read_gain(2) == Catch::Approx(0.5));
+
+  proto->main_audio_in->set_value(0.5f);
+  CHECK(mapped.read_gain(0) == Catch::Approx(0.125));
+  CHECK(proto->audio_ins[1]->read_gain(0) == Catch::Approx(0.25));
+
+  mapped.is_output = true;
+  CHECK(mapped.hardware_channel(0) == -1);
 }
