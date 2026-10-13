@@ -113,7 +113,7 @@ public:
     m_quantum.expected = setup.buffer_size;
     m_rate.expected = setup.rate;
     m_silence.assign(setup.buffer_size, 0.f);
-    m_scratch.assign(setup.buffer_size, 0.f);
+    m_scratch.assign(std::size_t(setup.buffer_size) * setup.outputs.size(), 0.f);
     m_cycle_in.resize(setup.inputs.size());
     m_cycle_out.resize(setup.outputs.size());
     m_chunk_in.resize(setup.inputs.size());
@@ -641,7 +641,7 @@ public:
           m_silence.data());
       ossia::pipewire::assign_chunk_pointers(
           m_cycle_out.data(), m_chunk_out.data(), outputs, offset,
-          m_scratch.data());
+          m_scratch.data(), block);
 
       ossia::audio_tick_state ts{
           m_chunk_in.data(), m_chunk_out.data(), (int)inputs, (int)outputs,
@@ -852,9 +852,9 @@ private:
   ossia::pod_vector<float*> m_chunk_in, m_chunk_out;
   ossia::pod_vector<pw_buffer*> m_buf_in, m_buf_out;
 
-  // Missing inputs read zeroes, missing outputs write into a discard
-  // buffer. Keep them distinct: one shared dummy would feed the previous
-  // chunk's discarded output back into the missing inputs.
+  // Missing inputs read zeroes, missing outputs each write into their own
+  // discard buffer. Keep the two distinct: one shared dummy would feed the
+  // previous chunk's discarded output back into the missing inputs.
   ossia::pod_vector<float> m_silence;
   ossia::pod_vector<float> m_scratch;
 };
