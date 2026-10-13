@@ -467,6 +467,7 @@ void time_interval::stop()
     timeProcess->stop();
   }
 
+  m_offset = Zero;
   m_date = Zero;
   m_date_residue = 0.;
   m_running = false;

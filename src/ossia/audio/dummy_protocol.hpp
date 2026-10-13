@@ -31,7 +31,7 @@ public:
         = 1e6 * double(effective_buffer_size) / double(effective_sample_rate);
 
     auto started = std::make_shared<std::atomic_bool>(false);
-    m_runThread = std::thread{[this, started, us_per_buffer] {
+    m_runThread = ossia::thread{[this, started, us_per_buffer] {
       while(!*started)
       {
         std::this_thread::yield();
@@ -117,6 +117,6 @@ public:
   ~dummy_engine() override { stop(); }
 
 private:
-  std::thread m_runThread;
+  ossia::thread m_runThread;
 };
 }

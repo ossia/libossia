@@ -8,6 +8,7 @@
 
 #include <boost/algorithm/string/case_conv.hpp>
 
+#include <ossia/detail/json.hpp>
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>

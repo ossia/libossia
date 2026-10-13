@@ -14,6 +14,7 @@ get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
 ### Tests ###
 ossia_add_test(SafeMathTest "${CMAKE_CURRENT_SOURCE_DIR}/Math/SafeMathTest.cpp")
 ossia_add_test(FiltersTest  "${CMAKE_CURRENT_SOURCE_DIR}/Math/FiltersTest.cpp")
+ossia_add_test(ThreadStackTest "${CMAKE_CURRENT_SOURCE_DIR}/Misc/ThreadStackTest.cpp")
 if(OSSIA_MATH_EXPRESSION)
   ossia_add_test(MathExpressionTest "${CMAKE_CURRENT_SOURCE_DIR}/Math/MathExpressionTest.cpp")
 endif()
@@ -85,6 +86,7 @@ if(OSSIA_EDITOR)
     # TODO : investigate why this one does not pass on CI
     ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
     ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
+    ossia_add_test(ScenarioTransportTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTransportTest.cpp")
   endif()
 
   ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/lockfree_queue.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
@@ -133,7 +134,7 @@ private:
   ossia::net::device_base* m_device{};
 
   // Where the websocket server lives
-  std::thread m_serverThread;
+  ossia::thread m_serverThread;
 
   // To lock m_clients
   mutable mutex_t m_clientsMutex;

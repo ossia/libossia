@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/detail/variant.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -72,7 +73,7 @@ private:
   ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
   ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
 
-  std::thread m_thread;
+  ossia::thread m_thread;
   std::atomic_bool m_running{};
 
   struct Message

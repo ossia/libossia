@@ -140,7 +140,9 @@ public:
    *  e.g. this is used when pressing the "play" button on a random interval in
    * score.
    */
-  void request_start_interval(ossia::time_interval&, double ratio = 0.0);
+  //! Starts the interval at the next point of the `ratio` grid, `from` into it.
+  void request_start_interval(
+      ossia::time_interval&, double ratio = 0.0, ossia::time_value from = {});
   /*! Used to stop an interval,
    *  disregarding all the rules of the scenario.
    *  e.g. this is used when pressing the "stop" button on a random interval in
@@ -161,7 +163,18 @@ public:
 
 private:
   void stop_all_intervals();
+  void prepare_offset();
+  void make_rigid(time_interval& itv, time_value min, time_value max);
+  void restore_durations();
   ossia::time_value m_last_date{ossia::Infinite};
+
+  //! Durations overridden by an offset, restored on the next offset or stop.
+  struct saved_durations
+  {
+    time_value min;
+    time_value max;
+  };
+  ossia::flat_map<time_interval*, saved_durations> m_offset_durations;
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
@@ -192,6 +205,7 @@ private:
   {
     ossia::time_interval* interval{};
     double quantization_ratio{};
+    ossia::time_value from{};
     operator ossia::time_interval*() const noexcept { return interval; }
   };
 

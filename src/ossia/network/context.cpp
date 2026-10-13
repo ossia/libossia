@@ -1,4 +1,5 @@
 #include <ossia/network/context.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/network/context_functions.hpp>
 
 namespace ossia::net
@@ -18,9 +19,9 @@ void run_network_context(ossia::net::network_context& ctx)
   ctx.run();
 }
 
-std::thread run_threaded_network_context(ossia::net::network_context& ctx)
+ossia::thread run_threaded_network_context(ossia::net::network_context& ctx)
 {
-  return std::thread{[&ctx] { ctx.run(); }};
+  return ossia::thread{[&ctx] { ctx.run(); }};
 }
 
 void stop_network_context(ossia::net::network_context& ctx)

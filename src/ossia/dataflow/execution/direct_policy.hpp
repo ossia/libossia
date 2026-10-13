@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/thread.hpp>
 #if !defined(OSSIA_FREESTANDING)
 #include <ossia/dataflow/execution/execution_policy.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
@@ -41,10 +42,10 @@ struct direct_execution_state_policy : execution_state_policy
   static constexpr int max_threads = 16;
   struct net_thread
   {
-    std::thread thread;
+    ossia::thread thread;
   } m_threads[max_threads];
 
-  std::thread m_midiThread;
+  ossia::thread m_midiThread;
 
   std::atomic_bool m_startFlag{};
   std::atomic_bool m_stopFlag{};

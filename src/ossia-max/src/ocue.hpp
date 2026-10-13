@@ -7,6 +7,7 @@
 #include <ossia-max/src/object_base.hpp>
 
 #include <ossia-max/src/search_filter.hpp>
+#include <ossia/detail/json.hpp>
 #include <rapidjson/stringbuffer.h>
 
 namespace ossia

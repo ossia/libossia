@@ -2,7 +2,9 @@
 
 #include <ossia/detail/config.hpp>
 
-#if defined(__clang__)
+// Only when optimizing: without optimization, flatten keeps the locals of every
+// inlined callee in a single frame, which can overflow a thread's stack.
+#if defined(__clang__) && defined(__OPTIMIZE__)
 #define OSSIA_MAXIMUM_INLINE OSSIA_INLINE __attribute__((flatten))
 #else
 #define OSSIA_MAXIMUM_INLINE OSSIA_INLINE

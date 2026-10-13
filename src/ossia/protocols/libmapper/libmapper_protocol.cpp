@@ -199,7 +199,7 @@ void libmapper_server_protocol::set_device(ossia::net::device_base& dev)
       this);
   dev.on_node_renamed.connect<&libmapper_server_protocol::on_nodeRenamed>(this);
 
-  m_thread = std::thread{[this] { execThread(); }};
+  m_thread = ossia::thread{[this] { execThread(); }};
 
   while(!m_running)
     std::this_thread::sleep_for(std::chrono::milliseconds(1));

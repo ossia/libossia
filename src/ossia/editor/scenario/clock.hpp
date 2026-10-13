@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <ossia/editor/scenario/time_value.hpp>
 
@@ -110,7 +111,7 @@ private:
   /// factor consideration)
   time_value m_date{};
 
-  std::thread m_thread; /// a thread to launch the clock execution
+  ossia::thread m_thread; /// a thread to launch the clock execution
 
   /// a time reference used to compute time tick
   clock_type::time_point m_lastTime{};

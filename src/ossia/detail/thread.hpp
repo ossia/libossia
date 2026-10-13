@@ -3,15 +3,88 @@
 
 #include <ossia/detail/flat_map.hpp>
 
+#include <exception>
+#include <functional>
 #include <string>
 #include <thread>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+#if !defined(_WIN32) && !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)
+#define OSSIA_THREAD_PTHREAD 1
+#include <pthread.h>
+#endif
 
 namespace ossia
 {
+/**
+ * A std::thread with a 16 MB stack, like the main thread, instead of the
+ * platform default for secondary threads (512 kB on macOS).
+ * Windows and WebAssembly use std::thread with its default stack size.
+ */
+class OSSIA_EXPORT thread
+{
+public:
+  static constexpr std::size_t stack_size = 16 * 1024 * 1024;
+
+#if defined(OSSIA_THREAD_PTHREAD)
+  using native_handle_type = pthread_t;
+#else
+  using native_handle_type = std::thread::native_handle_type;
+#endif
+
+  thread() noexcept = default;
+
+  //! As std::thread: f and args are copied (or moved) to the new thread.
+  template <typename F, typename... Args>
+    requires(!std::is_same_v<std::remove_cvref_t<F>, thread>)
+  explicit thread(F&& f, Args&&... args)
+  {
+    using call_t = std::tuple<std::decay_t<F>, std::decay_t<Args>...>;
+    start(
+        [](void* p) {
+      auto* call = static_cast<call_t*>(p);
+      std::apply(
+          [](auto& fun, auto&... a) { std::invoke(std::move(fun), std::move(a)...); },
+          *call);
+      delete call;
+    },
+        [](void* p) { delete static_cast<call_t*>(p); },
+        new call_t(std::forward<F>(f), std::forward<Args>(args)...));
+  }
+
+  thread(thread&& other) noexcept;
+  thread& operator=(thread&& other) noexcept;
+  thread(const thread&) = delete;
+  thread& operator=(const thread&) = delete;
+  ~thread();
+
+  bool joinable() const noexcept;
+  void join();
+  void detach();
+  native_handle_type native_handle() noexcept;
+
+private:
+  //! Runs fun(arg) on the new thread; destroy(arg) if it cannot be created.
+  void start(void (*fun)(void*), void (*destroy)(void*), void* arg);
+
+#if defined(OSSIA_THREAD_PTHREAD)
+  pthread_t m_handle{};
+  bool m_joinable{};
+#else
+  std::thread m_impl;
+#endif
+};
+
 OSSIA_EXPORT
 void set_thread_realtime(std::thread& t, int prio = 99, bool algo_fifo = true);
 OSSIA_EXPORT
+void set_thread_realtime(ossia::thread& t, int prio = 99, bool algo_fifo = true);
+OSSIA_EXPORT
 void set_thread_name(std::thread& t, std::string_view name);
+OSSIA_EXPORT
+void set_thread_name(ossia::thread& t, std::string_view name);
 OSSIA_EXPORT
 void set_thread_name(std::string_view name);
 OSSIA_EXPORT

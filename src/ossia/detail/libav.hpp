@@ -32,7 +32,10 @@ inline bool seek_to_flick(
 
   const auto dts = av_rescale_q_rnd(flicks, flicks_tb, av_tb, AVRounding::AV_ROUND_DOWN);
 
-  avio_flush(format->pb);
+  // Demuxers that do their own I/O (AVFMT_NOFILE: image sequences, devices)
+  // have no pb.
+  if(format->pb)
+    avio_flush(format->pb);
   avformat_flush(format);
   if(codec)
     avcodec_flush_buffers(codec);

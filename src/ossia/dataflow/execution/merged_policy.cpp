@@ -1,4 +1,5 @@
 #include "merged_policy.hpp"
+#include <ossia/detail/thread.hpp>
 
 #include <ossia/dataflow/execution/to_state_element.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
@@ -42,7 +43,7 @@ void merged_execution_state_policy::commit()
 #if !defined(OSSIA_FREESTANDING)
 threaded_merged_execution_state_policy::threaded_merged_execution_state_policy()
 {
-  m_valuesOutputThread = std::thread{[this] {
+  m_valuesOutputThread = ossia::thread{[this] {
     while(!m_stopFlag)
     {
       std::vector<ossia::state_element> m;

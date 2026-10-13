@@ -32,9 +32,15 @@ public:
       std::string card_in, std::string card_out, int inputs, int outputs, int rate,
       int bs)
   {
+    // A direction without channels is not opened at all: a capture device
+    // that is busy or missing would otherwise fail the whole engine. One of
+    // the two stays open, as it is the one that clocks the engine: playback
+    // when neither has channels.
+    const bool capture = inputs > 0;
+    const bool playback = outputs > 0 || !capture;
     m_client = std::make_unique<Alsa_pcmi>(
-        card_in.c_str(), card_out.c_str(), nullptr, rate, bs, 2, 2,
-        Alsa_pcmi::DEBUG_ALL);
+        playback ? card_out.c_str() : nullptr, capture ? card_in.c_str() : nullptr,
+        nullptr, rate, bs, 2, 2, Alsa_pcmi::DEBUG_ALL);
 
     if(m_client->state() != 0)
     {
@@ -45,7 +51,7 @@ public:
     effective_buffer_size = bs;
     effective_inputs = std::min(inputs, (int)m_client->ncapt());
     effective_outputs = std::min(outputs, (int)m_client->nplay());
-    m_thread = std::thread{[this] {
+    m_thread = ossia::thread{[this] {
       init_thread();
       thread_duplex();
     }};
@@ -179,7 +185,7 @@ private:
   }
 
   std::unique_ptr<Alsa_pcmi> m_client;
-  std::thread m_thread;
+  ossia::thread m_thread;
   using clk = std::chrono::steady_clock;
   clk::time_point m_start_time{};
   clk::time_point m_last_time{};

@@ -311,7 +311,7 @@ public:
     // client, playback simply never starts. Watch for the absence of
     // process cycles and re-export the node, which re-runs activation and
     // driver assignment.
-    m_watchdog = std::thread{[this] { watchdog_main(); }};
+    m_watchdog = ossia::thread{[this] { watchdog_main(); }};
   }
 
   std::uint32_t filter_node_id() const noexcept
@@ -818,7 +818,7 @@ private:
   }
 
   std::atomic<std::uint64_t> m_cycles{};
-  std::thread m_watchdog;
+  ossia::thread m_watchdog;
   std::atomic_bool m_watchdog_quit{};
 
   ossia::pipewire::quantum_tracker m_quantum{};

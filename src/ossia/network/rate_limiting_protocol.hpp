@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/parameter_data.hpp>
@@ -52,7 +53,7 @@ private:
   ossia::net::device_base* m_device{};
 
   std::atomic_bool m_running{true};
-  std::thread m_thread;
+  ossia::thread m_thread;
 
   clock::time_point m_lastTime;
   using map_t = ossia::flat_map<

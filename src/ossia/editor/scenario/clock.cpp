@@ -51,7 +51,7 @@ void clock::start_and_tick()
     m_thread.join();
 
   // launch a new thread to run the clock execution
-  m_thread = std::thread(&clock::thread_callback, this);
+  m_thread = ossia::thread(&clock::thread_callback, this);
   set_thread_realtime(m_thread);
 }
 

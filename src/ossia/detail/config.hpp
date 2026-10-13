@@ -83,6 +83,20 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
+// Gives our rapidjson its own symbols, so that a static link with another copy
+// (e.g. Qt Quick 3D's assimp) does not merge their inline functions. Defined
+// here so that header-only users (JIT, SDK add-ons) match the library.
+#if !defined(RAPIDJSON_NAMESPACE_BEGIN)
+#define RAPIDJSON_NAMESPACE_BEGIN \
+  namespace rapidjson             \
+  {                               \
+  inline namespace ossia          \
+  {
+#define RAPIDJSON_NAMESPACE_END \
+  }                             \
+  }
+#endif
+
 // https://github.com/Tencent/rapidjson/issues/1015
 #if !defined(RAPIDJSON_HAS_CXX11_RVALUE_REFS)
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1

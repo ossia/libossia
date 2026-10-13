@@ -110,6 +110,16 @@ struct token_request
     ossia::time_value orig_from = other.prev_date;
     ossia::time_value tick_amount = other.date - other.prev_date;
 
+    // A tick that does not advance (speed 0) still runs the process once, at
+    // its position in the loop.
+    if(tick_amount.impl == 0)
+    {
+      other.prev_date = time_value{orig_from.impl % loop_duration.impl} + start_offset;
+      other.date = other.prev_date;
+      f(other);
+      return;
+    }
+
     // The pieces of a looped tick must tile the parent's carried sample span
     // the way the parent tiles the buffer. Cutting on the accumulated model
     // amount with a single rounding keeps the cuts monotone, so consecutive

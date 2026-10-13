@@ -167,6 +167,7 @@ void scenario::stop()
   m_maxReachedEvents.clear();
   m_overticks.clear();
   m_itv_end_map.clear();
+  restore_durations();
   m_last_date = ossia::Infinite;
 }
 
@@ -242,6 +243,7 @@ void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
       m_itv_to_stop.erase(it);
 
     m_itv_end_map.erase(itv.get());
+    m_offset_durations.erase(itv.get());
 
     remove_one(m_intervals, itv);
   }
@@ -341,9 +343,10 @@ void scenario::mute_impl(bool m)
   }
 }
 
-void scenario::request_start_interval(time_interval& itv, double ratio)
+void scenario::request_start_interval(
+    time_interval& itv, double ratio, ossia::time_value from)
 {
-  m_itv_to_start.emplace_back(quantized_interval{&itv, ratio});
+  m_itv_to_start.emplace_back(quantized_interval{&itv, ratio, from});
 }
 void scenario::request_stop_interval(time_interval& itv, double ratio)
 {

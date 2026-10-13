@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/nullable_variant.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
@@ -19,7 +20,7 @@ struct websocket_threaded_connection
       : socket([](auto&&...) {})
   {
     running = true;
-    thread = std::thread([this, ip] {
+    thread = ossia::thread([this, ip] {
       auto log = spdlog::get("websocket");
       if(!log)
         log = spdlog::stderr_logger_mt("websocket");
@@ -64,7 +65,7 @@ struct websocket_threaded_connection
 
   ossia::net::websocket_client socket;
   std::atomic_bool running{};
-  std::thread thread;
+  ossia::thread thread;
 };
 
 //! A sink to use with spdlog, that will send its log messages over websockets.
@@ -183,7 +184,7 @@ public:
       , sender{s}
       , conn{t}
   {
-    thread = std::thread([this] {
+    thread = ossia::thread([this] {
       while(running)
       {
         if(init && conn->socket.connected())
@@ -275,7 +276,7 @@ public:
 
 private:
   rapidjson::StringBuffer buffer;
-  std::thread thread;
+  ossia::thread thread;
   std::chrono::seconds interval;
   std::string sender;
   std::string init_msg;
