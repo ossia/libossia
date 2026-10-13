@@ -71,15 +71,17 @@ for_each_chunk(std::uint32_t nframes, std::uint32_t max_frames, F&& f)
 }
 
 // Builds the per-chunk channel pointer array: channels whose cycle buffer
-// exists advance by offset, missing ones fall back to scratch. Inputs and
-// outputs must use *distinct* scratch storage: sharing one dummy buffer
-// feeds each tick's discarded output back into the missing inputs.
+// exists advance by offset, missing ones fall back to scratch, the i-th one
+// at scratch + i * stride. Inputs and outputs must use *distinct* scratch
+// storage: sharing one dummy buffer feeds each tick's discarded output back
+// into the missing inputs. Missing outputs need a stride of at least the
+// chunk size, or what the tick writes to one lands in the others.
 inline void assign_chunk_pointers(
     float* const* cycle, float** chunk, std::size_t channels,
-    std::uint32_t offset, float* scratch) noexcept
+    std::uint32_t offset, float* scratch, std::size_t stride = 0) noexcept
 {
   for (std::size_t i = 0; i < channels; ++i)
-    chunk[i] = cycle[i] ? cycle[i] + offset : scratch;
+    chunk[i] = cycle[i] ? cycle[i] + offset : scratch + i * stride;
 }
 
 }
