@@ -482,9 +482,20 @@ struct token_request
   get_quantification_dates(double rate) const noexcept
   {
     quantification_points res;
+    for_each_quantification_date(
+        rate, [&](const quantification_point& p) { res.push_back(p); });
+    return res;
+  }
 
+  //! Calls `f` with every quantification point of this tick, in order, the
+  //! way get_quantification_dates() lists them - without building the list,
+  //! so that the audio thread can walk the points without allocating.
+  //! At most 1024 points: a tick spanning more means the rate is nonsense.
+  template <typename F>
+  void for_each_quantification_date(double rate, F&& f) const noexcept
+  {
     if(prev_date == date)
-      return res;
+      return;
 
     const double musical_tick_duration = musical_end_position - musical_start_position;
     const bool rewinding = date < prev_date;
@@ -494,8 +505,8 @@ struct token_request
     if(rate <= 0. || musical_tick_duration == 0.
        || (musical_tick_duration < 0.) != rewinding)
     {
-      res.push_back({prev_date, 0, musical_start_position});
-      return res;
+      f(quantification_point{prev_date, 0, musical_start_position});
+      return;
     }
 
     // A point falling exactly on the end of the tick belongs to the next one,
@@ -508,6 +519,7 @@ struct token_request
 
     // A point is kept if it lands inside the tick; false means we walked past
     // the end and can stop.
+    int count = 0;
     const auto try_push = [&](double musical_position, int64_t index) {
       // Scale the musical distance to this point by the tick, rather than
       // scaling the tick by a normalised position. The two associate
@@ -542,10 +554,10 @@ struct token_request
           return false;
       }
 
-      res.push_back({d, index, musical_position});
+      f(quantification_point{d, index, musical_position});
       // A tick spanning this many points means the rate is nonsense: stop
-      // rather than fill memory.
-      return res.size() < 1024;
+      // rather than run forever.
+      return ++count < 1024;
     };
 
     if(rate <= 1.)
@@ -554,7 +566,7 @@ struct token_request
       // signature change, and no bar line subdivides it.
       const double unit = quarters_in_bar / rate;
       if(!(unit > 0.))
-        return res;
+        return;
 
       const double origin = musical_start_last_signature;
       const double start = (musical_start_position - origin) / unit;
@@ -568,7 +580,7 @@ struct token_request
         if(!try_push(k * unit + origin, k))
           break;
       }
-      return res;
+      return;
     }
 
     // Shorter than a bar: a subdivision of the quarter note, counted from the
@@ -578,18 +590,10 @@ struct token_request
     // is always a point.
     const double unit = 4. / rate;
     if(!(unit > 0.) || !(quarters_in_bar > 0.))
-      return res;
+      return;
 
     const double lo = rewinding ? musical_end_position : musical_start_position;
     const double hi = rewinding ? musical_start_position : musical_end_position;
-
-    // Collect the segments first so a rewinding walk can take them in reverse:
-    // the points inside a segment are monotone in k, and so are the segments.
-    ossia::small_vector<std::pair<double, double>, 8> segments;
-    for_each_bar_segment(lo, hi, [&](double bar_line, double next_bar) {
-      if(segments.size() < 1024)
-        segments.push_back({bar_line, next_bar});
-    });
 
     const auto walk_segment = [&](double bar_line, double next_bar) {
       const int divs = int(std::ceil((next_bar - bar_line) / unit)) + 1;
@@ -624,17 +628,25 @@ struct token_request
 
     if(!rewinding)
     {
-      for(const auto& [b, n] : segments)
-        if(!walk_segment(b, n))
-          break;
+      bool walking = true;
+      for_each_bar_segment(lo, hi, [&](double bar_line, double next_bar) {
+        if(walking)
+          walking = walk_segment(bar_line, next_bar);
+      });
+      return;
     }
-    else
-    {
-      for(auto it = segments.rbegin(); it != segments.rend(); ++it)
-        if(!walk_segment(it->first, it->second))
-          break;
-    }
-    return res;
+
+    // Rewinding takes the segments in reverse: the points inside a segment
+    // are monotone in k, and so are the segments. A tick crosses more than 8
+    // bar lines only at absurd speeds.
+    ossia::small_vector<std::pair<double, double>, 8> segments;
+    for_each_bar_segment(lo, hi, [&](double bar_line, double next_bar) {
+      if(segments.size() < 1024)
+        segments.push_back({bar_line, next_bar});
+    });
+    for(auto it = segments.rbegin(); it != segments.rend(); ++it)
+      if(!walk_segment(it->first, it->second))
+        break;
   }
 
   //! The next quantification point, as a sample offset into the buffer.
