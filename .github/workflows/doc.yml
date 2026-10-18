@@ -27,6 +27,23 @@ jobs:
           doxygen > doxygen.log
           mkdir -p publish
           mv html publish
+          # This branch is served at ossia.io/libossia/ and shadows that path on
+          # the main website: send visitors of the root to the libossia page.
+          cat > publish/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>libossia</title>
+            <link rel="canonical" href="https://ossia.io/site-libossia/about.html">
+            <meta http-equiv="refresh" content="0; url=https://ossia.io/site-libossia/about.html">
+          </head>
+          <body>
+            <p>Redirecting to <a href="https://ossia.io/site-libossia/about.html">libossia</a>.
+               See also the <a href="html/">libossia API documentation</a>.</p>
+          </body>
+          </html>
+          EOF
       - name: Deploy Documentation
         uses: peaceiris/actions-gh-pages@v3
         with:
