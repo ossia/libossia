@@ -661,6 +661,7 @@ set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_protocols.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_util.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_can_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_http_request.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_midi_inbound_socket.hpp"
@@ -744,7 +745,6 @@ set(OSSIA_QT_SCORE_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_scenario.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_exec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_loop.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_util.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_script.hpp"
     )
 
