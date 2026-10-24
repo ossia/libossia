@@ -101,6 +101,9 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   int sampleRate{44100};
   int bufferSize{64};
+  //! Frames the audio backend reports between the hardware and the engine.
+  int inputLatency{};
+  int outputLatency{};
   double modelToSamplesRatio{1.};
   double samplesToModelRatio{1.};
   int64_t samples_since_start{};
