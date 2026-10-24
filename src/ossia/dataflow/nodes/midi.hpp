@@ -293,6 +293,20 @@ private:
     }
   }
 
+  //! The sample of the tick a date falls on. A date inside the tick can
+  //! map to a sample past the span the tick was handed, which belongs to the
+  //! next tick.
+  static int64_t stamp_in_tick(
+      const ossia::token_request& t, time_value at, double samplesratio,
+      int64_t tick_start) noexcept
+  {
+    const auto tick_end
+        = tick_start + std::abs(t.physical_write_duration(samplesratio));
+    return std::clamp(
+        t.to_physical_time_in_tick(at, samplesratio), tick_start,
+        std::max(tick_start, tick_end - 1));
+  }
+
   //! Note-offs for every note whose end date has been reached.
   //! Overdue ends (the note both started and finished inside a single tick, or
   //! a tick was skipped) are stamped at the beginning of the tick instead of
@@ -310,7 +324,7 @@ private:
       {
         mp.messages.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
         mp.messages.back().timestamp
-            = std::max(tick_start, t.to_physical_time_in_tick(end_time, samplesratio));
+            = stamp_in_tick(t, end_time, samplesratio, tick_start);
 
         it = m_playing_notes.erase(it);
       }
@@ -425,7 +439,7 @@ private:
             mp.messages.push_back(
                 libremidi::from_midi1::note_on(m_channel, note.pitch, note.velocity));
             mp.messages.back().timestamp
-                = t.to_physical_time_in_tick(start_time, samplesratio);
+                = stamp_in_tick(t, start_time, samplesratio, tick_start);
 
             m_playing_notes.insert(note);
             it = m_notes.erase(it);
