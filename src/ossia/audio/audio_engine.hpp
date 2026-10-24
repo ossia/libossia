@@ -43,6 +43,10 @@ public:
   int effective_buffer_size{};
   int effective_inputs{};
   int effective_outputs{};
+  //! Frames from the hardware's input to the engine and from the engine to the
+  //! hardware's output, as the backend reports them; zero when it does not.
+  int effective_input_latency{};
+  int effective_output_latency{};
 
   void tick_start() { load_audio_tick(); }
   void tick_clear() { stop_received = true; }

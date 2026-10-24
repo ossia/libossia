@@ -33,6 +33,8 @@ struct OSSIA_EXPORT exec_state_facade
   ossia::execution_state* impl{};
   [[nodiscard]] int sampleRate() const noexcept;
   [[nodiscard]] int bufferSize() const noexcept;
+  [[nodiscard]] int inputLatency() const noexcept;
+  [[nodiscard]] int outputLatency() const noexcept;
   [[nodiscard]] double modelToSamples() const noexcept;
   [[nodiscard]] double samplesToModel() const noexcept;
   [[nodiscard]] int64_t samplesSinceStart() const noexcept;

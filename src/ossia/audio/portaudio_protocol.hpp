@@ -137,6 +137,8 @@ public:
         this->effective_buffer_size = bs;
         this->effective_inputs = actualInput ? actualInput->channelCount : 0;
         this->effective_outputs = actualOutput ? actualOutput->channelCount : 0;
+        this->effective_input_latency = int(info->inputLatency * info->sampleRate);
+        this->effective_output_latency = int(info->outputLatency * info->sampleRate);
       }
     }
     else
