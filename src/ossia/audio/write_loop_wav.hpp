@@ -1,6 +1,7 @@
 #pragma once
 #include <dr_wav.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -25,9 +26,10 @@ struct wav_loop_info
 };
 
 //! Writes `frames` frames of 32-bit float audio, one pointer per channel, to
-//! a WAV file with the loop metadata. Runs where it is called: from a worker,
-//! never from the audio thread. Returns false when the file could not be
-//! written in full.
+//! a WAV file with the loop metadata. Audio that does not fit the 4 GB of a
+//! RIFF file is written as RF64. Runs where it is called: from a worker, never
+//! from the audio thread. Returns false, and leaves no file behind, when the
+//! file could not be written in full.
 inline bool write_loop_wav(
     std::string_view path_utf8, int channels, int rate, int64_t frames,
     const float* const* data, const wav_loop_info& info)
@@ -35,15 +37,26 @@ inline bool write_loop_wav(
   if(channels <= 0 || rate <= 0 || frames < 0 || path_utf8.empty())
     return false;
 
-  std::ofstream file{
-      std::filesystem::path{std::u8string_view{
-          reinterpret_cast<const char8_t*>(path_utf8.data()), path_utf8.size()}},
-      std::ios::binary | std::ios::trunc};
+  const std::filesystem::path path{std::u8string_view{
+      reinterpret_cast<const char8_t*>(path_utf8.data()), path_utf8.size()}};
+  std::ofstream file{path, std::ios::binary | std::ios::trunc};
   if(!file)
     return false;
 
+  auto fail = [&] {
+    file.close();
+    std::error_code ec;
+    std::filesystem::remove(path, ec);
+    return false;
+  };
+
+  // RIFF sizes are 32 bits; the margin covers the header and metadata chunks.
+  constexpr uint64_t riff_max_data = 0xFFFFFFFFull - 65536;
+  const uint64_t data_bytes = uint64_t(frames) * uint64_t(channels) * sizeof(float);
+
   drwav_data_format format{};
-  format.container = drwav_container_riff;
+  format.container
+      = data_bytes > riff_max_data ? drwav_container_rf64 : drwav_container_riff;
   format.format = DR_WAVE_FORMAT_IEEE_FLOAT;
   format.channels = channels;
   format.sampleRate = rate;
@@ -52,8 +65,10 @@ inline bool write_loop_wav(
   drwav_metadata metadata[2]{};
   drwav_uint32 metadata_count = 0;
 
+  // The sampler chunk counts in 32 bits even in RF64: a loop it cannot end
+  // where the file ends is left out rather than written wrong.
   drwav_smpl_loop sampler_loop{};
-  if(info.loop && frames > 0)
+  if(info.loop && frames > 0 && uint64_t(frames - 1) <= 0xFFFFFFFFull)
   {
     sampler_loop.type = drwav_smpl_loop_type_forward;
     sampler_loop.firstSampleOffset = 0;
@@ -106,7 +121,7 @@ inline bool write_loop_wav(
   if(!drwav_init_write_with_metadata(
          &wav, &format, on_write, on_seek, &file, nullptr,
          metadata_count > 0 ? metadata : nullptr, metadata_count))
-    return false;
+    return fail();
 
   constexpr int64_t chunk = 4096;
   std::vector<float> interleaved(std::size_t(chunk * channels));
@@ -122,8 +137,13 @@ inline bool write_loop_wav(
     written += n;
   }
 
-  drwav_uninit(&wav);
+  const bool finalized = drwav_uninit(&wav) == DRWAV_SUCCESS;
   file.flush();
-  return written == frames && bool(file);
+  if(written != frames || !finalized || !file)
+    return fail();
+  file.close();
+  if(!file)
+    return fail();
+  return true;
 }
 }
