@@ -772,6 +772,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_tick.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/drwav_handle.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/drwav_write_handle.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/write_loop_wav.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fade.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fft.hpp"
