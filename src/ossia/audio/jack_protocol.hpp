@@ -5,6 +5,7 @@
 #if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/thread.hpp>
 
 #include <weak_libjack.h>
@@ -189,6 +190,23 @@ public:
         }
       }
     }
+
+    // Once connected to the hardware, the ports have its latency.
+    if(!input_ports.empty())
+    {
+      jack_latency_range_t range{};
+      jack_port_get_latency_range(input_ports[0], JackCaptureLatency, &range);
+      this->effective_input_latency = int(range.max);
+    }
+    if(!output_ports.empty())
+    {
+      jack_latency_range_t range{};
+      jack_port_get_latency_range(output_ports[0], JackPlaybackLatency, &range);
+      this->effective_output_latency = int(range.max);
+    }
+    ossia::logger().info(
+        "JACK: capture latency {} frames, playback latency {} frames",
+        this->effective_input_latency, this->effective_output_latency);
 
     if(settings && settings->transport != transport_mode::none)
     {

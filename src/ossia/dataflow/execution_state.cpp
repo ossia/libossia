@@ -507,6 +507,16 @@ double exec_state_facade::samplesToModel() const noexcept
   return impl->samplesToModelRatio;
 }
 
+int exec_state_facade::inputLatency() const noexcept
+{
+  return impl->inputLatency;
+}
+
+int exec_state_facade::outputLatency() const noexcept
+{
+  return impl->outputLatency;
+}
+
 int64_t exec_state_facade::samplesSinceStart() const noexcept
 {
   return impl->samples_since_start;
