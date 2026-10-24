@@ -13,6 +13,7 @@
 #include <TlHelp32.h>
 #endif
 
+#include <algorithm>
 #include <string_view>
 
 #define USE_WEAK_JACK 1
@@ -106,6 +107,7 @@ public:
     jack_set_sample_rate_callback(
         client, [](jack_nframes_t nframes, void* arg) -> int { return 0; }, this);
     jack_on_shutdown(client, JackShutdownCallback{}, this);
+    jack_set_latency_callback(client, latency_callback, this);
     for(int i = 0; i < inputs; i++)
     {
       std::string name;
@@ -191,22 +193,13 @@ public:
       }
     }
 
-    // Once connected to the hardware, the ports have its latency.
-    if(!input_ports.empty())
-    {
-      jack_latency_range_t range{};
-      jack_port_get_latency_range(input_ports[0], JackCaptureLatency, &range);
-      this->effective_input_latency = int(range.max);
-    }
-    if(!output_ports.empty())
-    {
-      jack_latency_range_t range{};
-      jack_port_get_latency_range(output_ports[0], JackPlaybackLatency, &range);
-      this->effective_output_latency = int(range.max);
-    }
+    // Once connected to the hardware, the ports have its latency. JACK
+    // recomputes it later, on its own thread, whenever the graph changes:
+    // latency_callback keeps the values current.
+    update_latencies();
     ossia::logger().info(
         "JACK: capture latency {} frames, playback latency {} frames",
-        this->effective_input_latency, this->effective_output_latency);
+        this->effective_input_latency.load(), this->effective_output_latency.load());
 
     if(settings && settings->transport != transport_mode::none)
     {
@@ -270,6 +263,51 @@ public:
   }
 
 private:
+  void update_latencies() noexcept
+  {
+    if(!input_ports.empty())
+    {
+      jack_latency_range_t range{};
+      jack_port_get_latency_range(input_ports[0], JackCaptureLatency, &range);
+      this->effective_input_latency.store(int(range.max), std::memory_order_relaxed);
+    }
+    if(!output_ports.empty())
+    {
+      jack_latency_range_t range{};
+      jack_port_get_latency_range(output_ports[0], JackPlaybackLatency, &range);
+      this->effective_output_latency.store(int(range.max), std::memory_order_relaxed);
+    }
+  }
+
+  // Called by JACK when the latencies of the graph change. A client with a
+  // latency callback has to propagate the latencies through itself: every
+  // input feeds every output without adding any, which is what JACK assumes
+  // for a client without one.
+  static void latency_callback(jack_latency_callback_mode_t mode, void* arg)
+  {
+    auto& self = *static_cast<jack_engine*>(arg);
+    const auto& from
+        = mode == JackCaptureLatency ? self.input_ports : self.output_ports;
+    const auto& to = mode == JackCaptureLatency ? self.output_ports : self.input_ports;
+
+    if(!from.empty())
+    {
+      jack_latency_range_t range{};
+      jack_port_get_latency_range(from[0], mode, &range);
+      for(std::size_t i = 1; i < from.size(); i++)
+      {
+        jack_latency_range_t r{};
+        jack_port_get_latency_range(from[i], mode, &r);
+        range.min = std::min(range.min, r.min);
+        range.max = std::max(range.max, r.max);
+      }
+      for(auto port : to)
+        jack_port_set_latency_range(port, mode, &range);
+    }
+
+    self.update_latencies();
+  }
+
   static int
   clear_buffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
   {
