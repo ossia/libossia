@@ -75,7 +75,11 @@ void execution_state::unregister_device(net::device_base* d)
   if(d)
   {
     ossia::remove_erase(m_devices_edit, d);
-    m_device_change_queue.enqueue({device_operation::UNREGISTER, d});
+    ossia::net::midi::midi_stream* midi{};
+#if defined(OSSIA_PROTOCOL_MIDI)
+    midi = dynamic_cast<ossia::net::midi::midi_stream*>(&d->get_protocol());
+#endif
+    m_device_change_queue.enqueue({device_operation::UNREGISTER, d, midi});
   }
 }
 
@@ -121,10 +125,24 @@ void execution_state::register_midi_parameter(net::midi::midi_stream& p)
 #endif
 }
 
-void execution_state::unregister_midi_parameter(net::midi::midi_stream& p)
+void execution_state::register_midi_inlet(
+    const ossia::inlet& port, net::midi::midi_stream& p)
 {
+  // One registration per inlet: registering it again replaces the first.
+  auto [it, inserted] = m_midiInlets.try_emplace(&port, &p);
+  if(!inserted)
+  {
+    unregister_midi_parameter(it->second);
+    it->second = &p;
+  }
+  register_midi_parameter(p);
+}
+
+void execution_state::unregister_midi_parameter(net::midi::midi_stream* p)
+{
+  // Pointer identity only: the stream may already be destroyed.
 #if defined(OSSIA_PROTOCOL_MIDI)
-  auto it = m_receivedMidi.find(&p);
+  auto it = m_receivedMidi.find(p);
   if(it != m_receivedMidi.end())
   {
     it->second.count--;
@@ -227,7 +245,7 @@ void execution_state::register_port(const inlet& port)
       if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_device().get_protocol()))
       {
-        register_midi_parameter(*midi_addr);
+        register_midi_inlet(port, *midi_addr);
       }
     }
     else if(auto addr = port.address.target<ossia::net::parameter_base*>())
@@ -235,7 +253,7 @@ void execution_state::register_port(const inlet& port)
       if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
              &(*addr)->get_node().get_device().get_protocol()))
       {
-        register_midi_parameter(*midi_addr);
+        register_midi_inlet(port, *midi_addr);
       }
     }
   }
@@ -274,21 +292,10 @@ void execution_state::unregister_port(const inlet& port)
 #if defined(OSSIA_PROTOCOL_MIDI)
   else if(port.target<ossia::midi_port>())
   {
-    if(auto addr = port.address.target<ossia::net::node_base*>())
+    if(auto it = m_midiInlets.find(&port); it != m_midiInlets.end())
     {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
-             &(*addr)->get_device().get_protocol()))
-      {
-        unregister_midi_parameter(*midi_addr);
-      }
-    }
-    else if(auto addr = port.address.target<ossia::net::parameter_base*>())
-    {
-      if(auto midi_addr = dynamic_cast<ossia::net::midi::midi_stream*>(
-             &(*addr)->get_node().get_device().get_protocol()))
-      {
-        unregister_midi_parameter(*midi_addr);
-      }
+      unregister_midi_parameter(it->second);
+      m_midiInlets.erase(it);
     }
   }
 #endif
@@ -310,6 +317,23 @@ void execution_state::apply_device_changes()
 
   if(flattened.empty())
     return;
+
+  // The ports reading a removed device's stream are reset without being
+  // unregistered: its entry goes with the device, even one registered and
+  // removed within the same batch.
+  for(auto& op : flattened)
+  {
+    if(op.operation != device_operation::UNREGISTER || !op.midi)
+      continue;
+    m_receivedMidi.erase(op.midi);
+    for(auto it = m_midiInlets.begin(); it != m_midiInlets.end();)
+    {
+      if(it->second == op.midi)
+        it = m_midiInlets.erase(it);
+      else
+        ++it;
+    }
+  }
 
   // We must first check for devices that were registered and unregistered
   // afterwards. IMPORTANT: here we must *not* use iterators, but indices to
@@ -388,10 +412,12 @@ void execution_state::init_midi_timings()
 
 void execution_state::begin_tick()
 {
+  // Before anything reads the MIDI streams: those of the devices removed
+  // since may be destroyed already.
+  apply_device_changes();
   init_midi_timings();
   m_policy->clear_local_state();
   get_new_values();
-  apply_device_changes();
 
   // Allow non-audio-protocol devices to refresh their audio buffers
   for(auto& dev : m_devices_exec)
@@ -406,6 +432,7 @@ void execution_state::reset()
   m_valueQueues.clear();
   m_receivedValues.clear();
   m_receivedMidi.clear();
+  m_midiInlets.clear();
 }
 
 void execution_state::advance_tick(std::size_t t)

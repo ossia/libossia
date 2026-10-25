@@ -119,7 +119,8 @@ private:
   void register_parameter(ossia::net::parameter_base& p);
   void unregister_parameter(ossia::net::parameter_base& p);
   void register_midi_parameter(net::midi::midi_stream& p);
-  void unregister_midi_parameter(net::midi::midi_stream& p);
+  void unregister_midi_parameter(net::midi::midi_stream* p);
+  void register_midi_inlet(const ossia::inlet& port, net::midi::midi_stream& p);
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_edit;
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_exec;
   struct device_operation
@@ -130,6 +131,10 @@ private:
       UNREGISTER
     } operation{};
     ossia::net::device_base* device{};
+    //! The device's MIDI stream, if it has one, taken while the device is
+    //! alive: an unregistered device may be destroyed before the operation
+    //! is applied.
+    ossia::net::midi::midi_stream* midi{};
   };
   ossia::spsc_queue<device_operation> m_device_change_queue;
 
@@ -147,6 +152,10 @@ private:
   };
 
   ossia::ptr_map<ossia::net::midi::midi_stream*, received_midi_state> m_receivedMidi;
+  //! The stream each MIDI inlet registered with. Unregistering an inlet goes
+  //! through this rather than its address: the device the address points into
+  //! may be destroyed by then.
+  ossia::ptr_map<const ossia::inlet*, ossia::net::midi::midi_stream*> m_midiInlets;
 
   friend struct local_pull_visitor;
   friend struct global_pull_visitor;
