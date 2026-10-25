@@ -26,6 +26,7 @@ midi_protocol::midi_protocol(
   conf.on_message = [this](libremidi::message&& m) { midi_callback(std::move(m)); };
 
   conf.ignore_timing = false;
+  conf.ignore_sysex = false;
   m_input = std::make_unique<libremidi::midi_in>(conf, api);
 }
 
@@ -49,6 +50,7 @@ midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info info
     conf.on_message
         = [this](libremidi::message&& m) { midi_callback(std::move(m)); };
     conf.ignore_timing = false;
+    conf.ignore_sysex = false;
     m_input = std::make_unique<libremidi::midi_in>(conf, libremidi::API::UNSPECIFIED);
   }
   else
@@ -636,17 +638,10 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
 
   if(m_registers)
   {
-    this->to_midi2.convert(
+    // System-exclusive arrives as all the SysEx7 packets it is made of.
+    this->to_midi2.convert_packets(
         mess.bytes.data(), mess.bytes.size(), mess.timestamp,
-        [&](const uint32_t* ump, int count, auto ts) {
-      libremidi::ump u;
-      std::copy_n(ump, std::min(count, 4), u.data);
-      u.timestamp = ts;
-
-      receive_ump(u);
-
-      return stdx::error{};
-    });
+        [&](const libremidi::ump& u) { receive_ump(u); });
   }
 
   const auto chan = mess.get_channel();
