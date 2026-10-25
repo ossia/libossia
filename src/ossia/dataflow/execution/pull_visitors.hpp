@@ -160,9 +160,14 @@ struct global_pull_node_visitor
       }
       else
       {
+        // Only channel messages have a channel: the same bits of a system or
+        // SysEx7 packet are its status or its byte count.
         for(const libremidi::ump& v : it->second.messages)
         {
-          if(v.get_channel() == channel)
+          using enum libremidi::midi2::message_type;
+          const auto type = v.get_type();
+          if((type == MIDI_1_CHANNEL || type == MIDI_2_CHANNEL)
+             && v.get_channel() == channel)
             val.messages.push_back(v);
         }
       }
