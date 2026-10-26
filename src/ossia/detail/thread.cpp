@@ -8,6 +8,7 @@
 
 #include <boost/predef.h>
 
+#include <cstdint>
 #include <optional>
 #include <system_error>
 #include <string>
@@ -43,6 +44,26 @@ bool lock_process_memory(bool lock)
 bool unlock_memory(const void* ptr, std::size_t size)
 {
   return false;
+}
+
+static void touch_pages(const void* ptr, std::size_t size)
+{
+  constexpr std::size_t page = 4096;
+  auto p = static_cast<const volatile unsigned char*>(ptr);
+  for(std::size_t i = 0; i < size; i += page)
+    (void)p[i];
+}
+
+void preload_memory(const void* ptr, std::size_t size)
+{
+  if(!ptr || size == 0)
+    return;
+#if _WIN32_WINNT >= 0x0602
+  WIN32_MEMORY_RANGE_ENTRY range{const_cast<void*>(ptr), size};
+  if(PrefetchVirtualMemory(GetCurrentProcess(), 1, &range, 0))
+    return;
+#endif
+  touch_pages(ptr, size);
 }
 
 void set_thread_name(std::thread& t, std::string_view name)
@@ -196,6 +217,27 @@ bool unlock_memory(const void* ptr, std::size_t size)
 #else
   return false;
 #endif
+}
+
+void preload_memory(const void* ptr, std::size_t size)
+{
+  if(!ptr || size == 0)
+    return;
+  const auto page = (uintptr_t)sysconf(_SC_PAGESIZE);
+#if defined(__linux__)
+  // MADV_WILLNEED only reads the readahead window (256 kB here), not the
+  // range. MADV_POPULATE_READ (Linux 5.14) faults the whole range in.
+#if !defined(MADV_POPULATE_READ)
+#define MADV_POPULATE_READ 22
+#endif
+  // madvise wants a page-aligned start.
+  const auto begin = (uintptr_t)ptr & ~(page - 1);
+  if(madvise((void*)begin, size + ((uintptr_t)ptr - begin), MADV_POPULATE_READ) == 0)
+    return;
+#endif
+  auto p = static_cast<const volatile unsigned char*>(ptr);
+  for(std::size_t i = 0; i < size; i += page)
+    (void)p[i];
 }
 
 bool lock_process_memory(bool lock)
