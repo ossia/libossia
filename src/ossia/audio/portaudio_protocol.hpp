@@ -8,8 +8,15 @@
 #include <ossia/detail/thread.hpp>
 
 #include <portaudio.h>
+#if defined(__linux__) && __has_include(<alsa/asoundlib.h>)
+#include <ossia/audio/libasound.hpp>
+#define OSSIA_PORTAUDIO_ALSA_PERIOD 1
+#endif
 
 #include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -29,7 +36,9 @@ public:
       throw std::runtime_error(
           std::string("PortAudio: cannot initialize: ") + Pa_GetErrorText(ec));
 
-    const auto hostApiIndex = Pa_HostApiTypeIdToHostApiIndex(hostApi);
+    // paInDevelopment: any host API.
+    const int hostApiIndex
+        = hostApi == paInDevelopment ? -1 : Pa_HostApiTypeIdToHostApiIndex(hostApi);
     const int card_in_idx = find_device(card_in, hostApiIndex, true);
     const int card_out_idx = find_device(card_out, hostApiIndex, false);
 
@@ -46,27 +55,33 @@ public:
           + (card_out.empty() ? card_in : card_out));
     }
 
-    auto latency = [&](const PaDeviceInfo* dev) {
-      // The ALSA host derives its period from the latency: two buffers give a
-      // period of bs frames and three periods. Full-speed USB devices (1 ms
-      // packets) under-run continuously with less than 3 ms buffered.
-      if(dev && Pa_GetHostApiInfo(dev->hostApi)->type == paALSA)
-        return std::max(2. * bs / rate, 0.003);
-      return 0.01;
+    auto latency = [&](const PaDeviceInfo* dev, bool input, int channels) {
+      if(!dev || Pa_GetHostApiInfo(dev->hostApi)->type != paALSA)
+        return 0.01;
+      // The ALSA host (pa_linux_alsa.c) asks for a period of (bs + latency) / 4
+      // rounded up to a multiple of bs, at least the device's minimum, and a
+      // buffer of latency + period. With latency = (n - 1) periods: n periods
+      // of max(bs, device minimum) rounded up to a multiple of bs. Unlike the
+      // ALSA engine it cannot retry with more periods, so periods shorter
+      // than 2 ms get 4 (an HDA codec at 0.67 ms under-runs with 3 here).
+      int period = std::max(bs, alsa_min_period(dev->name, input, rate, channels));
+      period = (period + bs - 1) / bs * bs;
+      const int periods = period * 1000 < 2 * rate ? 4 : 3;
+      return double(periods - 1) * period / rate;
     };
 
     PaStreamParameters inputParameters;
     inputParameters.device = card_in_idx;
     inputParameters.channelCount = inputs;
     inputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-    inputParameters.suggestedLatency = latency(devInInfo);
+    inputParameters.suggestedLatency = latency(devInInfo, true, inputs);
     inputParameters.hostApiSpecificStreamInfo = nullptr;
 
     PaStreamParameters outputParameters;
     outputParameters.device = card_out_idx;
     outputParameters.channelCount = outputs;
     outputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-    outputParameters.suggestedLatency = latency(devOutInfo);
+    outputParameters.suggestedLatency = latency(devOutInfo, false, outputs);
     outputParameters.hostApiSpecificStreamInfo = nullptr;
 
     PaStreamParameters* actualInput = inputs > 0 ? &inputParameters : nullptr;
@@ -83,6 +98,19 @@ public:
       throw std::runtime_error(err);
     }
 
+    // Before the stream starts: the callback reads them.
+    auto info = Pa_GetStreamInfo(stream);
+    this->effective_sample_rate = info->sampleRate;
+    this->effective_buffer_size = bs;
+    this->effective_inputs = inputs;
+    this->effective_outputs = outputs;
+    this->effective_input_latency = int(std::lround(info->inputLatency * info->sampleRate));
+    this->effective_output_latency
+        = int(std::lround(info->outputLatency * info->sampleRate));
+    m_stall_timeout = std::max(
+        std::chrono::milliseconds(1000),
+        std::chrono::milliseconds(int64_t(20) * 1000 * bs / std::max(rate, 1)));
+
     // PortAudio's own real-time mode (PaAlsa_EnableRealtimeScheduling) runs
     // the callback at SCHED_FIFO 1: the callback sets the priority instead.
     m_stream.store(stream);
@@ -96,13 +124,6 @@ public:
       throw std::runtime_error(err);
     }
 
-    auto info = Pa_GetStreamInfo(stream);
-    this->effective_sample_rate = info->sampleRate;
-    this->effective_buffer_size = bs;
-    this->effective_inputs = inputs;
-    this->effective_outputs = outputs;
-    this->effective_input_latency = int(info->inputLatency * info->sampleRate);
-    this->effective_output_latency = int(info->outputLatency * info->sampleRate);
   }
 
   bool running() const override
@@ -111,10 +132,26 @@ public:
     return s && Pa_IsStreamActive(s) == 1;
   }
 
+  //! Called from the thread that stops the engine. Besides a stream that
+  //! ended, an active stream whose callback no longer runs: the ALSA host
+  //! keeps polling without calling back when every period under-runs, or
+  //! when the device was unplugged.
   bool failed() const noexcept override
   {
     auto s = m_stream.load();
-    return s && Pa_IsStreamActive(s) == 0 && !stop_processing;
+    if(!s || stop_processing)
+      return false;
+    if(Pa_IsStreamActive(s) == 0)
+      return true;
+    const auto now = std::chrono::steady_clock::now();
+    const auto calls = m_callbacks.load(std::memory_order_relaxed);
+    if(calls != m_seenCallbacks || m_seenAt == std::chrono::steady_clock::time_point{})
+    {
+      m_seenCallbacks = calls;
+      m_seenAt = now;
+      return false;
+    }
+    return now - m_seenAt > m_stall_timeout;
   }
 
   void stop() override
@@ -123,9 +160,11 @@ public:
 
     // A stream that is stopped but not closed keeps the device open: opening
     // it again, e.g. when the settings change, fails until it is closed.
+    // Aborting: stopping waits for the host's poll loop, seconds on a stalled
+    // device, and the ALSA host drops the buffer either way.
     if(auto stream = m_stream.exchange(nullptr))
     {
-      if(auto ec = Pa_StopStream(stream); ec != paNoError)
+      if(auto ec = Pa_AbortStream(stream); ec != paNoError)
         ossia::logger().warn("PortAudio: stopping the stream: {}", Pa_GetErrorText(ec));
       if(auto ec = Pa_CloseStream(stream); ec != paNoError)
         ossia::logger().warn("PortAudio: closing the stream: {}", Pa_GetErrorText(ec));
@@ -139,6 +178,46 @@ public:
   }
 
 private:
+  //! The smallest period the ALSA device accepts at this rate, 0 when it is
+  //! not a hardware device or cannot be asked (e.g. busy).
+  static int alsa_min_period(std::string_view name, bool input, int rate, int channels)
+  {
+#if OSSIA_PORTAUDIO_ALSA_PERIOD
+    // "Card: device (hw:N,M)"
+    auto pos = name.rfind(" (hw:");
+    if(pos == std::string_view::npos || !name.ends_with(')'))
+      return 0;
+    const std::string hw{name.substr(pos + 2, name.size() - pos - 3)};
+    try
+    {
+      auto& snd = ossia::libasound::instance();
+      snd_pcm_t* pcm{};
+      if(snd.pcm_open(
+             &pcm, hw.c_str(), input ? SND_PCM_STREAM_CAPTURE : SND_PCM_STREAM_PLAYBACK,
+             SND_PCM_NONBLOCK)
+         < 0)
+        return 0;
+      snd_pcm_hw_params_t* params{};
+      snd_alloca(&params, snd, pcm_hw_params);
+      snd_pcm_uframes_t min{};
+      int dir{};
+      unsigned r = rate, c = std::max(channels, 1);
+      if(snd.pcm_hw_params_any(pcm, params) >= 0
+         && snd.pcm_hw_params_set_rate_near(pcm, params, &r, nullptr) >= 0
+         && snd.pcm_hw_params_set_channels_near(pcm, params, &c) >= 0)
+        snd.pcm_hw_params_get_period_size_min(params, &min, &dir);
+      snd.pcm_close(pcm);
+      return int(min);
+    }
+    catch(...)
+    {
+      return 0;
+    }
+#else
+    return 0;
+#endif
+  }
+
   //! ALSA device names end with the card index, e.g. "MM-1: USB Audio (hw:3,0)",
   //! which changes when USB devices enumerate in another order: when the exact
   //! name is gone, a device whose name only differs by that index matches.
@@ -148,8 +227,9 @@ private:
       return paNoDevice;
 
     auto without_index = [](std::string_view n) {
-      if(auto pos = n.rfind(" (hw:"); pos != std::string_view::npos && n.ends_with(')'))
-        return n.substr(0, pos);
+      for(auto suffix : {" (hw:", " (plughw:"})
+        if(auto pos = n.rfind(suffix); pos != std::string_view::npos && n.ends_with(')'))
+          return n.substr(0, pos);
       return n;
     };
 
@@ -157,7 +237,7 @@ private:
     for(int i = 0; i < Pa_GetDeviceCount(); i++)
     {
       auto info = Pa_GetDeviceInfo(i);
-      if(info->hostApi != hostApiIndex && hostApiIndex != paInDevelopment)
+      if(hostApiIndex >= 0 && info->hostApi != hostApiIndex)
         continue;
       if((input ? info->maxInputChannels : info->maxOutputChannels) <= 0)
         continue;
@@ -214,9 +294,16 @@ private:
     }();
 
     auto& self = *static_cast<portaudio_engine*>(userData);
+    self.m_callbacks.fetch_add(1, std::memory_order_relaxed);
+    // The flags of one host period reach every callback that period is split
+    // into; they share its time stamp.
     if(statusFlags
        & (paInputUnderflow | paInputOverflow | paOutputUnderflow | paOutputOverflow))
-      self.xruns.fetch_add(1, std::memory_order_relaxed);
+    {
+      if(timeInfo->currentTime == 0. || timeInfo->currentTime != self.m_lastXrunTime)
+        self.xruns.fetch_add(1, std::memory_order_relaxed);
+      self.m_lastXrunTime = timeInfo->currentTime;
+    }
 
     self.tick_start();
     auto clt = self.m_stream.load();
@@ -240,6 +327,11 @@ private:
   }
 
   std::atomic<PaStream*> m_stream{};
+  std::atomic<uint64_t> m_callbacks{};
+  double m_lastXrunTime{-1.};
+  std::chrono::milliseconds m_stall_timeout{1000};
+  mutable uint64_t m_seenCallbacks{};
+  mutable std::chrono::steady_clock::time_point m_seenAt{};
 };
 }
 
