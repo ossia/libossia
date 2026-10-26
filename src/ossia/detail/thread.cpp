@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/thread.hpp>
@@ -17,13 +18,21 @@
 
 namespace ossia
 {
-void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
+static bool set_thread_realtime(HANDLE hdl)
 {
-  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
+  if(SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL))
+    return true;
+  return SetThreadPriority(hdl, THREAD_PRIORITY_HIGHEST);
+}
 
-  auto err = SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
-  if(err == 0)
-    SetThreadPriority(hdl, THREAD_PRIORITY_HIGHEST);
+bool set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
+{
+  return set_thread_realtime(reinterpret_cast<HANDLE>(t.native_handle()));
+}
+
+bool set_current_thread_realtime(int prio, bool algo_fifo)
+{
+  return set_thread_realtime(GetCurrentThread());
 }
 
 void set_thread_name(std::thread& t, std::string_view name)
@@ -58,12 +67,9 @@ void set_thread_name(std::string_view name)
   }
   SetThreadDescription(hdl, wname.data());
 }
-void set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
+bool set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
 {
-  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
-  auto err = SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
-  if(err == 0)
-    SetThreadPriority(hdl, THREAD_PRIORITY_HIGHEST);
+  return set_thread_realtime(reinterpret_cast<HANDLE>(t.native_handle()));
 }
 
 void set_thread_name(ossia::thread& t, std::string_view name)
@@ -100,20 +106,58 @@ int get_pid()
 #include <pthread_np.h>
 #endif
 
+#include <sys/resource.h>
 #include <unistd.h>
+
+#include <algorithm>
+#include <cstring>
 namespace ossia
-{
-void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 {
 #if !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)              \
     && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
         || BOOST_LIB_C_GNU)
-  sched_param sch_params;
-  sch_params.sched_priority = 99;
-  pthread_setschedparam(
-      t.native_handle(), algo_fifo ? SCHED_FIFO : SCHED_RR, &sch_params);
+#define OSSIA_PTHREAD_REALTIME 1
+// Without CAP_SYS_NICE the kernel refuses any priority above RLIMIT_RTPRIO,
+// and refuses it entirely rather than lowering it: ask for what is allowed.
+static bool set_thread_realtime(pthread_t t, int prio, bool algo_fifo)
+{
+  const int policy = algo_fifo ? SCHED_FIFO : SCHED_RR;
+  int lo = sched_get_priority_min(policy);
+  int hi = sched_get_priority_max(policy);
+#if defined(RLIMIT_RTPRIO)
+  if(rlimit rl; getrlimit(RLIMIT_RTPRIO, &rl) == 0 && rl.rlim_cur != RLIM_INFINITY
+                && rl.rlim_cur >= (rlim_t)lo)
+    hi = std::min<int>(hi, rl.rlim_cur);
+#endif
+  sched_param sch_params{};
+  sch_params.sched_priority = std::clamp(prio, lo, hi);
+  if(int err = pthread_setschedparam(t, policy, &sch_params); err != 0)
+  {
+    ossia::logger().warn(
+        "Could not give a thread real-time priority {}: {}. It runs at normal "
+        "priority; raise the rtprio limit (/etc/security/limits.d) to fix this.",
+        sch_params.sched_priority, std::strerror(err));
+    return false;
+  }
+  return true;
+}
+#endif
 
-  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
+bool set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
+{
+#if OSSIA_PTHREAD_REALTIME
+  return set_thread_realtime(t.native_handle(), prio, algo_fifo);
+#else
+  return false;
+#endif
+}
+
+bool set_current_thread_realtime(int prio, bool algo_fifo)
+{
+#if OSSIA_PTHREAD_REALTIME
+  return set_thread_realtime(pthread_self(), prio, algo_fifo);
+#else
+  return false;
 #endif
 }
 
@@ -137,17 +181,12 @@ void set_thread_name(std::string_view name)
 #endif
 }
 
-void set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
+bool set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
 {
-#if !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)              \
-    && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
-        || BOOST_LIB_C_GNU)
-  sched_param sch_params;
-  sch_params.sched_priority = 99;
-  pthread_setschedparam(
-      t.native_handle(), algo_fifo ? SCHED_FIFO : SCHED_RR, &sch_params);
-
-  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
+#if OSSIA_PTHREAD_REALTIME
+  return set_thread_realtime(t.native_handle(), prio, algo_fifo);
+#else
+  return false;
 #endif
 }
 

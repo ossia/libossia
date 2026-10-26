@@ -77,10 +77,16 @@ private:
 #endif
 };
 
+//! Requests a real-time policy for the thread. The priority is lowered to
+//! what the process may use (RLIMIT_RTPRIO); returns false, and logs why,
+//! when the thread keeps its normal priority.
 OSSIA_EXPORT
-void set_thread_realtime(std::thread& t, int prio = 99, bool algo_fifo = true);
+bool set_thread_realtime(std::thread& t, int prio = 95, bool algo_fifo = true);
 OSSIA_EXPORT
-void set_thread_realtime(ossia::thread& t, int prio = 99, bool algo_fifo = true);
+bool set_thread_realtime(ossia::thread& t, int prio = 95, bool algo_fifo = true);
+//! For threads created by a library, e.g. an audio API's callback thread.
+OSSIA_EXPORT
+bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true);
 OSSIA_EXPORT
 void set_thread_name(std::thread& t, std::string_view name);
 OSSIA_EXPORT
