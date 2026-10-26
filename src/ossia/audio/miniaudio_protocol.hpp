@@ -34,6 +34,10 @@
 #define MA_NO_NODE_GRAPH 1
 #define MA_NO_GENERATION 1
 #define MA_MAX_CHANNELS 1024
+// The audio thread is created with this priority when the rtprio limit
+// allows it; the callback raises it otherwise (it asks for the maximum by
+// default, which the usual limit of 95 or 98 refuses).
+#define MA_PTHREAD_REALTIME_THREAD_PRIORITY 95
 // Export the miniaudio API from libossia so consumers (score-plugin-audio)
 // link against this one copy instead of compiling their own. OSSIA_EXPORT is
 // empty in static builds, dllexport/visibility when building the ossia shared
@@ -95,6 +99,8 @@ public:
 
     config.sampleRate = rate;
     config.periodSizeInFrames = bs;
+    // As for PortAudio: periods shorter than 2 ms get one more.
+    config.periods = int64_t(bs) * 1000 < 2 * int64_t(rate) ? 4 : 3;
     // A zeroed device id means "system default device". Passing NULL as the
     // pDeviceID makes miniaudio open the OS default device and, on backends
     // that support it (WASAPI in particular), automatically follow the OS
@@ -146,13 +152,9 @@ public:
     {
       config.playback.shareMode = mode;
       config.capture.shareMode = mode;
-      for(auto profile :
-          {ma_performance_profile_low_latency, ma_performance_profile_conservative})
-      {
-        config.performanceProfile = profile;
-        if((res = ma_device_init(&m_ctx->context, &config, &m_stream)) == MA_SUCCESS)
-          break;
-      }
+      // The performance profile only matters without a period size: no
+      // retry with another one.
+      res = ma_device_init(&m_ctx->context, &config, &m_stream);
       if(res == MA_SUCCESS)
       {
         m_exclusive = mode == ma_share_mode_exclusive;
