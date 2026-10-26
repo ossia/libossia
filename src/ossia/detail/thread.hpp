@@ -99,10 +99,18 @@ bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true, bool log 
 OSSIA_EXPORT
 bool lock_process_memory(bool lock);
 
-//! Lets the kernel evict this range again, e.g. a memory-mapped media file:
-//! once lock_process_memory() is on, every page read from it stays in RAM.
+//! Lets the kernel evict this range again: once lock_process_memory() is on,
+//! every page read from a mapped file stays in RAM. For data no real-time
+//! thread reads, e.g. a waveform cache shown by the GUI.
 OSSIA_EXPORT
 bool unlock_memory(const void* ptr, std::size_t size);
+
+//! Reads a mapped range in from its file now, so that a real-time thread
+//! reading it later does not wait for the disk; with lock_process_memory()
+//! on, the pages then stay resident. Blocks until the range is read: call it
+//! from a background thread for anything large.
+OSSIA_EXPORT
+void preload_memory(const void* ptr, std::size_t size);
 OSSIA_EXPORT
 void set_thread_name(std::thread& t, std::string_view name);
 OSSIA_EXPORT
