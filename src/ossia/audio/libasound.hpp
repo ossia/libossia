@@ -114,6 +114,7 @@ public:
   decltype(&::snd_pcm_hw_params_test_channels) pcm_hw_params_test_channels{};
   decltype(&::snd_pcm_hw_params_set_channels_near) pcm_hw_params_set_channels_near{};
   decltype(&::snd_pcm_delay) pcm_delay{};
+  decltype(&::snd_pcm_resume) pcm_resume{};
 
   // clang-format on
   static const libasound& instance()
@@ -306,6 +307,7 @@ private:
     pcm_hw_params_test_channels = library.symbol<decltype(&::snd_pcm_hw_params_test_channels)>("snd_pcm_hw_params_test_channels");
     pcm_hw_params_set_channels_near = library.symbol<decltype(&::snd_pcm_hw_params_set_channels_near)>("snd_pcm_hw_params_set_channels_near");
     pcm_delay = library.symbol<decltype(&::snd_pcm_delay)>("snd_pcm_delay");
+    pcm_resume = library.symbol<decltype(&::snd_pcm_resume)>("snd_pcm_resume");
 
     // in terms of regex:
     // decltype\(&::([a-z_]+)\) [a-z_]+{};
