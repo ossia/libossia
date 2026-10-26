@@ -235,6 +235,12 @@ private:
     const int n = m_fsize;
     int failures = 0;
     int idle_xruns = 0;
+    // On USB the hardware pointer is where the driver submitted the frames,
+    // not where they are heard: the latency is measured once it runs, as the
+    // mean over periods 8 to 15 after the start.
+    int delay_period = 0;
+    int64_t delay_sum = 0;
+    int delay_count = 0;
 
     while(m_stop_token.load(std::memory_order_relaxed))
     {
@@ -287,6 +293,19 @@ private:
         for(int c = effective_outputs; c < (int)client.nplay(); c++)
           client.clear_chan(c, n);
         client.play_done(n);
+        if(delay_period < 16 && ++delay_period >= 8 && client.play_handle())
+        {
+          snd_pcm_sframes_t delay{};
+          if(ossia::libasound::instance().pcm_delay(client.play_handle(), &delay) == 0
+             && delay > n)
+          {
+            delay_sum += delay - n;
+            delay_count++;
+          }
+          if(delay_period == 16 && delay_count > 0)
+            effective_output_latency.store(
+                int(delay_sum / delay_count), std::memory_order_relaxed);
+        }
 
         k -= n;
       }
