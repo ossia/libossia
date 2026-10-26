@@ -87,6 +87,14 @@ bool set_thread_realtime(ossia::thread& t, int prio = 95, bool algo_fifo = true)
 //! For threads created by a library, e.g. an audio API's callback thread.
 OSSIA_EXPORT
 bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true);
+
+//! Keeps the process's memory resident (mlockall), so that a real-time
+//! thread never waits for a page to come back from swap. Pages are locked as
+//! they are first touched: address space reserved but not used stays free.
+//! Needs an unlimited RLIMIT_MEMLOCK, as every later allocation is locked
+//! too; returns false, and logs why, when memory is not locked.
+OSSIA_EXPORT
+bool lock_process_memory(bool lock);
 OSSIA_EXPORT
 void set_thread_name(std::thread& t, std::string_view name);
 OSSIA_EXPORT
