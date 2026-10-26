@@ -41,6 +41,7 @@
 #define MA_API OSSIA_EXPORT
 
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/thread.hpp>
 
@@ -81,7 +82,7 @@ public:
   miniaudio_engine(
       std::shared_ptr<miniaudio_context> ctx, std::string name,
       const ma_device_id& card_in, const ma_device_id& card_out, int inputs, int outputs,
-      int rate, int bs)
+      int rate, int bs, ma_share_mode share = ma_share_mode_shared)
       : m_ctx{std::move(ctx)}
   {
     ma_device_type dtype = ma_device_type_duplex;
@@ -108,7 +109,6 @@ public:
       config.playback.pDeviceID = is_default_id(card_out) ? nullptr : &card_out;
       config.playback.channels = outputs;
       config.playback.format = ma_format_f32;
-      // config.playback.shareMode = ma_share_mode_exclusive;
     }
 
     if(inputs > 0)
@@ -116,7 +116,6 @@ public:
       config.capture.pDeviceID = is_default_id(card_in) ? nullptr : &card_in;
       config.capture.channels = inputs;
       config.capture.format = ma_format_f32;
-      // config.capture.shareMode = ma_share_mode_exclusive;
     }
 
     config.dataCallback = callback;
@@ -139,17 +138,55 @@ public:
     ins.resize(effective_inputs + 2);
     outs.resize(effective_outputs + 2);
 
-    if(ma_device_init(&m_ctx->context, &config, &m_stream) != MA_SUCCESS)
+    // Exclusive access (ALSA "hw:") gives a period of bs frames; shared access
+    // goes through the system mixer (ALSA dmix), whose own period is used
+    // whatever bs is. A device another program holds can only be shared.
+    ma_result res = MA_ERROR;
+    for(ma_share_mode mode : {share, ma_share_mode_shared})
     {
-      config.performanceProfile = ma_performance_profile_conservative;
-      if(ma_device_init(&m_ctx->context, &config, &m_stream) != MA_SUCCESS)
+      config.playback.shareMode = mode;
+      config.capture.shareMode = mode;
+      for(auto profile :
+          {ma_performance_profile_low_latency, ma_performance_profile_conservative})
       {
-        throw std::runtime_error("Cannot initialize miniaudio");
+        config.performanceProfile = profile;
+        if((res = ma_device_init(&m_ctx->context, &config, &m_stream)) == MA_SUCCESS)
+          break;
       }
+      if(res == MA_SUCCESS)
+      {
+        m_exclusive = mode == ma_share_mode_exclusive;
+        if(mode != share)
+          ossia::logger().warn(
+              "miniaudio: exclusive access refused, using the device in shared mode");
+        break;
+      }
+      if(mode == ma_share_mode_shared)
+        break;
+    }
+    if(res != MA_SUCCESS)
+      throw std::runtime_error(
+          std::string("miniaudio: cannot open the device: ") + ma_result_description(res));
+
+    if(res = ma_device_start(&m_stream); res != MA_SUCCESS)
+    {
+      ma_device_uninit(&m_stream);
+      throw std::runtime_error(
+          std::string("miniaudio: cannot start the device: ")
+          + ma_result_description(res));
     }
 
-    if(ma_device_start(&m_stream) != MA_SUCCESS)
-      throw std::runtime_error("Cannot start miniaudio");
+    auto to_client_frames = [rate](ma_uint32 frames, ma_uint32 device_rate) {
+      return device_rate > 0 ? int(int64_t(frames) * rate / device_rate) : int(frames);
+    };
+    if(outputs > 0)
+      effective_output_latency = to_client_frames(
+          m_stream.playback.internalPeriodSizeInFrames * m_stream.playback.internalPeriods,
+          m_stream.playback.internalSampleRate);
+    if(inputs > 0)
+      effective_input_latency = to_client_frames(
+          m_stream.capture.internalPeriodSizeInFrames,
+          m_stream.capture.internalSampleRate);
 
 #if defined(__EMSCRIPTEN__)
     // A duplex device only reaches the output from inside getUserMedia()'s
@@ -169,6 +206,9 @@ public:
 
     m_active = true;
   }
+
+  //! Whether the device is used exclusively, without the system mixer.
+  bool exclusive() const noexcept { return m_exclusive; }
 
   bool running() const override
   {
@@ -199,6 +239,9 @@ private:
         = [] {
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
+#if defined(__linux__)
+      ossia::set_current_thread_realtime();
+#endif
       return 0;
     }();
 #endif
@@ -270,6 +313,7 @@ private:
   ossia::pod_vector<float*> outs;
 
   bool m_active{};
+  bool m_exclusive{};
 };
 }
 
