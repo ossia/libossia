@@ -269,7 +269,10 @@ private:
 
       while(k >= n)
       {
-        client.capt_init(n);
+        // Both return the frames that can be accessed in one piece: always n
+        // here, as the buffers are whole periods, unless the device failed.
+        if(client.capt_init(n) != n && client.capt_handle())
+          break;
         for(int c = 0; c < effective_inputs; c++)
           client.capt_chan(c, m_capture_ptrs[c], n, 1);
         client.capt_done(n);
@@ -277,7 +280,8 @@ private:
         std::fill(m_playback.begin(), m_playback.end(), 0.f);
         process(m_capture_ptrs.data(), m_playback_ptrs.data(), n);
 
-        client.play_init(n);
+        if(client.play_init(n) != n && client.play_handle())
+          break;
         for(int c = 0; c < effective_outputs; c++)
           client.play_chan(c, m_playback_ptrs[c], n, 1);
         for(int c = effective_outputs; c < (int)client.nplay(); c++)
@@ -320,6 +324,10 @@ private:
       case -5:
         return "ALSA: " + name + " does not support this number of periods for "
                + stream;
+      case -8:
+        return "ALSA: " + card_out + " cannot use the period " + card_in
+               + " gave for capture (" + std::to_string(bs)
+               + " frames requested): choose another buffer size";
       case -6:
         return "ALSA: " + name + " uses a sample format score cannot handle for "
                + stream;

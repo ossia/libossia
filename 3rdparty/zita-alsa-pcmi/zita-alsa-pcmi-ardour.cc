@@ -95,8 +95,8 @@ Alsa_pcmi::pcm_start (void)
 	int err;
 
 	if (_play_handle) {
-    unsigned int n = snd.pcm_avail_update(_play_handle);
-    if(n < _fsize * _real_nfrag)
+    const snd_pcm_sframes_t n = snd.pcm_avail_update(_play_handle);
+    if(n < (snd_pcm_sframes_t)(_fsize * _real_nfrag))
     {
       if(_debug & DEBUG_STAT)
         fprintf(stderr, "Alsa_pcmi: full buffer not available at start.\n");
@@ -104,7 +104,8 @@ Alsa_pcmi::pcm_start (void)
     }
     for(unsigned int i = 0; i < _real_nfrag; i++)
     {
-      play_init(_fsize);
+      if(play_init(_fsize) != (int)_fsize)
+        return -1;
       for(unsigned int j = 0; j < _play_nchan; j++)
       {
         clear_chan(j, _fsize);
@@ -212,14 +213,14 @@ snd_pcm_sframes_t Alsa_pcmi::pcm_wait(void)
 
 		if (need_play) {
       snd.pcm_poll_descriptors_revents(_play_handle, _poll_fd, n1, &rev);
-      if(rev & POLLERR)
+      // POLLNVAL after an unplug: the file operations are gone.
+      if(rev & (POLLERR | POLLNVAL | POLLHUP))
       {
         if(_debug & DEBUG_WAIT)
         {
           fprintf(stderr, "Alsa_pcmi: error on playback pollfd.\n");
         }
-        _state = 1;
-        recover();
+        _state = recover() ? -1 : 1;
         return 0;
       }
       if(rev & POLLOUT)
@@ -230,14 +231,14 @@ snd_pcm_sframes_t Alsa_pcmi::pcm_wait(void)
     if(need_capt)
     {
       snd.pcm_poll_descriptors_revents(_capt_handle, _poll_fd + n1, n2 - n1, &rev);
-      if(rev & POLLERR)
+      // POLLNVAL after an unplug: the file operations are gone.
+      if(rev & (POLLERR | POLLNVAL | POLLHUP))
       {
         if(_debug & DEBUG_WAIT)
         {
           fprintf(stderr, "Alsa_pcmi: error on capture pollfd.\n");
         }
-        _state = 1;
-        recover();
+        _state = recover() ? -1 : 1;
         return 0;
       }
       if(rev & POLLIN)
@@ -866,12 +867,16 @@ int Alsa_pcmi::set_hwpar(
   }
 
   const unsigned int requested = *nchan;
-  unsigned int min_chan = 0;
-  snd.pcm_hw_params_get_channels_min(hwpar, &min_chan);
   snd.pcm_hw_params_get_channels_max(hwpar, nchan);
-  if(requested > 0 && min_chan <= *nchan)
+  if(requested > 0)
   {
-    *nchan = std::clamp(requested, min_chan, *nchan);
+    // The nearest count the device has: some only have 2 and 8, or even ones.
+    snd_pcm_hw_params_t* probe;
+    snd_alloca(&probe, snd, pcm_hw_params);
+    snd.pcm_hw_params_copy(probe, hwpar);
+    unsigned int n = requested;
+    if(snd.pcm_hw_params_set_channels_near(handle, probe, &n) >= 0)
+      *nchan = n;
   }
   else if(*nchan > 1024)
   {
@@ -905,7 +910,21 @@ int Alsa_pcmi::set_hwpar(
     }
     return -1;
   }
-  if(snd.pcm_hw_params_set_period_size_near(handle, hwpar, &_fsize, 0) < 0)
+  // Capture is configured first: playback has to use the period it got.
+  if(handle == _play_handle && _capt_hwpar && _capt_handle)
+  {
+    if(snd.pcm_hw_params_set_period_size(handle, hwpar, _fsize, 0) < 0)
+    {
+      if(_debug & DEBUG_INIT)
+      {
+        fprintf(
+            stderr, "Alsa_pcmi: playback cannot use the capture period of %lu.\n",
+            _fsize);
+      }
+      return -8;
+    }
+  }
+  else if(snd.pcm_hw_params_set_period_size_near(handle, hwpar, &_fsize, 0) < 0)
   {
     if(_debug & DEBUG_INIT)
     {
@@ -1037,6 +1056,24 @@ Alsa_pcmi::recover (void)
     _capt_xrun = xruncheck(stat);
   }
 
+  // A disconnected device cannot come back; a suspended one is resumed
+  // when the driver supports it, else prepared like after an xrun.
+  for(snd_pcm_t* h : {_play_handle, _capt_handle})
+  {
+    if(!h)
+      continue;
+    switch(snd.pcm_state(h))
+    {
+      case SND_PCM_STATE_DISCONNECTED:
+        return -1;
+      case SND_PCM_STATE_SUSPENDED:
+        snd.pcm_resume(h);
+        break;
+      default:
+        break;
+    }
+  }
+
   if(pcm_stop())
   {
     return -1;
@@ -1049,7 +1086,9 @@ Alsa_pcmi::recover (void)
     }
     return -1;
   }
-  if(_capt_handle && !_synced && ((err = snd.pcm_prepare(_capt_handle)) < 0))
+  // Even when linked: a plugin between the application and the hardware
+  // (plughw) only resets its own buffer pointers in its prepare.
+  if(_capt_handle && ((err = snd.pcm_prepare(_capt_handle)) < 0))
   {
     if(_debug & DEBUG_INIT)
     {
