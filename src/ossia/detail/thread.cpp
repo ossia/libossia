@@ -35,6 +35,11 @@ bool set_current_thread_realtime(int prio, bool algo_fifo)
   return set_thread_realtime(GetCurrentThread());
 }
 
+bool lock_process_memory(bool lock)
+{
+  return false;
+}
+
 void set_thread_name(std::thread& t, std::string_view name)
 {
   auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
@@ -106,10 +111,12 @@ int get_pid()
 #include <pthread_np.h>
 #endif
 
+#include <sys/mman.h>
 #include <sys/resource.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <cstring>
 namespace ossia
 {
@@ -156,6 +163,31 @@ bool set_current_thread_realtime(int prio, bool algo_fifo)
 {
 #if OSSIA_PTHREAD_REALTIME
   return set_thread_realtime(pthread_self(), prio, algo_fifo);
+#else
+  return false;
+#endif
+}
+
+bool lock_process_memory(bool lock)
+{
+#if defined(__linux__) && defined(MCL_ONFAULT)
+  if(!lock)
+    return munlockall() == 0;
+
+  if(rlimit rl; getrlimit(RLIMIT_MEMLOCK, &rl) == 0 && rl.rlim_cur != RLIM_INFINITY)
+  {
+    ossia::logger().warn(
+        "Memory not locked: the memlock limit is {} kB. Set it to unlimited "
+        "(/etc/security/limits.d) to keep audio from waiting on swapped pages.",
+        rl.rlim_cur / 1024);
+    return false;
+  }
+  if(mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT) != 0)
+  {
+    ossia::logger().warn("Memory not locked: {}", std::strerror(errno));
+    return false;
+  }
+  return true;
 #else
   return false;
 #endif
