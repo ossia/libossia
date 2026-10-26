@@ -8,9 +8,6 @@
 #include <ossia/detail/thread.hpp>
 
 #include <portaudio.h>
-#if defined(__linux__) && __has_include(<pa_linux_alsa.h>)
-#include <pa_linux_alsa.h>
-#endif
 
 #include <algorithm>
 #include <stdexcept>
@@ -86,11 +83,9 @@ public:
       throw std::runtime_error(err);
     }
 
+    // PortAudio's own real-time mode (PaAlsa_EnableRealtimeScheduling) runs
+    // the callback at SCHED_FIFO 1: the callback sets the priority instead.
     m_stream.store(stream);
-#if defined(__linux__) && __has_include(<pa_linux_alsa.h>)
-    if(hostApi == paALSA)
-      PaAlsa_EnableRealtimeScheduling(stream, 1);
-#endif
 
     if(ec = Pa_StartStream(stream); ec != paNoError)
     {
@@ -213,7 +208,7 @@ private:
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
 #if defined(__linux__)
-      ossia::set_current_thread_realtime();
+      ossia::set_current_thread_realtime(95, true, false);
 #endif
       return 0;
     }();

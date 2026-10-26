@@ -246,7 +246,7 @@ private:
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
 #if defined(__linux__)
-      ossia::set_current_thread_realtime();
+      ossia::set_current_thread_realtime(95, true, false);
 #endif
       return 0;
     }();
