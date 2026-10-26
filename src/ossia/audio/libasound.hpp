@@ -94,6 +94,26 @@ public:
   decltype(&::snd_device_name_hint) device_name_hint{};
   decltype(&::snd_device_name_get_hint) device_name_get_hint{};
   decltype(&::snd_device_name_free_hint) device_name_free_hint{};
+  decltype(&::snd_card_next) card_next{};
+  decltype(&::snd_ctl_pcm_next_device) ctl_pcm_next_device{};
+  decltype(&::snd_ctl_pcm_info) ctl_pcm_info{};
+  decltype(&::snd_ctl_card_info_get_id) ctl_card_info_get_id{};
+  decltype(&::snd_ctl_card_info_get_name) ctl_card_info_get_name{};
+  decltype(&::snd_ctl_card_info_get_longname) ctl_card_info_get_longname{};
+  decltype(&::snd_ctl_card_info_get_driver) ctl_card_info_get_driver{};
+  decltype(&::snd_pcm_info_sizeof) pcm_info_sizeof{};
+  decltype(&::snd_pcm_info_set_device) pcm_info_set_device{};
+  decltype(&::snd_pcm_info_set_subdevice) pcm_info_set_subdevice{};
+  decltype(&::snd_pcm_info_set_stream) pcm_info_set_stream{};
+  decltype(&::snd_pcm_info_get_name) pcm_info_get_name{};
+  decltype(&::snd_pcm_hw_params_copy) pcm_hw_params_copy{};
+  decltype(&::snd_pcm_hw_params_test_rate) pcm_hw_params_test_rate{};
+  decltype(&::snd_pcm_hw_params_test_period_size) pcm_hw_params_test_period_size{};
+  decltype(&::snd_pcm_hw_params_test_buffer_size) pcm_hw_params_test_buffer_size{};
+  decltype(&::snd_pcm_hw_params_test_format) pcm_hw_params_test_format{};
+  decltype(&::snd_pcm_hw_params_test_channels) pcm_hw_params_test_channels{};
+  decltype(&::snd_pcm_hw_params_set_channels_near) pcm_hw_params_set_channels_near{};
+  decltype(&::snd_pcm_delay) pcm_delay{};
 
   // clang-format on
   static const libasound& instance()
@@ -266,6 +286,26 @@ private:
         "snd_device_name_get_hint");
     device_name_free_hint = library.symbol<decltype(&::snd_device_name_free_hint)>(
         "snd_device_name_free_hint");
+    card_next = library.symbol<decltype(&::snd_card_next)>("snd_card_next");
+    ctl_pcm_next_device = library.symbol<decltype(&::snd_ctl_pcm_next_device)>("snd_ctl_pcm_next_device");
+    ctl_pcm_info = library.symbol<decltype(&::snd_ctl_pcm_info)>("snd_ctl_pcm_info");
+    ctl_card_info_get_id = library.symbol<decltype(&::snd_ctl_card_info_get_id)>("snd_ctl_card_info_get_id");
+    ctl_card_info_get_name = library.symbol<decltype(&::snd_ctl_card_info_get_name)>("snd_ctl_card_info_get_name");
+    ctl_card_info_get_longname = library.symbol<decltype(&::snd_ctl_card_info_get_longname)>("snd_ctl_card_info_get_longname");
+    ctl_card_info_get_driver = library.symbol<decltype(&::snd_ctl_card_info_get_driver)>("snd_ctl_card_info_get_driver");
+    pcm_info_sizeof = library.symbol<decltype(&::snd_pcm_info_sizeof)>("snd_pcm_info_sizeof");
+    pcm_info_set_device = library.symbol<decltype(&::snd_pcm_info_set_device)>("snd_pcm_info_set_device");
+    pcm_info_set_subdevice = library.symbol<decltype(&::snd_pcm_info_set_subdevice)>("snd_pcm_info_set_subdevice");
+    pcm_info_set_stream = library.symbol<decltype(&::snd_pcm_info_set_stream)>("snd_pcm_info_set_stream");
+    pcm_info_get_name = library.symbol<decltype(&::snd_pcm_info_get_name)>("snd_pcm_info_get_name");
+    pcm_hw_params_copy = library.symbol<decltype(&::snd_pcm_hw_params_copy)>("snd_pcm_hw_params_copy");
+    pcm_hw_params_test_rate = library.symbol<decltype(&::snd_pcm_hw_params_test_rate)>("snd_pcm_hw_params_test_rate");
+    pcm_hw_params_test_period_size = library.symbol<decltype(&::snd_pcm_hw_params_test_period_size)>("snd_pcm_hw_params_test_period_size");
+    pcm_hw_params_test_buffer_size = library.symbol<decltype(&::snd_pcm_hw_params_test_buffer_size)>("snd_pcm_hw_params_test_buffer_size");
+    pcm_hw_params_test_format = library.symbol<decltype(&::snd_pcm_hw_params_test_format)>("snd_pcm_hw_params_test_format");
+    pcm_hw_params_test_channels = library.symbol<decltype(&::snd_pcm_hw_params_test_channels)>("snd_pcm_hw_params_test_channels");
+    pcm_hw_params_set_channels_near = library.symbol<decltype(&::snd_pcm_hw_params_set_channels_near)>("snd_pcm_hw_params_set_channels_near");
+    pcm_delay = library.symbol<decltype(&::snd_pcm_delay)>("snd_pcm_delay");
 
     // in terms of regex:
     // decltype\(&::([a-z_]+)\) [a-z_]+{};
