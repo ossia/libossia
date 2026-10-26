@@ -45,42 +45,80 @@ public:
     // Linked streams run on one clock and are fine with 2 periods. Streams
     // that cannot be linked (dmix with dsnoop) drift in phase and need 3.
     // Linking two cards succeeds but only starts them together: their clocks
-    // still differ, which the retry below handles. Some devices need more than
-    // the period they accept: full-speed USB (1 ms packets) under-runs
+    // still differ, which the check below handles. Some devices need more
+    // than the period they accept: full-speed USB (1 ms packets) under-runs
     // continuously with two periods shorter than 2 ms. With periods == 0, a
-    // start that keeps under-running is retried with one more period.
-    unsigned nfrag = periods > 0 ? periods : 2;
-    for(;;)
-    {
+    // small period that keeps under-running is retried with one more period,
+    // and a count the device refuses falls back to the one that ran.
+    bool use_capture = capture;
+    std::string error;
+    auto attempt = [&](unsigned nfrag) {
       m_client.reset();
       m_client = std::make_unique<Alsa_pcmi>(
-          playback ? card_out.c_str() : nullptr, capture ? card_in.c_str() : nullptr,
-          nullptr, rate, bs, nfrag, nfrag, Alsa_pcmi::DEBUG_INIT,
-          playback ? std::max(outputs, 0) : 0, capture ? inputs : 0);
+          playback ? card_out.c_str() : nullptr,
+          use_capture ? card_in.c_str() : nullptr, nullptr, rate, bs, nfrag, nfrag,
+          Alsa_pcmi::DEBUG_INIT, playback ? std::max(outputs, 0) : 0,
+          use_capture ? inputs : 0);
       auto& client = *m_client;
-      if(periods <= 0 && nfrag == 2 && client.state() == 0 && client.play_handle()
-         && client.capt_handle() && !client.synced())
-      {
-        nfrag = 3;
-        continue;
-      }
-
       // Playback clocks the engine and is what the user hears: without it the
-      // engine would run, silently. A missing capture only removes inputs.
-      if(client.state() != 0 || (playback && !client.play_handle()))
-        throw std::runtime_error(
-            describe_error(client, card_in, card_out, playback, capture, rate, bs));
+      // engine would run, silently. Capture only brings the inputs.
+      if(client.state() == 0 && (!playback || client.play_handle()))
+        return true;
+      error = describe_error(client, card_in, card_out, playback, use_capture, rate, bs);
+      m_client.reset();
+      return false;
+    };
+    auto configure = [&](unsigned nfrag) {
+      if(attempt(nfrag))
+        return true;
+      if(!(use_capture && playback))
+        return false;
+      ossia::logger().warn("{}; continuing without inputs", error);
+      use_capture = false;
+      return attempt(nfrag);
+    };
+    auto run = [&] {
+      try
+      {
+        start(inputs, outputs, playback ? card_out : card_in);
+        return true;
+      }
+      catch(std::exception& e)
+      {
+        error = e.what();
+        return false;
+      }
+    };
 
-      start(inputs, outputs, playback ? card_out : card_in);
+    unsigned nfrag = periods > 0 ? periods : 2;
+    if(!configure(nfrag))
+      throw std::runtime_error(error);
+    if(periods <= 0 && m_client->play_handle() && m_client->capt_handle()
+       && !m_client->synced())
+    {
+      if(attempt(3))
+        nfrag = 3;
+      else if(!attempt(nfrag))
+        throw std::runtime_error(error);
+    }
+    if(!run())
+      throw std::runtime_error(error);
 
-      if(periods > 0 || nfrag >= 4 || !keeps_underrunning())
-        break;
-
+    while(periods <= 0 && nfrag < 4 && keeps_underrunning())
+    {
       ossia::logger().info(
           "ALSA: {} under-runs with {} periods, trying {}",
           playback ? card_out : card_in, nfrag, nfrag + 1);
       shutdown();
-      nfrag++;
+      if(attempt(nfrag + 1) && run())
+      {
+        nfrag++;
+        continue;
+      }
+      // The device does not take more periods: keep the count that ran.
+      if(!attempt(nfrag) || !run())
+        throw std::runtime_error(error);
+      break;
     }
 
     if(capture && !m_client->capt_handle())
@@ -142,9 +180,11 @@ private:
     m_failed = false;
     m_stop_token = true;
 
+    // The thread owns the promise: the future returns as soon as the value
+    // is set, possibly while set_value() is still running.
     std::promise<int> started;
     auto start_result = started.get_future();
-    m_thread = ossia::thread{[this, &started] {
+    m_thread = ossia::thread{[this, started = std::move(started)]() mutable {
       init_thread();
       const int err = m_client->pcm_start();
       started.set_value(err);
@@ -162,14 +202,19 @@ private:
   }
 
   //! A configuration the device cannot sustain under-runs on almost every
-  //! period. The first ones are skipped: two cards starting together often
-  //! under-run once or twice while their streams settle.
+  //! period. Only short periods are checked, as they are the ones devices
+  //! cannot sustain, and the check holds up the caller. The first periods are
+  //! skipped: two cards starting together often under-run once or twice
+  //! while their streams settle.
   bool keeps_underrunning()
   {
-    const int period_ms = std::max(1, 1000 * m_fsize / std::max(effective_sample_rate, 1));
-    std::this_thread::sleep_for(std::chrono::milliseconds(std::max(50, 4 * period_ms)));
+    const int period_us = int(int64_t(1'000'000) * m_fsize / std::max(effective_sample_rate, 1));
+    if(period_us > 5000)
+      return false;
+    using namespace std::chrono;
+    std::this_thread::sleep_for(std::max<microseconds>(30ms, microseconds(4 * period_us)));
     const auto before = xruns.load();
-    std::this_thread::sleep_for(std::chrono::milliseconds(std::max(100, 20 * period_ms)));
+    std::this_thread::sleep_for(std::max<microseconds>(60ms, microseconds(20 * period_us)));
     return xruns.load() - before >= 2 || m_failed.load();
   }
 
@@ -253,7 +298,9 @@ private:
     if(playback && !client.play_handle() && client.play_open_error() < 0)
       return "ALSA: cannot open " + card_out + " for playback: "
              + ossia::libasound::instance().strerror(client.play_open_error());
-    if(capture && !client.capt_handle() && client.capt_open_error() < 0)
+    // Nothing opened: a capture-only engine whose device could not be opened.
+    if(!client.play_handle() && capture && !client.capt_handle()
+       && client.capt_open_error() < 0)
       return "ALSA: cannot open " + card_in + " for capture: "
              + ossia::libasound::instance().strerror(client.capt_open_error());
 
