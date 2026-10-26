@@ -373,7 +373,19 @@ public:
   bool running() const override
   {
     auto& pa = libpulse::instance();
-    return m_stream && pa.pa_stream_is_corked(m_stream);
+    // 1 when corked (paused), negative on error.
+    return m_stream && pa.pa_stream_is_corked(m_stream) == 0;
+  }
+
+  void stop() override
+  {
+    audio_engine::stop();
+    if(m_stream)
+    {
+      auto& pa = libpulse::instance();
+      mainloop_locker lock{*this};
+      pa.pa_stream_cork(m_stream, 1, nullptr, nullptr);
+    }
   }
 
   ~pulseaudio_engine() override
