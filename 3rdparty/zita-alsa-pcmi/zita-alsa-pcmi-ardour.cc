@@ -26,6 +26,8 @@
 
 #include <sys/time.h>
 
+#include <algorithm>
+
 #include <byteswap.h>
 
 /* Public members *************************************************************/
@@ -38,7 +40,9 @@ Alsa_pcmi::Alsa_pcmi (
 		unsigned int fsize,
 		unsigned int play_nfrag,
 		unsigned int capt_nfrag,
-		unsigned int debug)
+		unsigned int debug,
+		unsigned int play_nchan,
+		unsigned int capt_nchan)
 	: _fsamp (fsamp)
 	, _fsize (fsize)
 	, _play_nfrag (play_nfrag)
@@ -46,6 +50,7 @@ Alsa_pcmi::Alsa_pcmi (
 	, _capt_nfrag (capt_nfrag)
 	, _debug (debug)
 	, _state (-1)
+	, _error_stream (0)
 	, _play_handle (0)
 	, _capt_handle (0)
 	, _ctrl_handle (0)
@@ -53,8 +58,8 @@ Alsa_pcmi::Alsa_pcmi (
 	, _play_swpar (0)
 	, _capt_hwpar (0)
 	, _capt_swpar (0)
-	, _play_nchan (0)
-	, _capt_nchan (0)
+	, _play_nchan (play_nchan)
+	, _capt_nchan (capt_nchan)
 	, _play_xrun (0)
 	, _capt_xrun (0)
 	, _synced (false)
@@ -91,13 +96,13 @@ Alsa_pcmi::pcm_start (void)
 
 	if (_play_handle) {
     unsigned int n = snd.pcm_avail_update(_play_handle);
-    if(n < _fsize * _play_nfrag)
+    if(n < _fsize * _real_nfrag)
     {
       if(_debug & DEBUG_STAT)
         fprintf(stderr, "Alsa_pcmi: full buffer not available at start.\n");
       return -1;
     }
-    for(unsigned int i = 0; i < _play_nfrag; i++)
+    for(unsigned int i = 0; i < _real_nfrag; i++)
     {
       play_init(_fsize);
       for(unsigned int j = 0; j < _play_nchan; j++)
@@ -451,7 +456,7 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
 
   if(play_name)
   {
-    if(snd.pcm_open(&_play_handle, play_name, SND_PCM_STREAM_PLAYBACK, 0) < 0)
+    if((_play_open_error = snd.pcm_open(&_play_handle, play_name, SND_PCM_STREAM_PLAYBACK, 0)) < 0)
     {
       _play_handle = 0;
       if(_debug & DEBUG_INIT)
@@ -464,7 +469,7 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
 
   if(capt_name)
   {
-    if(snd.pcm_open(&_capt_handle, capt_name, SND_PCM_STREAM_CAPTURE, 0) < 0)
+    if((_capt_open_error = snd.pcm_open(&_capt_handle, capt_name, SND_PCM_STREAM_CAPTURE, 0)) < 0)
     {
       _capt_handle = 0;
       if(_debug & DEBUG_INIT)
@@ -474,6 +479,12 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
       }
     }
   }
+
+  // The channel counts hold the requested ones until set_hwpar() replaces them.
+  if(!_play_handle)
+    _play_nchan = 0;
+  if(!_capt_handle)
+    _capt_nchan = 0;
 
   if(!_play_handle && !_capt_handle)
   {
@@ -523,12 +534,15 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
       }
       return;
     }
-    if(set_hwpar(_capt_handle, _capt_hwpar, "capture", _capt_nfrag, &_capt_nchan) < 0)
+    _error_stream = "capture";
+    if((err = set_hwpar(_capt_handle, _capt_hwpar, "capture", _capt_nfrag, &_capt_nchan)) < 0)
     {
+      _state = err < -1 ? err : -2;
       return;
     }
     if(set_swpar(_capt_handle, _capt_swpar, "capture") < 0)
     {
+      _state = -7;
       return;
     }
   }
@@ -551,12 +565,15 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
       }
       return;
     }
-    if(set_hwpar(_play_handle, _play_hwpar, "playback", _play_nfrag, &_play_nchan) < 0)
+    _error_stream = "playback";
+    if((err = set_hwpar(_play_handle, _play_hwpar, "playback", _play_nfrag, &_play_nchan)) < 0)
     {
+      _state = err < -1 ? err : -2;
       return;
     }
     if(set_swpar(_play_handle, _play_swpar, "playback") < 0)
     {
+      _state = -7;
       return;
     }
   }
@@ -565,6 +582,7 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
 
   if(_play_handle)
   {
+    _error_stream = "playback";
     if(snd.pcm_hw_params_get_rate(_play_hwpar, &fsamp, &dir) || (fsamp != _fsamp) || dir)
     {
       if(_debug & DEBUG_INIT)
@@ -662,6 +680,7 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
 
   if(_capt_handle)
   {
+    _error_stream = "capture";
     if(snd.pcm_hw_params_get_rate(_capt_hwpar, &fsamp, &dir) || (fsamp != _fsamp) || dir)
     {
       if(_debug & DEBUG_INIT)
@@ -764,6 +783,7 @@ Alsa_pcmi::initialise (const char* play_name, const char* capt_name, const char*
   }
 
   _state = 0;
+  _error_stream = 0;
 }
 
 int Alsa_pcmi::set_hwpar(
@@ -845,8 +865,15 @@ int Alsa_pcmi::set_hwpar(
     return -3;
   }
 
+  const unsigned int requested = *nchan;
+  unsigned int min_chan = 0;
+  snd.pcm_hw_params_get_channels_min(hwpar, &min_chan);
   snd.pcm_hw_params_get_channels_max(hwpar, nchan);
-  if(*nchan > 1024)
+  if(requested > 0 && min_chan <= *nchan)
+  {
+    *nchan = std::clamp(requested, min_chan, *nchan);
+  }
+  else if(*nchan > 1024)
   {
     if(_debug & DEBUG_INIT)
     {

@@ -43,6 +43,15 @@ public:
   int effective_buffer_size{};
   int effective_inputs{};
   int effective_outputs{};
+  //! Frames from the hardware's input to the engine and from the engine to the
+  //! hardware's output, as the backend reports them; zero when it does not.
+  //! A backend may update them from its own thread when the device or the
+  //! connections change (JACK does), so they are read with a load.
+  std::atomic_int effective_input_latency{};
+  std::atomic_int effective_output_latency{};
+
+  //! Buffer over- and underruns the driver reported since the engine started.
+  std::atomic_int64_t xruns{};
 
   void tick_start() { load_audio_tick(); }
   void tick_clear() { stop_received = true; }
