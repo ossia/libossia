@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <ossia/detail/config.hpp>
 
 #include <ossia/detail/flat_map.hpp>
@@ -85,8 +86,10 @@ bool set_thread_realtime(std::thread& t, int prio = 95, bool algo_fifo = true);
 OSSIA_EXPORT
 bool set_thread_realtime(ossia::thread& t, int prio = 95, bool algo_fifo = true);
 //! For threads created by a library, e.g. an audio API's callback thread.
+//! A thread that already has a real-time policy keeps it. Audio callbacks
+//! pass log = false: logging allocates and locks.
 OSSIA_EXPORT
-bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true);
+bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true, bool log = true);
 
 //! Keeps the process's memory resident (mlockall), so that a real-time
 //! thread never waits for a page to come back from swap. Pages are locked as
@@ -95,6 +98,11 @@ bool set_current_thread_realtime(int prio = 95, bool algo_fifo = true);
 //! too; returns false, and logs why, when memory is not locked.
 OSSIA_EXPORT
 bool lock_process_memory(bool lock);
+
+//! Lets the kernel evict this range again, e.g. a memory-mapped media file:
+//! once lock_process_memory() is on, every page read from it stays in RAM.
+OSSIA_EXPORT
+bool unlock_memory(const void* ptr, std::size_t size);
 OSSIA_EXPORT
 void set_thread_name(std::thread& t, std::string_view name);
 OSSIA_EXPORT

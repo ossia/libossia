@@ -30,12 +30,17 @@ bool set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
   return set_thread_realtime(reinterpret_cast<HANDLE>(t.native_handle()));
 }
 
-bool set_current_thread_realtime(int prio, bool algo_fifo)
+bool set_current_thread_realtime(int prio, bool algo_fifo, bool log)
 {
   return set_thread_realtime(GetCurrentThread());
 }
 
 bool lock_process_memory(bool lock)
+{
+  return false;
+}
+
+bool unlock_memory(const void* ptr, std::size_t size)
 {
   return false;
 }
@@ -111,11 +116,16 @@ int get_pid()
 #include <pthread_np.h>
 #endif
 
+#if __has_include(<sys/mman.h>)
 #include <sys/mman.h>
+#endif
+#if __has_include(<sys/resource.h>)
 #include <sys/resource.h>
+#endif
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cerrno>
 #include <cstring>
 namespace ossia
@@ -124,26 +134,30 @@ namespace ossia
     && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
         || BOOST_LIB_C_GNU)
 #define OSSIA_PTHREAD_REALTIME 1
-// Without CAP_SYS_NICE the kernel refuses any priority above RLIMIT_RTPRIO,
-// and refuses it entirely rather than lowering it: ask for what is allowed.
-static bool set_thread_realtime(pthread_t t, int prio, bool algo_fifo)
+static bool set_thread_realtime(pthread_t t, int prio, bool algo_fifo, bool log)
 {
   const int policy = algo_fifo ? SCHED_FIFO : SCHED_RR;
-  int lo = sched_get_priority_min(policy);
+#if defined(__linux__) && defined(RLIMIT_RTPRIO)
+  // Without CAP_SYS_NICE the kernel refuses any priority above RLIMIT_RTPRIO,
+  // and refuses it entirely rather than lowering it: ask for what is allowed.
+  const int lo = sched_get_priority_min(policy);
   int hi = sched_get_priority_max(policy);
-#if defined(RLIMIT_RTPRIO)
   if(rlimit rl; getrlimit(RLIMIT_RTPRIO, &rl) == 0 && rl.rlim_cur != RLIM_INFINITY
-                && rl.rlim_cur >= (rlim_t)lo)
-    hi = std::min<int>(hi, rl.rlim_cur);
+                && rl.rlim_cur >= (rlim_t)lo && rl.rlim_cur < (rlim_t)hi)
+    hi = (int)rl.rlim_cur;
+  prio = std::clamp(prio, lo, hi);
 #endif
   sched_param sch_params{};
-  sch_params.sched_priority = std::clamp(prio, lo, hi);
+  sch_params.sched_priority = prio;
   if(int err = pthread_setschedparam(t, policy, &sch_params); err != 0)
   {
-    ossia::logger().warn(
-        "Could not give a thread real-time priority {}: {}. It runs at normal "
-        "priority; raise the rtprio limit (/etc/security/limits.d) to fix this.",
-        sch_params.sched_priority, std::strerror(err));
+    static std::atomic_bool warned{};
+    if(log && !warned.exchange(true))
+      ossia::logger().warn(
+          "Could not give threads real-time priority {}: {}. They run at normal "
+          "priority, audio may drop out. On Linux, raise the rtprio limit "
+          "(/etc/security/limits.d).",
+          prio, std::strerror(err));
     return false;
   }
   return true;
@@ -153,16 +167,32 @@ static bool set_thread_realtime(pthread_t t, int prio, bool algo_fifo)
 bool set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 {
 #if OSSIA_PTHREAD_REALTIME
-  return set_thread_realtime(t.native_handle(), prio, algo_fifo);
+  return set_thread_realtime(t.native_handle(), prio, algo_fifo, true);
 #else
   return false;
 #endif
 }
 
-bool set_current_thread_realtime(int prio, bool algo_fifo)
+bool set_current_thread_realtime(int prio, bool algo_fifo, bool log)
 {
 #if OSSIA_PTHREAD_REALTIME
-  return set_thread_realtime(pthread_self(), prio, algo_fifo);
+  // A thread created by an audio server (JACK, PipeWire) already has the
+  // priority it chose.
+  int policy{};
+  sched_param current{};
+  if(pthread_getschedparam(pthread_self(), &policy, &current) == 0
+     && (policy == SCHED_FIFO || policy == SCHED_RR))
+    return true;
+  return set_thread_realtime(pthread_self(), prio, algo_fifo, log);
+#else
+  return false;
+#endif
+}
+
+bool unlock_memory(const void* ptr, std::size_t size)
+{
+#if defined(__linux__) && defined(MCL_ONFAULT)
+  return munlock(ptr, size) == 0;
 #else
   return false;
 #endif
@@ -216,7 +246,7 @@ void set_thread_name(std::string_view name)
 bool set_thread_realtime(ossia::thread& t, int prio, bool algo_fifo)
 {
 #if OSSIA_PTHREAD_REALTIME
-  return set_thread_realtime(t.native_handle(), prio, algo_fifo);
+  return set_thread_realtime(t.native_handle(), prio, algo_fifo, true);
 #else
   return false;
 #endif
