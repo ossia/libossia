@@ -44,6 +44,7 @@ public:
   decltype(&::pa_stream_set_overflow_callback) pa_stream_set_overflow_callback{};
   decltype(&::pa_stream_connect_playback) pa_stream_connect_playback{};
   decltype(&::pa_stream_cork) pa_stream_cork{};
+  decltype(&::pa_operation_unref) pa_operation_unref{};
   decltype(&::pa_stream_is_corked) pa_stream_is_corked{};
   decltype(&::pa_threaded_mainloop_signal) pa_threaded_mainloop_signal{};
   decltype(&::pa_stream_begin_write) pa_stream_begin_write{};
@@ -124,6 +125,8 @@ private:
     pa_stream_connect_playback = library.symbol<decltype(&::pa_stream_connect_playback)>(
         "pa_stream_connect_playback");
     pa_stream_cork = library.symbol<decltype(&::pa_stream_cork)>("pa_stream_cork");
+    pa_operation_unref
+        = library.symbol<decltype(&::pa_operation_unref)>("pa_operation_unref");
     pa_stream_is_corked
         = library.symbol<decltype(&::pa_stream_is_corked)>("pa_stream_is_corked");
     pa_stream_begin_write
@@ -367,7 +370,8 @@ public:
     }
 
     // cork means pausing, cork = 0 means resuming
-    pa.pa_stream_cork(m_stream, 0, success_cb, this);
+    if(auto op = pa.pa_stream_cork(m_stream, 0, success_cb, this))
+      pa.pa_operation_unref(op);
   }
 
   bool running() const override
@@ -384,7 +388,8 @@ public:
     {
       auto& pa = libpulse::instance();
       mainloop_locker lock{*this};
-      pa.pa_stream_cork(m_stream, 1, nullptr, nullptr);
+      if(auto op = pa.pa_stream_cork(m_stream, 1, nullptr, nullptr))
+        pa.pa_operation_unref(op);
     }
   }
 
