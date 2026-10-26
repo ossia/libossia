@@ -215,6 +215,12 @@ public:
     return m_active && ma_device_get_state(&m_stream) == ma_device_state_started;
   }
 
+  bool failed() const noexcept override
+  {
+    return m_active && !stop_processing
+           && ma_device_get_state(&m_stream) == ma_device_state_stopped;
+  }
+
   void stop() override
   {
     audio_engine::stop();
