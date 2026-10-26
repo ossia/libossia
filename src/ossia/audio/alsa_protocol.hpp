@@ -65,7 +65,9 @@ public:
         continue;
       }
 
-      if(client.state() != 0)
+      // Playback clocks the engine and is what the user hears: without it the
+      // engine would run, silently. A missing capture only removes inputs.
+      if(client.state() != 0 || (playback && !client.play_handle()))
         throw std::runtime_error(
             describe_error(client, card_in, card_out, playback, capture, rate, bs));
 
