@@ -18,6 +18,8 @@ public:
   virtual ~audio_engine();
 
   virtual bool running() const = 0;
+  //! True once the stream died on its own, e.g. the device was unplugged.
+  virtual bool failed() const noexcept { return false; }
   virtual void wait(int milliseconds);
   virtual void stop();
 

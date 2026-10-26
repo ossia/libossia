@@ -102,12 +102,16 @@ public:
 
   ~alsa_engine() override { stop(); }
 
-  //! False as well once the device stopped answering, e.g. unplugged.
   bool running() const override
   {
     if(!m_client)
       return false;
     return m_activated && !m_failed.load(std::memory_order_relaxed);
+  }
+
+  bool failed() const noexcept override
+  {
+    return m_failed.load(std::memory_order_relaxed);
   }
 
 private:

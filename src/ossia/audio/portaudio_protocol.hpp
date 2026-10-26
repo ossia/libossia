@@ -116,6 +116,12 @@ public:
     return s && Pa_IsStreamActive(s) == 1;
   }
 
+  bool failed() const noexcept override
+  {
+    auto s = m_stream.load();
+    return s && Pa_IsStreamActive(s) == 0 && !stop_processing;
+  }
+
   void stop() override
   {
     audio_engine::stop();
