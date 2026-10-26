@@ -39,7 +39,9 @@ public:
 	    unsigned int frsize,
 	    unsigned int play_nfrags,
 	    unsigned int capt_nfrags,
-	    unsigned int debug = 0);
+	    unsigned int debug = 0,
+	    unsigned int play_nchan = 0,
+	    unsigned int capt_nchan = 0);
 
 	~Alsa_pcmi (void);
 
@@ -99,6 +101,13 @@ public:
 	float capt_xrun (void) const { return _capt_xrun; }
 
 	int      state (void) const { return _state; }
+	// "playback" or "capture" when state() reports a configuration error.
+	const char* error_stream (void) const { return _error_stream; }
+	uint32_t real_play_nfrag (void) const { return _real_nfrag; }
+	bool synced (void) const { return _synced; }
+	// Negative errno of snd_pcm_open for each direction, 0 when it opened.
+	int play_open_error (void) const { return _play_open_error; }
+	int capt_open_error (void) const { return _capt_open_error; }
 	size_t   fsize (void) const { return _fsize; }
 	uint32_t fsamp (void) const { return _fsamp; }
 
@@ -155,6 +164,9 @@ private:
 	unsigned int         _capt_nfrag;
 	unsigned int         _debug;
 	int                  _state;
+	const char*          _error_stream;
+	int                  _play_open_error = 0;
+	int                  _capt_open_error = 0;
 	snd_pcm_t*           _play_handle;
 	snd_pcm_t*           _capt_handle;
 	snd_ctl_t*           _ctrl_handle;
