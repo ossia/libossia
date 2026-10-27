@@ -18,6 +18,9 @@
 #include <ossia/network/base/message_queue.hpp>
 
 #include <libremidi/libremidi.hpp>
+
+#include <algorithm>
+
 namespace ossia
 {
 execution_state::execution_state() {
@@ -66,7 +69,11 @@ void execution_state::register_device(net::device_base* d)
   if(d)
   {
     m_devices_edit.push_back(d);
-    m_device_change_queue.enqueue({device_operation::REGISTER, d});
+    ossia::net::midi::midi_stream* midi{};
+#if defined(OSSIA_PROTOCOL_MIDI)
+    midi = dynamic_cast<ossia::net::midi::midi_stream*>(&d->get_protocol());
+#endif
+    m_device_change_queue.enqueue({device_operation::REGISTER, d, midi});
   }
 }
 
@@ -320,10 +327,19 @@ void execution_state::apply_device_changes()
 
   // The ports reading a removed device's stream are reset without being
   // unregistered: its entry goes with the device, even one registered and
-  // removed within the same batch.
-  for(auto& op : flattened)
+  // removed within the same batch. A stream registered again later in the
+  // batch (the same device coming back, or a new one allocated where the old
+  // one was) keeps it: inlets may already be bound to it.
+  for(std::size_t i = 0; i < flattened.size(); ++i)
   {
+    const auto& op = flattened[i];
     if(op.operation != device_operation::UNREGISTER || !op.midi)
+      continue;
+    const bool back = std::any_of(
+        flattened.begin() + i + 1, flattened.end(), [&](const device_operation& o) {
+      return o.operation == device_operation::REGISTER && o.midi == op.midi;
+    });
+    if(back)
       continue;
     m_receivedMidi.erase(op.midi);
     for(auto it = m_midiInlets.begin(); it != m_midiInlets.end();)
