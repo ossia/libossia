@@ -790,20 +790,25 @@ struct token_request
     return f;
   }
 
+  //! The musical position at `t`, in the tick: the musical span is split as
+  //! the dates are. A date is relative to the item ticked, which need not
+  //! start where musical time does, e.g. a box later in a scenario: the
+  //! position is not proportional to the date.
+  [[nodiscard]] constexpr double musical_position_at(time_value t) const noexcept
+  {
+    return musical_start_position
+           + (musical_end_position - musical_start_position) * tick_fraction_at(t);
+  }
+
   constexpr void set_end_time(time_value t) noexcept
   // C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
+    const double f = tick_fraction_at(t);
     if(length_sample > 0)
-      length_sample = int32_t(length_sample * tick_fraction_at(t) + 0.5);
+      length_sample = int32_t(length_sample * f + 0.5);
 
-    const auto old_date = date;
+    musical_end_position = musical_position_at(t);
     date = t;
-
-    if(old_date.impl > 0)
-    {
-      double ratio = t.impl / double(old_date.impl);
-      musical_end_position *= ratio;
-    }
 
     // TODO what if musical_end_position is now before musical_end_last_bar
   }
@@ -818,14 +823,8 @@ struct token_request
       length_sample -= skipped;
     }
 
-    const auto old_date = prev_date;
+    musical_start_position = musical_position_at(t);
     prev_date = t;
-
-    if(old_date.impl > 0)
-    {
-      double ratio = t.impl / double(old_date.impl);
-      musical_start_position *= ratio;
-    }
 
     // TODO what if musical_start_position is now after end_position /
     // end_last_bar ?
