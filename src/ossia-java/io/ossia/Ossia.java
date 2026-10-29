@@ -537,7 +537,7 @@ public interface Ossia extends Library
      boolean ossia_value_convert_bool (Pointer val);
      byte ossia_value_convert_char (Pointer val);
 
-     String ossia_value_convert_byte_array (
+     void ossia_value_convert_byte_array (
       Pointer val_in,
       PointerByReference val_out,
       SizeTByReference size);
