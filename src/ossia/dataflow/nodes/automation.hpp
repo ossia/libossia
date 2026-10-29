@@ -36,7 +36,7 @@ namespace ossia::nodes
  *
  * \see \ref behavior \ref curve \ref curve_segment
  */
-class OSSIA_EXPORT automation final : public ossia::nonowning_graph_node
+class OSSIA_TEST_EXPORT automation final : public ossia::nonowning_graph_node
 {
 public:
   automation() { m_outlets.push_back(&value_out); }

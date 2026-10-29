@@ -167,15 +167,37 @@ if(OSSIA_STATIC)
 endif()
 set_target_properties(ossia PROPERTIES DEFINE_SYMBOL "OSSIA_EXPORTS")
 
+# OSSIA_TEST_EXPORT marks what only tests reach from outside the library, after
+# Q_AUTOTEST_EXPORT: it is OSSIA_EXPORT when tests are built or the library is
+# shared, and empty otherwise. OSSIA_TEST_EXPORTS mirrors OSSIA_EXPORTS so that
+# verdigris' E_SIGNAL accepts the test macro too.
+if(OSSIA_TESTING OR OSSIA_EXPORT_FOR_TESTS OR NOT OSSIA_STATIC)
+  set(_ossia_test_export_value "OSSIA_EXPORT")
+else()
+  set(_ossia_test_export_value "")
+endif()
+set(_ossia_test_export_content "
+#ifndef OSSIA_TEST_EXPORT
+#  define OSSIA_TEST_EXPORT ${_ossia_test_export_value}
+#endif
+
+#ifndef OSSIA_TEST_EXPORTS
+#  define OSSIA_TEST_EXPORTS OSSIA_EXPORTS
+#endif
+")
+
 if(OSSIA_STATIC_EXPORT)
   if(NOT OSSIA_NO_DLLIMPORT)
-    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT DLLIMPORT)
+    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT DLLIMPORT
+      CUSTOM_CONTENT_FROM_VARIABLE _ossia_test_export_content)
   else()
-    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT)
+    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT
+      CUSTOM_CONTENT_FROM_VARIABLE _ossia_test_export_content)
   endif()
   target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1)
 else()
-  generate_export_header(ossia BASE_NAME OSSIA)
+  generate_export_header(ossia BASE_NAME OSSIA
+    CUSTOM_CONTENT_FROM_VARIABLE _ossia_test_export_content)
 endif()
 
 configure_file(ossia-config.hpp.in ossia-config.hpp)

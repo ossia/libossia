@@ -7,6 +7,7 @@
 #include <ossia_export.h>
 #else
 #define OSSIA_EXPORT
+#define OSSIA_TEST_EXPORT
 #endif
 
 #if defined(__APPLE__)

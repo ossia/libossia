@@ -17,6 +17,7 @@ option(OSSIA_FAST_DEVELOPER_BUILD "Create shared libraries for some third-party 
 option(OSSIA_COVERAGE "Run code coverage" OFF)
 option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
+option(OSSIA_EXPORT_FOR_TESTS "Export OSSIA_TEST_EXPORT symbols for tests built outside libossia" OFF)
 option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
 option(OSSIA_PCH "Enable PCH" ON)
