@@ -776,6 +776,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fade.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fft.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/meters.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/libasound.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio_protocol.hpp"
@@ -923,6 +924,7 @@ set(OSSIA_EXECLOG_SRCS
 
 set(OSSIA_FFT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fft.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/meters.hpp"
 )
 
 set(OSSIA_FFT_SRCS
