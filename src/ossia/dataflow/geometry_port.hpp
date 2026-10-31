@@ -896,6 +896,19 @@ struct camera_component
   float znear{0.1f};
   float zfar{1000.0f};
 
+  //! Perspective lens shift, as a fraction of the image size; +y moves the image up.
+  float shift[2]{0.0f, 0.0f};
+
+  //! Off-axis frustum as view-space tangents at unit distance: left, right, bottom, top.
+  //! Replaces yfov, aspect and shift for a perspective camera when frustum_set.
+  float frustum[4]{-1.0f, 1.0f, -1.0f, 1.0f};
+  bool frustum_set{false};
+
+  //! Column-major OpenGL projection (-Z forward, NDC z: near -1, far +1).
+  //! Replaces every other projection parameter when projection_matrix_set.
+  float projection_matrix[16]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+  bool projection_matrix_set{false};
+
   struct {
     float focal_length{50.0f};      // mm
     float focus_distance{10.0f};    // m
