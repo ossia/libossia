@@ -7,6 +7,7 @@
 #include <libremidi/message.hpp>
 #include <libremidi/ump_events.hpp>
 
+#include <algorithm>
 #include <iostream>
 
 #include <faust/dsp/poly-llvm-dsp.h>
@@ -241,64 +242,39 @@ struct faust_node_utils
     }
   }
 
-  template <typename Node>
+  //! Convert the active interval, padding missing input samples with silence.
   static void copy_input(
-      Node& self, int64_t d, int64_t n_in, float* inputs_, float** input_n,
+      int64_t st, int64_t d, int64_t n_in, float* inputs_, float** input_n,
       const ossia::audio_port& audio_in)
   {
-    // TODO offset !!!
     for(int64_t i = 0; i < n_in; i++)
     {
       input_n[i] = inputs_ + i * d;
       if(int64_t(audio_in.channels()) > i)
       {
-        auto num_samples = std::min((int64_t)d, (int64_t)audio_in.channel(i).size());
-        for(int64_t j = 0; j < num_samples; j++)
-        {
-          input_n[i][j] = (float)audio_in.channel(i)[j];
-        }
-
-        if(d > int64_t(audio_in.channel(i).size()))
-        {
-          for(int64_t j = audio_in.channel(i).size(); j < d; j++)
-          {
-            input_n[i][j] = 0.f;
-          }
-        }
+        copy_input_mono(st, d, input_n[i], audio_in.channel(i));
       }
       else
       {
-        for(int64_t j = 0; j < d; j++)
-        {
-          input_n[i][j] = 0.f;
-        }
+        std::fill_n(input_n[i], d, 0.f);
       }
     }
   }
-  template <typename Node>
+
   static void copy_input_mono(
-      Node& self, int64_t d, int64_t i, float* input,
-      const ossia::audio_channel& audio_in)
+      int64_t st, int64_t d, float* input, const ossia::audio_channel& audio_in)
   {
-    // TODO offset !!!
-    auto num_samples = std::min((int64_t)d, (int64_t)audio_in.size());
+    const auto available = std::max(int64_t(0), int64_t(audio_in.size()) - st);
+    const auto num_samples = std::min(d, available);
     for(int64_t j = 0; j < num_samples; j++)
     {
-      input[j] = (float)audio_in[j];
+      input[j] = (float)audio_in[st + j];
     }
-
-    if(d > int64_t(audio_in.size()))
-    {
-      for(int64_t j = audio_in.size(); j < d; j++)
-      {
-        input[j] = 0.f;
-      }
-    }
+    std::fill(input + num_samples, input + d, 0.f);
   }
 
-  template <typename Node>
-  static void
-  init_output(Node& self, int64_t d, int64_t n_out, float* outputs_, float** output_n)
+  static void init_output(
+      int64_t d, int64_t n_out, float* outputs_, float** output_n)
   {
     for(int64_t i = 0; i < n_out; i++)
     {
@@ -310,26 +286,17 @@ struct faust_node_utils
     }
   }
 
-  template <typename Node>
+  //! Preserve the full buffer and inactive frames without changing DSP channel count.
   static void copy_output(
-      Node& self, int64_t d, int64_t n_out, float* outputs_, float** output_n,
-      ossia::audio_port& audio_out)
+      int64_t st, int64_t d, int64_t buffer_size, int64_t n_out,
+      float** output_n, ossia::audio_port& audio_out)
   {
     audio_out.set_channels(n_out);
     for(int64_t i = 0; i < n_out; i++)
     {
-      audio_out.channel(i).resize(d);
-      for(int64_t j = 0; j < d; j++)
-      {
-        audio_out.channel(i)[j] = (double)output_n[i][j];
-      }
-    }
-
-    // TODO handle multichannel cleanly
-    if(n_out == 1)
-    {
-      audio_out.set_channels(2);
-      audio_out.channel(1) = audio_out.channel(0);
+      auto& channel = audio_out.channel(i);
+      channel.resize(buffer_size);
+      std::copy_n(output_n[i], d, channel.data() + st);
     }
   }
 
@@ -408,10 +375,10 @@ struct faust_node_utils
       float** input_n = (float**)alloca(sizeof(float*) * n_in);
       float** output_n = (float**)alloca(sizeof(float*) * n_out);
 
-      copy_input(self, d, n_in, inputs_, input_n, audio_in);
-      init_output(self, d, n_out, outputs_, output_n);
+      copy_input(st, d, n_in, inputs_, input_n, audio_in);
+      init_output(d, n_out, outputs_, output_n);
       dsp.compute(d, input_n, output_n);
-      copy_output(self, d, n_out, outputs_, output_n, audio_out);
+      copy_output(st, d, e.bufferSize(), n_out, output_n, audio_out);
     }
     else
     {
@@ -502,7 +469,6 @@ struct faust_node_utils
     if constexpr(std::is_same_v<FAUSTFLOAT, float>)
     {
       float* input = (float*)alloca(d * sizeof(float));
-      memset(input, 0, d * sizeof(float));
       float* output = (float*)alloca(d * sizeof(float));
 
       for(int i = 0; i < n_in; i++)
@@ -513,7 +479,7 @@ struct faust_node_utils
         in_chan.resize(e.bufferSize());
         out_chan.resize(e.bufferSize());
 
-        copy_input_mono(self, d, n_in, input, in_chan);
+        copy_input_mono(st, d, input, in_chan);
         memset(output, 0, d * sizeof(float));
         for(int z = 0; z < d; z++)
         {
