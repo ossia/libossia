@@ -99,7 +99,7 @@ jobs:
           path: install
 
   build-linux_x86:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         static: [0, 1]

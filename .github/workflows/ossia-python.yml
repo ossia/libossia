@@ -42,7 +42,7 @@ jobs:
           python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl || true
 
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/latest-ubuntu-toolchain
