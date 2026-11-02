@@ -61,7 +61,7 @@ auto run_plan_c2r(fft_plan, void*, void*)
 #endif
 }
 
-fft::fft(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -81,18 +81,12 @@ fft::fft(std::size_t newSize) noexcept
       m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
-fft::~fft()
+void fft::release() noexcept
 {
   destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
-}
-
-void fft::reset(std::size_t newSize)
-{
-  this->~fft();
-  new(this) fft(newSize);
 }
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
@@ -214,7 +208,7 @@ static const constexpr auto destroy_plan = [](auto&& p) { delete(fftw_plan_s*)p;
 static const constexpr auto cleanup = [] {};
 static const constexpr auto FFTW_DESTROY_INPUT = 0;
 static const constexpr auto FFTW_MEASURE = 0;
-fft::fft(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -235,18 +229,12 @@ fft::fft(std::size_t newSize) noexcept
   m_storage.resize(((fftw_plan_s*)m_fw)->temp_size);
 }
 
-fft::~fft()
+void fft::release() noexcept
 {
   destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
-}
-
-void fft::reset(std::size_t newSize)
-{
-  this->~fft();
-  new(this) fft(newSize);
 }
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
@@ -372,7 +360,7 @@ static void do_fft(FP* x_in, std::complex<FP>* x_out, int N)
 }
 }
 
-fft::fft(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -390,16 +378,10 @@ fft::fft(std::size_t newSize) noexcept
   m_output = (ossia::fft_complex*)calloc(m_storage_size + 1, sizeof(ossia::fft_complex));
 }
 
-fft::~fft()
+void fft::release() noexcept
 {
   free(m_input);
   free(m_output);
-}
-
-void fft::reset(std::size_t newSize)
-{
-  this->~fft();
-  new(this) fft(newSize);
 }
 
 fft_complex* fft::execute(float* input, std::size_t sz) noexcept
@@ -460,3 +442,88 @@ fft_real* rfft::execute() noexcept
 }
 }
 #endif
+
+namespace ossia
+{
+namespace
+{
+std::size_t storage_for(std::size_t size) noexcept
+{
+  return std::bit_ceil(std::max<std::size_t>(size, 1));
+}
+}
+
+fft::fft(std::size_t newSize) noexcept
+{
+  build(newSize);
+}
+
+fft::~fft()
+{
+  release();
+  for(auto& s : m_spares)
+  {
+    if(!s.input)
+      continue;
+    swap(s);
+    release();
+  }
+}
+
+void fft::swap(spare& s) noexcept
+{
+  std::swap(m_fw, s.fw);
+  std::swap(m_size, s.size);
+  std::swap(m_storage_size, s.storage_size);
+  std::swap(m_input, s.input);
+  std::swap(m_output, s.output);
+  std::swap(m_storage, s.storage);
+}
+
+void fft::reset(std::size_t newSize)
+{
+  // The plan covers the power-of-two storage, whatever the size within it
+  const std::size_t storage = storage_for(newSize);
+  if(storage == m_storage_size)
+  {
+    m_size = newSize;
+    return;
+  }
+
+  for(auto& s : m_spares)
+  {
+    if(s.input && s.storage_size == storage)
+    {
+      swap(s);
+      m_size = newSize;
+      return;
+    }
+  }
+
+  // Keep the current plan for when the size comes back, in a free slot or
+  // in place of the oldest one
+  spare* slot = nullptr;
+  for(auto& s : m_spares)
+    if(!s.input)
+    {
+      slot = &s;
+      break;
+    }
+  if(!slot)
+  {
+    slot = &m_spares[m_oldest_spare];
+    m_oldest_spare = (m_oldest_spare + 1) % m_spares.size();
+    // The oldest one is freed, the current one takes its place
+    swap(*slot);
+    release();
+  }
+  else
+  {
+    swap(*slot);
+  }
+  m_fw = {};
+  m_input = nullptr;
+  m_output = nullptr;
+  build(newSize);
+}
+}
