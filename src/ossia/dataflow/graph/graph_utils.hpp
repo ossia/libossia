@@ -427,7 +427,23 @@ struct OSSIA_EXPORT graph_util
       ossia::apply_con(init_node_visitor{in, *edge, e}, edge->con);
     }
 
+    if(auto* audio = in.target<ossia::audio_port>())
+      fit_to_tick(*audio, e.bufferSize);
+
     in.pre_process();
+  }
+
+  //! What reaches an audio inlet is sized by whoever produced it: a node set up
+  //! for another block size, a device, a delay line. Nodes index their inputs
+  //! with the tick's timings, so every channel is made to span exactly the tick
+  //! (an empty one becomes silence rather than a null buffer).
+  static void fit_to_tick(ossia::audio_port& port, int frames) noexcept
+  {
+    if(frames <= 0)
+      return;
+    for(auto& chan : port)
+      if(chan.size() != std::size_t(frames))
+        chan.resize(frames);
   }
 
   static void init_node(graph_node& n, execution_state& e)

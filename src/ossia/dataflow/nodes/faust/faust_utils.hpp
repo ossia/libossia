@@ -377,7 +377,7 @@ struct faust_node_utils
 
       copy_input(st, d, n_in, inputs_, input_n, audio_in);
       init_output(d, n_out, outputs_, output_n);
-      dsp.compute(d, input_n, output_n);
+      compute_in_blocks(dsp, d, n_in, n_out, input_n, output_n);
       copy_output(st, d, e.bufferSize(), n_out, output_n, audio_out);
     }
     else
@@ -406,7 +406,32 @@ struct faust_node_utils
         }
       }
 
-      dsp.compute(d, input_n, output_n);
+      compute_in_blocks(dsp, d, n_in, n_out, input_n, output_n);
+    }
+  }
+
+  //! The polyphonic DSP and the effect combiners mix into buffers of a fixed
+  //! size (MIX_BUFFER_SIZE frames), which a larger tick would overrun.
+  template <typename Dsp, typename T>
+  static void compute_in_blocks(
+      Dsp& dsp, int64_t frames, int64_t n_in, int64_t n_out, T** in, T** out)
+  {
+    static constexpr int64_t max_block = 4096;
+    if(BOOST_LIKELY(frames <= max_block))
+    {
+      dsp.compute(frames, in, out);
+      return;
+    }
+    T** in_b = (T**)alloca(sizeof(T*) * std::max(n_in, int64_t(1)));
+    T** out_b = (T**)alloca(sizeof(T*) * std::max(n_out, int64_t(1)));
+    for(int64_t done = 0; done < frames; done += max_block)
+    {
+      const int64_t n = std::min(max_block, frames - done);
+      for(int64_t i = 0; i < n_in; i++)
+        in_b[i] = in[i] + done;
+      for(int64_t i = 0; i < n_out; i++)
+        out_b[i] = out[i] + done;
+      dsp.compute(n, in_b, out_b);
     }
   }
 

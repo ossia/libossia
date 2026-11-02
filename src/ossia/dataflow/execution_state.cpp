@@ -540,6 +540,11 @@ int exec_state_facade::bufferSize() const noexcept
   return impl->bufferSize;
 }
 
+int exec_state_facade::setupBufferSize() const noexcept
+{
+  return impl->setupBufferSize();
+}
+
 double exec_state_facade::modelToSamples() const noexcept
 {
   return impl->modelToSamplesRatio;

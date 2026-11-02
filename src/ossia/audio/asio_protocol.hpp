@@ -768,6 +768,7 @@ private:
     if(self && sRate > 0)
     {
       self->effective_sample_rate = (int)sRate;
+      self->observed_sample_rate.store((int)sRate, std::memory_order_relaxed);
     }
   }
 

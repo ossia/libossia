@@ -73,6 +73,9 @@ public:
   fft_complex* execute() noexcept;
 
   [[nodiscard]] fft_real* input() const noexcept { return m_input; }
+  //! The size it was set up for, and the (power of two) size of input().
+  [[nodiscard]] std::size_t size() const noexcept { return m_size; }
+  [[nodiscard]] std::size_t storage_size() const noexcept { return m_storage_size; }
 
 private:
   fft_plan m_fw = {};
