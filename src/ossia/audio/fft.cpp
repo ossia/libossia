@@ -6,19 +6,10 @@
 
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
-
-#include <mutex>
 namespace ossia
 {
 namespace
 {
-//! Only executing a plan is thread-safe in FFTW: making and destroying them
-//! is not, and nodes running in parallel can do it at once
-std::mutex& planner_mutex()
-{
-  static std::mutex m;
-  return m;
-}
 #if defined(OSSIA_FFTW_SINGLE_ONLY)
 static const constexpr auto alloc_real = ::fftwf_alloc_real;
 static const constexpr auto alloc_complex = ::fftwf_alloc_complex;
@@ -89,7 +80,6 @@ void fft::build(std::size_t newSize, bool measure) noexcept
   m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   // Measuring runs transforms to choose the plan: not on the audio thread,
   // where a size nothing was prepared for has to be planned
-  std::lock_guard lock{planner_mutex()};
   m_fw = create_plan_r2c(
       m_storage_size, m_input, m_output,
       FFTW_DESTROY_INPUT | (measure ? FFTW_MEASURE : FFTW_ESTIMATE));
@@ -97,10 +87,7 @@ void fft::build(std::size_t newSize, bool measure) noexcept
 
 void fft::release() noexcept
 {
-  {
-    std::lock_guard lock{planner_mutex()};
-    destroy_plan(m_fw);
-  }
+  destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -141,17 +128,13 @@ rfft::rfft(std::size_t newSize) noexcept
   }
   m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   m_output = alloc_real(m_storage_size);
-  std::lock_guard lock{planner_mutex()};
   m_fw = create_plan_c2r(
       m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 rfft::~rfft()
 {
-  {
-    std::lock_guard lock{planner_mutex()};
-    destroy_plan(m_fw);
-  }
+  destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
