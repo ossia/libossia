@@ -287,7 +287,7 @@ public:
       std::uint32_t seen = 0;
       for (int j = 0; j < 100; ++j)
       {
-        seen = m_observed_rate.load(std::memory_order_relaxed);
+        seen = observed_sample_rate.load(std::memory_order_relaxed);
         if (seen != 0)
           break;
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -704,7 +704,7 @@ public:
           if (may_log(self.m_rate_logs))
             ossia::logger().warn(
                 "PipeWire: graph sample rate is {} but {} was requested; "
-                "audio will play at the wrong speed until it is restored",
+                "audio plays at the wrong speed until the engine runs at it",
                 rate, self.m_rate.expected);
           break;
         case event::recovered:
@@ -718,7 +718,7 @@ public:
     }
 
     if (rate != 0)
-      self.m_observed_rate.store(rate, std::memory_order_relaxed);
+      self.observed_sample_rate.store(rate, std::memory_order_relaxed);
 
     if (nframes == 0)
       return;
@@ -823,10 +823,6 @@ private:
 
   ossia::pipewire::quantum_tracker m_quantum{};
   ossia::pipewire::quantum_tracker m_rate{};
-
-  // Written by the process callback, read by the constructor to learn the
-  // rate the graph actually granted us.
-  std::atomic<std::uint32_t> m_observed_rate{};
 
   // A graph flapping between quantums/rates every cycle would otherwise
   // turn the transition logs back into per-cycle RT logging.

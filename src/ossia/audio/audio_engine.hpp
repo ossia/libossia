@@ -43,6 +43,12 @@ public:
 
   int effective_sample_rate{};
   int effective_buffer_size{};
+  //! The rate the audio thread last saw the device run at, for backends whose
+  //! rate can change under a running engine (another PipeWire client forcing
+  //! its own, an ASIO control panel); zero when the backend does not report it.
+  //! Once it differs from effective_sample_rate, the engine plays at the wrong
+  //! speed until the host restarts it at that rate.
+  std::atomic_int observed_sample_rate{};
   int effective_inputs{};
   int effective_outputs{};
   //! Frames from the hardware's input to the engine and from the engine to the

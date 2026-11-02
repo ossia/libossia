@@ -100,7 +100,16 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   bool in_local_scope(ossia::net::parameter_base& other) const;
 
   int sampleRate{44100};
+  //! Frames of the current tick, written by the audio thread on each one.
   int bufferSize{64};
+  //! Frames the engine was configured for. Ticks can be shorter for a while
+  //! (another client of the audio server imposing its block size), so nodes
+  //! created meanwhile size their fixed buffers from setupBufferSize().
+  int maxBufferSize{};
+  [[nodiscard]] int setupBufferSize() const noexcept
+  {
+    return bufferSize > maxBufferSize ? bufferSize : maxBufferSize;
+  }
   //! Frames the audio backend reports between the hardware and the engine.
   int inputLatency{};
   int outputLatency{};
