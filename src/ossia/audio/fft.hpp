@@ -3,6 +3,7 @@
 
 #include <ossia/detail/pod_vector.hpp>
 
+#include <array>
 #include <cinttypes>
 #include <cstddef>
 
@@ -78,12 +79,30 @@ public:
   [[nodiscard]] std::size_t storage_size() const noexcept { return m_storage_size; }
 
 private:
+  void build(std::size_t newSize) noexcept;
+  void release() noexcept;
+
   fft_plan m_fw = {};
   std::size_t m_size = 0;
   std::size_t m_storage_size = 0;
   fft_real* m_input{};
   fft_complex* m_output{};
   fft_temp_storage m_storage;
+
+  //! Plans for the sizes used before: an audio server can switch between a
+  //! few block sizes, and planning allocates (and measures, with FFTW).
+  struct spare
+  {
+    fft_plan fw = {};
+    std::size_t size = 0;
+    std::size_t storage_size = 0;
+    fft_real* input{};
+    fft_complex* output{};
+    fft_temp_storage storage;
+  };
+  void swap(spare& s) noexcept;
+  std::array<spare, 3> m_spares{};
+  std::size_t m_oldest_spare = 0;
 };
 
 class OSSIA_EXPORT rfft
