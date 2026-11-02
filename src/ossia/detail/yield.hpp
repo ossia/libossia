@@ -23,8 +23,9 @@
 #elif defined(__ppc__) || defined(_ARCH_PPC) || defined(_ARCH_PWR) \
 || defined(_ARCH_PWR2) || defined(_POWER)
 #define ossia_rwlock_pause() __asm__ __volatile__("or 27,27,27" ::: "memory")
-#elif defined(#elif defined(__riscv)
-#define ossia_rwlock_pause() __asm__ __volatile__("pause" ::: "memory")
+#elif defined(__riscv)
+// pause (Zihintpause)
+#define ossia_rwlock_pause() __asm__ __volatile__(".4byte 0x100000f" ::: "memory")
 #elif defined(_MSC_VER)
 #include <windows.h>
 #define ossia_rwlock_pause() YieldProcessor()
