@@ -93,9 +93,9 @@ edge_ptr graph_interface::allocate_edge(
       pool, c, pout, pin, pout_node, pin_node);
 }
 
-std::shared_ptr<bench_map> bench_ptr()
+std::shared_ptr<bench_state> bench_ptr()
 {
-  static std::shared_ptr<bench_map> b = std::make_shared<bench_map>();
+  static std::shared_ptr<bench_state> b = std::make_shared<bench_state>();
   return b;
 }
 template <typename T>
@@ -176,7 +176,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }
@@ -188,7 +188,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }
@@ -200,7 +200,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
-    g->update_fun.perf_map = opt.bench;
+    g->update_fun.bench = opt.bench;
 
     return g;
   }

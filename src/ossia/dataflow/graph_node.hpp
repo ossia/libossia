@@ -13,9 +13,15 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
+#include <memory>
+
 namespace ossia
 {
 class graph;
+namespace telemetry
+{
+struct bench_tap;
+}
 struct timed_value;
 struct typed_value;
 class state;
@@ -204,6 +210,10 @@ public:
 
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
+
+  //! When set and benchmarking is on, the executors add the time this node
+  //! takes to run. Swap it in and out from the audio thread only.
+  std::shared_ptr<ossia::telemetry::bench_tap> bench_tap;
 
 protected:
   inlets m_inlets;
