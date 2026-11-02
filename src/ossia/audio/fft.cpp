@@ -6,10 +6,19 @@
 
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
+
+#include <mutex>
 namespace ossia
 {
 namespace
 {
+//! Only executing a plan is thread-safe in FFTW: making and destroying them
+//! is not, and nodes running in parallel can do it at once
+std::mutex& planner_mutex()
+{
+  static std::mutex m;
+  return m;
+}
 #if defined(OSSIA_FFTW_SINGLE_ONLY)
 static const constexpr auto alloc_real = ::fftwf_alloc_real;
 static const constexpr auto alloc_complex = ::fftwf_alloc_complex;
@@ -34,6 +43,7 @@ static const constexpr auto destroy_plan = ::fftw_destroy_plan;
 #else
 #define FFTW_DESTROY_INPUT 0
 #define FFTW_MEASURE 0
+#define FFTW_ESTIMATE 0
 
 auto alloc_real(std::size_t)
 {
@@ -61,7 +71,7 @@ auto run_plan_c2r(fft_plan, void*, void*)
 #endif
 }
 
-void fft::build(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize, bool measure) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -77,13 +87,20 @@ void fft::build(std::size_t newSize) noexcept
   }
   m_input = alloc_real(m_storage_size);
   m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
+  // Measuring runs transforms to choose the plan: not on the audio thread,
+  // where a size nothing was prepared for has to be planned
+  std::lock_guard lock{planner_mutex()};
   m_fw = create_plan_r2c(
-      m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
+      m_storage_size, m_input, m_output,
+      FFTW_DESTROY_INPUT | (measure ? FFTW_MEASURE : FFTW_ESTIMATE));
 }
 
 void fft::release() noexcept
 {
-  destroy_plan(m_fw);
+  {
+    std::lock_guard lock{planner_mutex()};
+    destroy_plan(m_fw);
+  }
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -124,13 +141,17 @@ rfft::rfft(std::size_t newSize) noexcept
   }
   m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   m_output = alloc_real(m_storage_size);
+  std::lock_guard lock{planner_mutex()};
   m_fw = create_plan_c2r(
       m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 rfft::~rfft()
 {
-  destroy_plan(m_fw);
+  {
+    std::lock_guard lock{planner_mutex()};
+    destroy_plan(m_fw);
+  }
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -208,7 +229,7 @@ static const constexpr auto destroy_plan = [](auto&& p) { delete(fftw_plan_s*)p;
 static const constexpr auto cleanup = [] {};
 static const constexpr auto FFTW_DESTROY_INPUT = 0;
 static const constexpr auto FFTW_MEASURE = 0;
-void fft::build(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize, bool /*measure*/) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -360,7 +381,7 @@ static void do_fft(FP* x_in, std::complex<FP>* x_out, int N)
 }
 }
 
-void fft::build(std::size_t newSize) noexcept
+void fft::build(std::size_t newSize, bool /*measure*/) noexcept
 {
   m_size = newSize;
   if(std::popcount(newSize) == 1)
@@ -455,7 +476,7 @@ std::size_t storage_for(std::size_t size) noexcept
 
 fft::fft(std::size_t newSize) noexcept
 {
-  build(newSize);
+  build(newSize, true);
 }
 
 fft::~fft()
@@ -482,6 +503,21 @@ void fft::swap(spare& s) noexcept
 
 void fft::reset(std::size_t newSize)
 {
+  use(newSize, false);
+}
+
+void fft::prepare(std::size_t newSize)
+{
+  // The sizes an audio server most often switches to, around its own
+  const std::size_t storage = storage_for(newSize);
+  for(std::size_t other : {storage / 4, storage / 2, storage * 2})
+    if(other >= 16)
+      use(other, true);
+  use(newSize, true);
+}
+
+void fft::use(std::size_t newSize, bool measure)
+{
   // The plan covers the power-of-two storage, whatever the size within it
   const std::size_t storage = storage_for(newSize);
   if(storage == m_storage_size)
@@ -495,25 +531,22 @@ void fft::reset(std::size_t newSize)
     if(s.input && s.storage_size == storage)
     {
       swap(s);
+      s.used = ++m_uses;
       m_size = newSize;
       return;
     }
   }
 
   // Keep the current plan for when the size comes back, in a free slot or
-  // in place of the oldest one
-  spare* slot = nullptr;
-  for(auto& s : m_spares)
-    if(!s.input)
-    {
-      slot = &s;
-      break;
-    }
-  if(!slot)
+  // in place of the one unused for the longest
+  auto slot = std::find_if(
+      m_spares.begin(), m_spares.end(), [](const spare& s) { return !s.input; });
+  if(slot == m_spares.end())
   {
-    slot = &m_spares[m_oldest_spare];
-    m_oldest_spare = (m_oldest_spare + 1) % m_spares.size();
-    // The oldest one is freed, the current one takes its place
+    slot = std::min_element(
+        m_spares.begin(), m_spares.end(),
+        [](const spare& a, const spare& b) { return a.used < b.used; });
+    // That one is freed, the current one takes its place
     swap(*slot);
     release();
   }
@@ -521,9 +554,10 @@ void fft::reset(std::size_t newSize)
   {
     swap(*slot);
   }
+  slot->used = ++m_uses;
   m_fw = {};
   m_input = nullptr;
   m_output = nullptr;
-  build(newSize);
+  build(newSize, measure);
 }
 }

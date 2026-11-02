@@ -68,7 +68,12 @@ public:
 
   static constexpr double norm(std::size_t sz) noexcept { return 1. / sz; }
 
+  //! For a new size: a plan it had for it, or a new one (planned quickly,
+  //! as this can happen on the audio thread)
   void reset(std::size_t newSize);
+  //! Plans for this size and the ones an audio server most often switches
+  //! to around it, ahead of time: not on the audio thread
+  void prepare(std::size_t newSize);
 
   fft_complex* execute(float* input, std::size_t sz) noexcept;
   fft_complex* execute() noexcept;
@@ -79,8 +84,9 @@ public:
   [[nodiscard]] std::size_t storage_size() const noexcept { return m_storage_size; }
 
 private:
-  void build(std::size_t newSize) noexcept;
+  void build(std::size_t newSize, bool measure) noexcept;
   void release() noexcept;
+  void use(std::size_t newSize, bool measure);
 
   fft_plan m_fw = {};
   std::size_t m_size = 0;
@@ -99,10 +105,11 @@ private:
     fft_real* input{};
     fft_complex* output{};
     fft_temp_storage storage;
+    std::size_t used = 0;
   };
   void swap(spare& s) noexcept;
   std::array<spare, 3> m_spares{};
-  std::size_t m_oldest_spare = 0;
+  std::size_t m_uses = 0;
 };
 
 class OSSIA_EXPORT rfft
