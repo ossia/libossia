@@ -416,7 +416,11 @@ struct faust_node_utils
   static void compute_in_blocks(
       Dsp& dsp, int64_t frames, int64_t n_in, int64_t n_out, T** in, T** out)
   {
+#if defined(MIX_BUFFER_SIZE)
+    static constexpr int64_t max_block = MIX_BUFFER_SIZE;
+#else
     static constexpr int64_t max_block = 4096;
+#endif
     if(BOOST_LIKELY(frames <= max_block))
     {
       dsp.compute(frames, in, out);
