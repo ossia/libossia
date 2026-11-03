@@ -17,7 +17,8 @@ joystick_protocol::joystick_protocol(
 {
   //  Check That (ID, Index) is a valid combination
   //  Could happen if a joystick is unplugged between settings and here
-  if(joystick_id != SDL_JoystickGetDeviceInstanceID(joystick_index))
+  const SDL_JoystickID sdl_id = sdl_joystick_ids{}[joystick_index];
+  if(sdl_id == 0 || joystick_id != static_cast<int32_t>(sdl_id))
     throw std::runtime_error("Invalid Settings");
 
   //  Check that this ID is not already registered
@@ -25,7 +26,7 @@ joystick_protocol::joystick_protocol(
     throw std::runtime_error("This Joystick is already open");
 
   //  Open The Joystick
-  m_joystick = SDL_JoystickOpen(joystick_index);
+  m_joystick = SDL_OpenJoystick(sdl_id);
 
   if(m_joystick == nullptr)
     throw std::runtime_error("Failed to open Joystick");
@@ -47,10 +48,10 @@ void joystick_protocol::set_device(ossia::net::device_base& dev)
   auto& root = dev.get_root_node();
 
   //  Retrieve Joystick Info
-  const int axis_count = SDL_JoystickNumAxes(m_joystick);
-  // const int ball_count = SDL_JoystickNumBalls(m_joystick);
-  const int hat_count = SDL_JoystickNumHats(m_joystick);
-  const int button_count = SDL_JoystickNumButtons(m_joystick);
+  const int axis_count = SDL_GetNumJoystickAxes(m_joystick);
+  // const int ball_count = SDL_GetNumJoystickBalls(m_joystick);
+  const int hat_count = SDL_GetNumJoystickHats(m_joystick);
+  const int button_count = SDL_GetNumJoystickButtons(m_joystick);
 
   //  Build Parameters Tree
 
@@ -112,7 +113,7 @@ void joystick_protocol::stop()
   if(m_joystick != nullptr)
   {
     m_manager.unregister_protocol(*this);
-    SDL_JoystickClose(m_joystick);
+    SDL_CloseJoystick(m_joystick);
     m_joystick = nullptr;
   }
 }
@@ -120,27 +121,27 @@ void joystick_protocol::stop()
 unsigned int joystick_info::get_joystick_count()
 {
   sdl_joystick_context::instance();
-  SDL_JoystickUpdate();
-  return static_cast<unsigned int>(SDL_NumJoysticks());
+  SDL_UpdateJoysticks();
+  return static_cast<unsigned int>(sdl_joystick_ids{}.count());
 }
 
 const char* joystick_info::get_joystick_name(const int index)
 {
   sdl_joystick_context::instance();
-  return SDL_JoystickNameForIndex(index);
+  return SDL_GetJoystickNameForID(sdl_joystick_ids{}[index]);
 }
 
 bool joystick_info::get_joystick_is_gamepad(const int index)
 {
   sdl_joystick_context::instance();
-  return SDL_IsGameController(index);
+  return SDL_IsGamepad(sdl_joystick_ids{}[index]);
 }
 
 bool joystick_info::get_joystick_is_available(const int index)
 {
   sdl_joystick_context::instance();
-  const auto id = SDL_JoystickGetDeviceInstanceID(index);
-  if(id != -1)
+  const auto id = sdl_joystick_ids{}[index];
+  if(id != 0)
     return !joystick_protocol_manager::instance().joystick_is_registered(id);
   return false;
 }
@@ -148,13 +149,14 @@ bool joystick_info::get_joystick_is_available(const int index)
 int32_t joystick_info::get_joystick_id(const int index)
 {
   sdl_joystick_context::instance();
-  return SDL_JoystickGetDeviceInstanceID(index);
+  const auto id = sdl_joystick_ids{}[index];
+  return id != 0 ? static_cast<int32_t>(id) : -1;
 }
 
 void joystick_info::write_joystick_uuid(const int index, uint8_t* dst)
 {
   sdl_joystick_context::instance();
-  const auto uid = SDL_JoystickGetDeviceGUID(index);
+  const auto uid = SDL_GetJoystickGUIDForID(sdl_joystick_ids{}[index]);
   std::copy_n(&uid.data[0], 16, dst);
 }
 
@@ -162,17 +164,18 @@ std::pair<int32_t, int32_t>
 joystick_info::get_available_id_for_uid(const uint8_t* request)
 {
   auto& mgr = joystick_protocol_manager::instance();
-  SDL_JoystickUpdate();
-  for(int i = 0, N = SDL_NumJoysticks(); i < N; i++)
+  SDL_UpdateJoysticks();
+  const sdl_joystick_ids ids;
+  for(int i = 0, N = ids.count(); i < N; i++)
   {
-    const auto uid = SDL_JoystickGetDeviceGUID(i);
+    const auto uid = SDL_GetJoystickGUIDForID(ids[i]);
     if(std::equal(std::begin(uid.data), std::end(uid.data), request))
     {
-      auto id = SDL_JoystickGetDeviceInstanceID(i);
+      const auto id = ids[i];
       if(mgr.joystick_is_registered(id))
         continue;
 
-      return {id, i};
+      return {static_cast<int32_t>(id), i};
     }
   }
   return {-1, -1};

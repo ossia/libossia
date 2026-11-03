@@ -7,7 +7,7 @@
 #include <ossia/network/context_functions.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-typedef struct _SDL_GameController SDL_GameController;
+typedef struct SDL_Gamepad SDL_Gamepad;
 namespace ossia::net
 {
 class joystick_protocol_manager;
@@ -75,9 +75,8 @@ private:
   ossia::small_flat_map<int, touchpad, 2> m_touchpads;
 
   int32_t m_joystick_id{};
-  int32_t m_joystick_index{};
 
-  SDL_GameController* m_joystick{};
+  SDL_Gamepad* m_joystick{};
 };
 
 }
