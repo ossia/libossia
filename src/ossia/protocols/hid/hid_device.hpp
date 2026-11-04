@@ -54,6 +54,8 @@ struct hid_device_configuration
   uint16_t vendor_id{};
   uint16_t product_id{};
   int interface_number{-1};
+  //! 0 matches any.
+  uint16_t usage_page{};
 };
 
 //! Resolves a configuration to a currently connected device.
