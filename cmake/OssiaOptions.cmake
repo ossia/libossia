@@ -78,6 +78,7 @@ option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidgets library
 option(OSSIA_PROTOCOL_JOYSTICK "Enable Joystick protocol" ON)  # Requires SDL2 library
+option(OSSIA_PROTOCOL_HID "Enable HID protocol" ON)  # Requires SDL2 library
 option(OSSIA_PROTOCOL_WIIMOTE "Enable Wiimote Protocol" ON) #use wiiuse
 option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON)
 option(OSSIA_PROTOCOL_LIBMAPPER "Enable libmapper protocol" OFF) #use external libmapper
@@ -101,6 +102,7 @@ set(OSSIA_AVAILABLE_PROTOCOLS
   HTTP WEBSOCKETS SERIAL
   PHIDGETS
   JOYSTICK
+  HID
   WIIMOTE
   ARTNET
   LIBMAPPER
@@ -339,6 +341,7 @@ endif()
 
 if(NOT OSSIA_ENABLE_SDL)
   set(OSSIA_PROTOCOL_JOYSTICK OFF CACHE "" INTERNAL FORCE)
+  set(OSSIA_PROTOCOL_HID OFF CACHE "" INTERNAL FORCE)
 endif()
 
 # Static linking configuration

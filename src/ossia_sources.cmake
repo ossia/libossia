@@ -578,6 +578,17 @@ set(OSSIA_JOYSTICK_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/game_controller_protocol.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.cpp")
 
+set(OSSIA_HID_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_device.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_report_descriptor.hpp"
+  )
+
+set(OSSIA_HID_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_device.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_protocol.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/hid/hid_report_descriptor.cpp")
+
 set(OSSIA_LIBMAPPER_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/libmapper/libmapper_protocol.hpp")
 
@@ -663,6 +674,7 @@ set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_util.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_can_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_hid_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_http_request.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_midi_inbound_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_midi_outbound_socket.hpp"
