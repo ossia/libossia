@@ -118,6 +118,19 @@ public:
   QObject* osc(QVariant config);
   W_SLOT(osc)
 
+  // USB / Bluetooth HID devices.
+  // onOpen, onClose, onError, onReport
+  // write, sendFeatureReport, getFeatureReport, reportDescriptor, close
+  QObject* hid(QVariant config);
+  W_SLOT(hid)
+  QJSValue hidDevices();
+  W_SLOT(hidDevices)
+
+  // Renders an image (background colour, picture, text) and encodes it, for
+  // devices with small displays. Returns an ArrayBuffer.
+  QJSValue renderImage(QVariant config);
+  W_SLOT(renderImage)
+
   // Bluetooth
   QObject* bluetoothScanner(QJSValue config);
   W_SLOT(bluetoothScanner)
