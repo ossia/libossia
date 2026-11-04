@@ -72,6 +72,24 @@ include(OssiaOptions)
 # against the same one we do.
 include(OssiaCxxStandard)
 
+# Packages without the paths of the machine that built them: the __FILE__ of
+# re2, abseil and Servus, and the lambda names in boost::asio's signatures,
+# otherwise carry the source and build folders, user name included. Before
+# the dependencies, which are built in-tree.
+if(OSSIA_STRIP_BUILD_PATHS AND NOT MSVC)
+  include(CheckCXXCompilerFlag)
+  check_cxx_compiler_flag("-ffile-prefix-map=a=b" OSSIA_HAS_FILE_PREFIX_MAP)
+  if(OSSIA_HAS_FILE_PREFIX_MAP)
+    add_compile_options(
+        "-ffile-prefix-map=${CMAKE_SOURCE_DIR}/="
+        "-ffile-prefix-map=${CMAKE_BINARY_DIR}/=")
+    # A Boost given outside the source tree.
+    if(BOOST_ROOT)
+      add_compile_options("-ffile-prefix-map=${BOOST_ROOT}/=")
+    endif()
+  endif()
+endif()
+
 # Dependencies
 include(OssiaDeps)
 
