@@ -153,7 +153,8 @@ std::optional<hid_device_info> hid_find_device(const hid_device_configuration& c
   if(!conf.path.empty())
   {
     for(const auto& d : devices)
-      if(d.path == conf.path)
+      if(d.path == conf.path
+         && (conf.usage_page == 0 || d.usage_page == 0 || d.usage_page == conf.usage_page))
         return d;
   }
 
@@ -164,6 +165,8 @@ std::optional<hid_device_info> hid_find_device(const hid_device_configuration& c
     if(!conf.serial.empty() && d.serial != conf.serial)
       continue;
     if(conf.interface_number >= 0 && d.interface_number != conf.interface_number)
+      continue;
+    if(conf.usage_page != 0 && d.usage_page != 0 && d.usage_page != conf.usage_page)
       continue;
     return d;
   }
