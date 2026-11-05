@@ -237,6 +237,12 @@ struct geometry
       sshort2,
       sshort1,
       user_struct,
+      // Formats without a vertex-input equivalent, for raw columns read by
+      // compute shaders (primitive_cloud_component::column): unnormalised
+      // 8-bit integers and 64-bit floats.
+      ubyte1,
+      sbyte1,
+      double1,
     } format
         = float4;
 
@@ -1059,6 +1065,82 @@ struct primitive_cloud_component
   // clouds with matching format_id can be batched together.
   std::string format_id;
   scene_property_map format_params;
+
+  // The scalar columns of one row, in row order, exactly as the producer
+  // stored them: a PLY vertex element's properties, or the fields a binary
+  // codec decodes to. Consumers read them by name; nothing here implies a
+  // meaning for any column.
+  struct column
+  {
+    enum scalar_type : uint8_t
+    {
+      f32,
+      f64,
+      f16,
+      i8,
+      u8,
+      i16,
+      u16,
+      i32,
+      u32,
+    };
+    std::string name;
+    scalar_type type{f32};
+    uint32_t byte_offset{};
+
+    static constexpr uint32_t byte_size(scalar_type t) noexcept
+    {
+      switch(t)
+      {
+        case f64:
+          return 8;
+        case f16:
+        case i16:
+        case u16:
+          return 2;
+        case i8:
+        case u8:
+          return 1;
+        default:
+          return 4;
+      }
+    }
+  };
+  std::vector<column> columns;
+
+  // Identity of the column layout (names, types, offsets, row_stride), as
+  // computed by column_layout_hash. Clouds sharing a format_id but not a
+  // layout are not batched together. 0 when there are no columns.
+  uint64_t columns_hash{};
+
+  static uint64_t column_layout_hash(
+      const std::vector<column>& cols, uint32_t row_stride) noexcept
+  {
+    if(cols.empty())
+      return 0;
+    // FNV-1a over every field, with separators so that ("ab","c") and
+    // ("a","bc") differ.
+    uint64_t h = 14695981039346656037ull;
+    auto mix = [&h](uint64_t v) {
+      for(int i = 0; i < 8; i++)
+      {
+        h ^= (v >> (8 * i)) & 0xff;
+        h *= 1099511628211ull;
+      }
+    };
+    mix(row_stride);
+    for(const auto& c : cols)
+    {
+      for(unsigned char ch : c.name)
+      {
+        h ^= ch;
+        h *= 1099511628211ull;
+      }
+      mix(0xffu);
+      mix(((uint64_t)c.type << 32) | c.byte_offset);
+    }
+    return h == 0 ? 1 : h;
+  }
 
   // GLSL type name for the per-primitive row payload. When non-empty
   // (e.g. "Splat3DGS"), raw_data is exposed as a per-vertex attribute
