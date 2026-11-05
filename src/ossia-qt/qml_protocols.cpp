@@ -1338,6 +1338,7 @@ static ossia::net::hid_device_configuration parse_hid(const QVariantMap& transpo
   conf.product_id = transport["ProductId"].toUInt();
   if(auto itf = transport["Interface"]; itf.isValid())
     conf.interface_number = itf.toInt();
+  conf.usage_page = transport["UsagePage"].toUInt();
   return conf;
 }
 
