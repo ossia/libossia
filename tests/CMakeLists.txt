@@ -55,6 +55,10 @@ if(NOT WIN32)
   ossia_add_test(HttpClientRequestTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpClientRequestTest.cpp")
 endif()
 
+if(OSSIA_PROTOCOL_HID)
+  ossia_add_test(HIDReportDescriptorTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/HIDReportDescriptorTest.cpp")
+endif()
+
 if(UNIX AND NOT APPLE)
   # SocketCAN. Skips itself at run-time if there is no vcan0 interface.
   ossia_add_test(CanSocketTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/CanSocketTest.cpp")

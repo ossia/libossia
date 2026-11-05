@@ -7,6 +7,7 @@
 #include <ossia-qt/invoke.hpp>
 #include <ossia-qt/protocols/qml_bluetooth.hpp>
 #include <ossia-qt/protocols/qml_can_socket.hpp>
+#include <ossia-qt/protocols/qml_hid_device.hpp>
 #include <ossia-qt/protocols/qml_http_request.hpp>
 #include <ossia-qt/protocols/qml_midi_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_outbound_socket.hpp>
@@ -26,7 +27,13 @@
 
 #include <boost/asio/io_context.hpp>
 
+#include <QBuffer>
+#include <QColor>
 #include <QFile>
+#include <QFont>
+#include <QImage>
+#include <QPainter>
+#include <QTransform>
 #include <QJSValue>
 #include <QJSValueList>
 #include <QQmlEngine>
@@ -144,6 +151,9 @@ W_OBJECT_IMPL(ossia::qt::qml_serial_socket)
 W_OBJECT_IMPL(ossia::qt::qml_can_socket)
 #endif
 W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
+#if defined(OSSIA_PROTOCOL_HID)
+W_OBJECT_IMPL(ossia::qt::qml_hid_device)
+#endif
 
 #if defined(OSSIA_HAS_BLUETOOTH)
 W_OBJECT_IMPL(ossia::qt::qml_bluetooth_scanner)
@@ -1317,6 +1327,227 @@ QJSValue qml_protocols::canInterfaces()
   return {};
 }
 #endif
+
+#if defined(OSSIA_PROTOCOL_HID)
+static ossia::net::hid_device_configuration parse_hid(const QVariantMap& transport)
+{
+  ossia::net::hid_device_configuration conf;
+  conf.path = transport["Path"].toString().toStdString();
+  conf.serial = transport["Serial"].toString().toStdString();
+  conf.vendor_id = transport["VendorId"].toUInt();
+  conf.product_id = transport["ProductId"].toUInt();
+  if(auto itf = transport["Interface"]; itf.isValid())
+    conf.interface_number = itf.toInt();
+  conf.usage_page = transport["UsagePage"].toUInt();
+  return conf;
+}
+
+QObject* qml_protocols::hid(QVariant config)
+{
+  auto conf = config.toMap();
+  auto onError = conf["onError"].value<QJSValue>();
+
+  auto hid_conf = parse_hid(conf["Transport"].toMap());
+  if(hid_conf.path.empty() && hid_conf.vendor_id == 0 && hid_conf.product_id == 0)
+  {
+    const QString err = "Transport.Path or Transport.VendorId / ProductId is required";
+    ossia::logger().error("Protocols.hid: {}", err.toStdString());
+    call_later(this, onError, err);
+    return nullptr;
+  }
+
+  auto dev = new qml_hid_device{};
+  qjsEngine(this)->newQObject(dev);
+  dev->onOpen = conf["onOpen"].value<QJSValue>();
+  dev->onClose = conf["onClose"].value<QJSValue>();
+  dev->onError = onError;
+  dev->onReport = conf["onReport"].value<QJSValue>();
+  return open_later(dev, [dev, hid_conf] { dev->open(hid_conf); });
+}
+
+QJSValue qml_protocols::hidDevices()
+{
+  auto qjs = qjsEngine(this);
+  if(!qjs)
+    return {};
+
+  auto result = qjs->newArray();
+  int count = 0;
+  for(const auto& d : ossia::net::hid_enumerate())
+  {
+    auto obj = qjs->newObject();
+    obj.setProperty("path", QString::fromStdString(d.path));
+    obj.setProperty("vendorId", int(d.vendor_id));
+    obj.setProperty("productId", int(d.product_id));
+    obj.setProperty("release", int(d.release));
+    obj.setProperty("serial", QString::fromStdString(d.serial));
+    obj.setProperty("manufacturer", QString::fromStdString(d.manufacturer));
+    obj.setProperty("product", QString::fromStdString(d.product));
+    obj.setProperty("usagePage", int(d.usage_page));
+    obj.setProperty("usage", int(d.usage));
+    obj.setProperty("interface", d.interface_number);
+    result.setProperty(count++, obj);
+  }
+  return result;
+}
+#else
+QObject* qml_protocols::hid(QVariant config)
+{
+  const auto err = QStringLiteral("this build has no HID support");
+  ossia::logger().error("Protocols.hid: {}", err.toStdString());
+  auto onError = config.toMap()["onError"].value<QJSValue>();
+  call_later(this, onError, err);
+  return nullptr;
+}
+
+QJSValue qml_protocols::hidDevices()
+{
+  if(auto qjs = qjsEngine(this))
+    return qjs->newArray();
+  return {};
+}
+#endif
+
+static QColor parse_color(const QVariant& v, QColor def)
+{
+  if(!v.isValid())
+    return def;
+  if(v.typeId() == QMetaType::QString)
+  {
+    auto c = QColor::fromString(v.toString());
+    return c.isValid() ? c : def;
+  }
+
+  const auto list = v.toList();
+  if(list.size() < 3)
+    return def;
+
+  bool normalized = true;
+  for(const auto& e : list)
+    if(e.toDouble() > 1.)
+      normalized = false;
+
+  auto component = [&](int i, double fallback) {
+    const double x = i < list.size() ? list[i].toDouble() : fallback;
+    return std::clamp(normalized ? x : x / 255., 0., 1.);
+  };
+  return QColor::fromRgbF(
+      component(0, 0), component(1, 0), component(2, 0), component(3, normalized ? 1. : 255.));
+}
+
+QJSValue qml_protocols::renderImage(QVariant config)
+{
+  auto qjs = qjsEngine(this);
+  if(!qjs)
+    return {};
+
+  const auto conf = config.toMap();
+  const int w = std::clamp(conf.value("Width", 72).toInt(), 1, 8192);
+  const int h = std::clamp(conf.value("Height", w).toInt(), 1, 8192);
+
+  QImage img{w, h, QImage::Format_ARGB32_Premultiplied};
+  img.fill(parse_color(conf["Background"], Qt::black));
+
+  {
+    QPainter p{&img};
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
+
+    if(auto src = conf["Image"]; src.isValid())
+    {
+      QImage pic;
+      if(src.typeId() == QMetaType::QByteArray)
+        pic.loadFromData(src.toByteArray());
+      else
+        pic.load(src.toString());
+
+      if(!pic.isNull())
+      {
+        const auto fit = conf.value("Fit", "cover").toString();
+        QSize sz = pic.size();
+        if(fit == "stretch")
+          sz = img.size();
+        else
+          sz.scale(
+              img.size(), fit == "contain" ? Qt::KeepAspectRatio
+                                           : Qt::KeepAspectRatioByExpanding);
+        const QRect target{
+            (w - sz.width()) / 2, (h - sz.height()) / 2, sz.width(), sz.height()};
+        p.drawImage(target, pic);
+      }
+    }
+
+    if(auto text = conf["Text"].toString(); !text.isEmpty())
+    {
+      QFont font;
+      if(auto family = conf["FontFamily"].toString(); !family.isEmpty())
+        font.setFamily(family);
+      font.setPixelSize(std::max(1, conf.value("FontSize", h / 4).toInt()));
+      font.setBold(conf["Bold"].toBool());
+      p.setFont(font);
+      p.setPen(parse_color(conf["TextColor"], Qt::white));
+
+      const auto align = conf.value("Align", "center").toString();
+      int flags = Qt::AlignHCenter | Qt::TextWordWrap;
+      if(align == "top")
+        flags |= Qt::AlignTop;
+      else if(align == "bottom")
+        flags |= Qt::AlignBottom;
+      else
+        flags |= Qt::AlignVCenter;
+      const int margin = std::max(1, w / 24);
+      p.drawText(img.rect().adjusted(margin, margin, -margin, -margin), flags, text);
+    }
+  }
+
+  if(const int rot = conf["Rotation"].toInt() % 360; rot != 0)
+    img = img.transformed(QTransform().rotate(rot));
+  {
+    const bool mx = conf["MirrorX"].toBool();
+    const bool my = conf["MirrorY"].toBool();
+    if(mx || my)
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+      img = img.flipped(
+          (mx ? Qt::Horizontal : Qt::Orientations{})
+          | (my ? Qt::Vertical : Qt::Orientations{}));
+#else
+      img = img.mirrored(mx, my);
+#endif
+    }
+  }
+
+  const auto format = conf.value("Format", "jpeg").toString().toLower();
+  QByteArray out;
+  auto raw = [&](QImage::Format f) {
+    const auto converted = img.convertToFormat(f);
+    for(int y = 0; y < converted.height(); y++)
+      out.append(
+          reinterpret_cast<const char*>(converted.constScanLine(y)),
+          converted.width() * converted.depth() / 8);
+  };
+
+  if(format == "rgb")
+    raw(QImage::Format_RGB888);
+  else if(format == "bgr")
+    raw(QImage::Format_BGR888);
+  else if(format == "rgba")
+    raw(QImage::Format_RGBA8888);
+  else if(format == "rgb565")
+    raw(QImage::Format_RGB16);
+  else
+  {
+    const char* fmt = format == "png" ? "PNG" : format == "bmp" ? "BMP" : "JPEG";
+    QBuffer buf{&out};
+    buf.open(QIODevice::WriteOnly);
+    QImage encoded = img;
+    if(qstrcmp(fmt, "PNG") != 0)
+      encoded = img.convertToFormat(QImage::Format_RGB888);
+    encoded.save(&buf, fmt, std::clamp(conf.value("Quality", 90).toInt(), 0, 100));
+  }
+
+  return qjs->toScriptValue(out);
+}
 
 #if defined(OSSIA_HAS_BLUETOOTH)
 QObject* qml_protocols::bluetoothScanner(QJSValue config)
