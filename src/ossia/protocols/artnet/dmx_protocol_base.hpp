@@ -61,6 +61,6 @@ public:
   void on_dmx(const uint8_t* dmx, int count);
 
 protected:
-  std::array<dmx_parameter*, 512> m_cache;
+  std::array<dmx_parameter*, 512> m_cache{};
 };
 }

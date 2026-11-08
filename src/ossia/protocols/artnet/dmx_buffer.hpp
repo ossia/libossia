@@ -1,11 +1,13 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <span>
+#include <ossia/detail/pod_vector.hpp>
 
-#include <boost/dynamic_bitset.hpp>
-
+#include <algorithm>
+#include <atomic>
 #include <cstdint>
+#include <memory>
+#include <span>
 
 #define DMX_CHANNEL_COUNT 512
 
@@ -36,7 +38,43 @@ struct dmx_config
   bool multicast{true};
 };
 
-struct dmx_buffer
+class dmx_dirty_flags
+{
+public:
+  std::size_t size() const noexcept { return m_size; }
+
+  void resize(std::size_t n)
+  {
+    auto flags = std::make_unique<std::atomic_bool[]>(n);
+    for(std::size_t i = 0, N = std::min(n, m_size); i < N; i++)
+      flags[i].store(m_flags[i].load(std::memory_order_relaxed), std::memory_order_relaxed);
+    m_flags = std::move(flags);
+    m_size = n;
+  }
+
+  std::atomic_bool& operator[](std::size_t i) noexcept { return m_flags[i]; }
+  const std::atomic_bool& operator[](std::size_t i) const noexcept { return m_flags[i]; }
+
+  void reset() noexcept
+  {
+    for(std::size_t i = 0; i < m_size; i++)
+      m_flags[i] = false;
+  }
+
+  bool none() const noexcept
+  {
+    for(std::size_t i = 0; i < m_size; i++)
+      if(m_flags[i])
+        return false;
+    return true;
+  }
+
+private:
+  std::unique_ptr<std::atomic_bool[]> m_flags;
+  std::size_t m_size{};
+};
+
+struct OSSIA_EXPORT dmx_buffer
 {
   explicit dmx_buffer(int universe_size);
   ~dmx_buffer();
@@ -52,16 +90,25 @@ struct dmx_buffer
 
   std::span<uint8_t> write_channels(int start, int count) noexcept
   {
-    int first_universe = start / universe_size;
-    int last_universe = (start + count) / universe_size;
-    assert(first_universe >= 0);
-    assert(first_universe < dirty.size());
-    assert(last_universe >= 0);
-    assert(last_universe < dirty.size());
+    if(start < 0 || count <= 0)
+      return {};
+    const std::size_t first_universe = start / universe_size;
+    const std::size_t last_universe = (std::size_t(start) + count - 1) / universe_size;
+    if(last_universe >= dirty.size())
+      return {};
 
-    for(int i = first_universe; i <= last_universe; i++)
+    for(std::size_t i = first_universe; i <= last_universe; i++)
       dirty[i] = true;
     return {data.data() + start, std::size_t(count)};
+  }
+
+  void write_channel(std::size_t channel, uint8_t value) noexcept
+  {
+    const std::size_t u = channel / universe_size;
+    if(u >= dirty.size())
+      return;
+    data[channel] = value;
+    dirty[u] = true;
   }
 
   std::span<uint8_t> write_universe(int u) noexcept
@@ -81,7 +128,7 @@ struct dmx_buffer
   }
 
   ossia::pod_vector<uint8_t> data;
-  mutable boost::dynamic_bitset<> dirty;
+  mutable dmx_dirty_flags dirty;
   int universe_size{};
 };
 
