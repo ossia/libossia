@@ -53,12 +53,14 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
       break;
     case ossia::net::dmx_config::just_universes: {
       auto& root = dev.get_root_node();
-      m_buffer.set_universe_count(16);
-      for(int i = 0; i < 16; i++)
+      const int universes = std::max<int>(m_conf.universe_count, 1);
+      const int size = m_conf.channels_per_universe;
+      m_buffer.set_universe_count(universes);
+      for(int i = 0; i < universes; i++)
       {
         device_parameter::create_device_parameter<dmx_range_parameter>(
             root, std::to_string(m_conf.start_universe + i), std::vector<ossia::value>{},
-            m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0, 255);
+            m_buffer, ossia::net::dmx_range{i * size, size}, 0, 255);
       }
       break;
     }
@@ -102,17 +104,22 @@ void dmx_input_protocol_base::create_channel_map()
   ossia::net::visit_parameters(
       m_device->get_root_node(),
       [this](ossia::net::node_base&, ossia::net::parameter_base& param) {
-    auto p = static_cast<dmx_parameter*>(&param);
-    if(auto c = p->channel(); c >= 0 && c < m_cache.size())
-      m_cache[p->channel()] = p;
-      });
+    auto p = dynamic_cast<dmx_parameter*>(&param);
+    if(!p || p->channel() >= m_cache.size())
+      return;
+    for(uint32_t c : p->channels())
+      if(c >= m_conf.channels_per_universe)
+        return;
+    m_cache[p->channel()] = p;
+  });
 }
 
 void dmx_input_protocol_base::on_dmx(const uint8_t* dmx, int count)
 {
   for(int i = 0, N = std::min(count, (int)m_cache.size()); i < N; i++)
   {
-    this->m_cache[i]->set_dmx_value(dmx + i, dmx + count);
+    if(auto p = this->m_cache[i])
+      p->set_dmx_value(dmx, dmx + count);
   }
 }
 }

@@ -207,6 +207,10 @@ if(OSSIA_PROTOCOL_MIDI)
   ossia_add_test(MIDITest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/MIDITest.cpp")
 endif()
 
+if(OSSIA_PROTOCOL_ARTNET)
+  ossia_add_test(DMXTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/DMXTest.cpp")
+endif()
+
 if(OSSIA_PROTOCOL_MINUIT)
   ossia_add_test(MinuitTest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/MinuitTest.cpp")
 endif()
