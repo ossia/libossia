@@ -11,6 +11,9 @@
 #include <string_view>
 #include <type_traits>
 
+class QString;
+class QByteArray;
+
 namespace ossia
 {
 
@@ -177,6 +180,30 @@ template <>
 struct hash<std::string> : string_hash { };
 template <>
 struct hash<std::string_view> : string_hash { };
+
+// Qt strings: the bytes they hold, as for std::string. Declared here rather
+// than in ossia-qt so that every hash of a QString sees them; the call
+// operators are templates so that Qt is only needed where one is hashed.
+template <>
+struct hash<QString>
+{
+  using is_avalanching = std::true_type;
+  template <typename S = QString>
+  OSSIA_INLINE uint64_t operator()(const S& s) const noexcept
+  {
+    return hash_bytes(s.constData(), (std::size_t)s.size() * sizeof(*s.constData()));
+  }
+};
+template <>
+struct hash<QByteArray>
+{
+  using is_avalanching = std::true_type;
+  template <typename S = QByteArray>
+  OSSIA_INLINE uint64_t operator()(const S& s) const noexcept
+  {
+    return hash_bytes(s.constData(), (std::size_t)s.size());
+  }
+};
 
 // Invalid overloads
 template <>
