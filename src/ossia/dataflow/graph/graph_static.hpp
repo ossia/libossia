@@ -154,8 +154,8 @@ public:
       }
       else
       {
-        // The states run alongside the other nodes: the inlets get what they
-        // push to an address in the next tick, once.
+        // The parallel executor runs the nodes without ports first and reads
+        // the queues again before running the others itself.
         tick_fun(*this, update_fun, e, m_all_nodes);
       }
 
