@@ -133,6 +133,9 @@ public:
     pool.corun_until(m_batch);
   }
 
+  //! Runs a node outside of any taskflow, on the calling thread.
+  void run_inline(ossia::graph_node& node) noexcept { call(node); }
+
 private:
   // pool_task entry point: recover the owning executor from the task itself.
   static void run_task(ossia::pool_task* pt) noexcept
@@ -150,24 +153,25 @@ private:
       pool.submit(&t);
   }
 
-  void execute(task& t) noexcept
+  void call(ossia::graph_node& node) noexcept
   {
     try
     {
-      m_func(*t.m_node);
+      m_func(node);
     }
     catch(const std::exception& e)
     {
-      fmt::print(
-          stderr, "ossia: error executing node '{}': {}\n", t.m_node->label(),
-          e.what());
+      fmt::print(stderr, "ossia: error executing node '{}': {}\n", node.label(), e.what());
     }
     catch(...)
     {
-      fmt::print(
-          stderr, "ossia: error executing node '{}'\n", t.m_node->label());
+      fmt::print(stderr, "ossia: error executing node '{}'\n", node.label());
     }
+  }
 
+  void execute(task& t) noexcept
+  {
+    call(*t.m_node);
     process_done(t);
   }
 
@@ -212,14 +216,37 @@ public:
   {
   }
 
+  //! The nodes without ports, the states, are not tasks: each tick runs them in
+  //! order on the calling thread before the others, so that what they push to
+  //! an address reaches the nodes reading it in the same tick. They have no
+  //! edge, having no ports; were one given an edge, every node becomes a task
+  //! again and they run in parallel with the others.
   void update_graph(
       ossia::node_map& nodes, const std::vector<graph_node*>& topo_order,
-      ossia::graph_t& graph)
+      std::size_t nodes_without_ports, ossia::graph_t& graph)
   {
     flow_nodes.clear();
     flow_graph.clear();
+    prologue.clear();
 
     flow_graph.reserve(nodes.size());
+
+    std::size_t first = std::min(nodes_without_ports, topo_order.size());
+    if(first > 0)
+    {
+      const auto has_ports = [](const ossia::graph_node& n) {
+        return !(n.root_inputs().empty() && n.root_outputs().empty());
+      };
+      for(auto [ei, ei_end] = boost::edges(graph); ei != ei_end; ++ei)
+      {
+        if(!has_ports(*graph[(*ei).m_source]) || !has_ports(*graph[(*ei).m_target]))
+        {
+          first = 0;
+          break;
+        }
+      }
+    }
+    prologue.assign(topo_order.begin(), topo_order.begin() + first);
 
     if(logger)
     {
@@ -228,27 +255,22 @@ public:
         executor.set_task_executor(
             node_exec_logger_bench{cur_state, *perf_map, *logger});
         for(auto node : topo_order)
-        {
           (*perf_map)[node] = std::nullopt;
-          flow_nodes[node] = flow_graph.emplace(*node);
-        }
       }
       else
       {
         executor.set_task_executor(node_exec_logger{cur_state, *logger});
-        for(auto node : topo_order)
-        {
-          flow_nodes[node] = flow_graph.emplace(*node);
-        }
       }
     }
     else
     {
       executor.set_task_executor(node_exec{cur_state});
-      for(auto node : topo_order)
-      {
-        flow_nodes[node] = flow_graph.emplace(*node);
-      }
+    }
+
+    for(std::size_t i = first; i < topo_order.size(); i++)
+    {
+      auto node = topo_order[i];
+      flow_nodes[node] = flow_graph.emplace(*node);
     }
 
     for(auto [ei, ei_end] = boost::edges(graph); ei != ei_end; ++ei)
@@ -267,7 +289,7 @@ public:
   void operator()(Graph_T& g, const DevicesT& devices)
   {
     impl(g, devices);
-    update_graph(g.m_nodes, g.m_all_nodes, impl.m_sub_graph);
+    update_graph(g.m_nodes, g.m_all_nodes, g.m_nodes_without_ports, impl.m_sub_graph);
   }
 
 private:
@@ -279,11 +301,14 @@ private:
   ossia::taskflow flow_graph;
   ossia::executor executor;
   ossia::hash_map<graph_node*, ossia::task*> flow_nodes;
+  //! The nodes run in order before the taskflow.
+  std::vector<ossia::graph_node*> prologue;
 };
 
 struct custom_parallel_exec
 {
-  //! Runs the nodes in any order their edges allow, several at once.
+  //! Runs the nodes without ports first, in order, then the others in any order
+  //! their edges allow, several at once.
   static constexpr bool in_order = false;
 
   template <typename Graph_T>
@@ -297,6 +322,12 @@ struct custom_parallel_exec
       std::span<ossia::graph_node* const>)
   {
     self.cur_state = &e;
+    if(!self.prologue.empty())
+    {
+      for(auto node : self.prologue)
+        self.executor.run_inline(*node);
+      e.receive_new_values();
+    }
     self.executor.run(self.flow_graph);
   }
 };
