@@ -13,6 +13,9 @@
 
 #include <ossia-config.hpp>
 
+#include <algorithm>
+#include <span>
+
 // #define OSSIA_GRAPH_DEBUG
 
 namespace ossia
@@ -48,6 +51,7 @@ public:
     {
       // Get a total order on nodes
       m_all_nodes.clear();
+      m_nodes_without_ports = 0;
       m_all_nodes.reserve(m_nodes.size());
 
       // TODO this should be doable with a single vector
@@ -68,6 +72,7 @@ public:
           m_all_nodes.push_back(node);
         }
       }
+      m_nodes_without_ports = m_all_nodes.size();
       // Then the others
       for(auto vtx : m_topo_order_cache)
       {
@@ -83,6 +88,7 @@ public:
     catch(const boost::not_a_dag&)
     {
       m_all_nodes.clear();
+      m_nodes_without_ports = 0;
       ossia::logger().error(
           "Execution graph is not a DAG, nothing will execute: {}",
           graph_util::describe_immediate_cycle(gr));
@@ -90,11 +96,13 @@ public:
     catch(const std::exception& e)
     {
       m_all_nodes.clear();
+      m_nodes_without_ports = 0;
       ossia::logger().error("Execution graph could not be sorted: {}", e.what());
     }
     catch(...)
     {
       m_all_nodes.clear();
+      m_nodes_without_ports = 0;
       ossia::logger().error("Execution graph could not be sorted");
     }
   }
@@ -130,7 +138,24 @@ public:
 
       disable_strict_nodes_rec(m_enabled_cache, m_disabled_cache);
 
-      tick_fun(*this, update_fun, e, m_all_nodes);
+      if constexpr(TickImpl::in_order)
+      {
+        // The nodes without ports, the states, run first. What they push to
+        // an address reaches the nodes reading it in the tick the state is
+        // in, as a cable would carry it, rather than in the next one.
+        const std::span<graph_node* const> nodes{m_all_nodes};
+        const std::size_t first = std::min(m_nodes_without_ports, nodes.size());
+        if(first > 0)
+        {
+          tick_fun(*this, update_fun, e, nodes.first(first));
+          e.receive_new_values();
+        }
+        tick_fun(*this, update_fun, e, nodes.subspan(first));
+      }
+      else
+      {
+        tick_fun(*this, update_fun, e, m_all_nodes);
+      }
 
 #if defined(OSSIA_EXECUTION_LOG)
       auto log = g_exec_log.log_executed_nodes(m_graph, m_all_nodes);
@@ -148,6 +173,8 @@ public:
   [[nodiscard]] const graph_t& impl() const { return m_graph; }
   graph_t& impl() { return m_graph; }
   std::vector<graph_node*> m_all_nodes;
+  //! How many nodes at the start of m_all_nodes have no ports.
+  std::size_t m_nodes_without_ports{};
 
 protected:
   void print(std::ostream& stream) override { print_graph(m_graph, stream); }

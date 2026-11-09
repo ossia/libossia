@@ -81,6 +81,11 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   void begin_tick();
 
+  //! Adds the values pushed to the parameters since begin_tick() to what the
+  //! inlets reading them get in this tick. A value is received once: the next
+  //! begin_tick() does not give it again.
+  void receive_new_values();
+
   void clear_devices();
   void reset();
 

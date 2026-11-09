@@ -283,6 +283,9 @@ private:
 
 struct custom_parallel_exec
 {
+  //! Runs the nodes in any order their edges allow, several at once.
+  static constexpr bool in_order = false;
+
   template <typename Graph_T>
   custom_parallel_exec(Graph_T&)
   {
@@ -291,7 +294,7 @@ struct custom_parallel_exec
   template <typename Graph_T, typename Impl>
   void operator()(
       Graph_T& g, custom_parallel_update<Impl>& self, ossia::execution_state& e,
-      const std::vector<ossia::graph_node*>&)
+      std::span<ossia::graph_node* const>)
   {
     self.cur_state = &e;
     self.executor.run(self.flow_graph);

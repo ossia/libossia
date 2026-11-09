@@ -2,6 +2,8 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
 
+#include <span>
+
 namespace ossia
 {
 struct node_exec
@@ -122,6 +124,9 @@ struct node_exec_logger_bench
 
 struct static_exec
 {
+  //! Runs the nodes one after the other, in the order given.
+  static constexpr bool in_order = true;
+
   template <typename Graph_T>
   static_exec(Graph_T&)
   {
@@ -139,7 +144,7 @@ struct static_exec
   template <typename Graph_T, typename Impl_T>
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
-      std::vector<graph_node*>& active_nodes)
+      std::span<graph_node* const> active_nodes)
   try
   {
     for(auto node : active_nodes)
@@ -159,6 +164,9 @@ struct static_exec
 
 struct static_exec_bench
 {
+  //! Runs the nodes one after the other, in the order given.
+  static constexpr bool in_order = true;
+
   std::shared_ptr<bench_map> perf;
   template <typename Graph_T>
   static_exec_bench(Graph_T&)
@@ -178,7 +186,7 @@ struct static_exec_bench
   template <typename Graph_T, typename Impl_T>
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
-      std::vector<graph_node*>& active_nodes)
+      std::span<graph_node* const> active_nodes)
   try
   {
     auto& p = *perf;
@@ -221,6 +229,9 @@ struct static_exec_bench
 
 struct static_exec_logger
 {
+  //! Runs the nodes one after the other, in the order given.
+  static constexpr bool in_order = true;
+
   template <typename Graph_T>
   static_exec_logger(Graph_T&)
   {
@@ -240,7 +251,7 @@ struct static_exec_logger
   template <typename Graph_T, typename Impl_T>
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
-      std::vector<graph_node*>& active_nodes)
+      std::span<graph_node* const> active_nodes)
   try
   {
     for(auto node : active_nodes)
@@ -263,6 +274,9 @@ struct static_exec_logger
 
 struct static_exec_logger_bench
 {
+  //! Runs the nodes one after the other, in the order given.
+  static constexpr bool in_order = true;
+
   template <typename T>
   void set_logger(const T& t)
   {
@@ -284,7 +298,7 @@ struct static_exec_logger_bench
   template <typename Graph_T, typename Impl_T>
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
-      std::vector<graph_node*>& active_nodes)
+      std::span<graph_node* const> active_nodes)
   try
   {
     auto& p = *perf;

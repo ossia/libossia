@@ -162,17 +162,22 @@ void execution_state::unregister_midi_parameter(net::midi::midi_stream* p)
 #endif
 }
 
-void execution_state::get_new_values()
+void execution_state::receive_new_values()
 {
-  for(auto it = m_receivedValues.begin(), end = m_receivedValues.end(); it != end; ++it)
-    it->second.clear();
-
   for(auto& mq : m_valueQueues)
   {
     ossia::received_value recv;
     while(mq.try_dequeue(recv))
       m_receivedValues[recv.address].push_back(recv.value);
   }
+}
+
+void execution_state::get_new_values()
+{
+  for(auto it = m_receivedValues.begin(), end = m_receivedValues.end(); it != end; ++it)
+    it->second.clear();
+
+  receive_new_values();
 
   for(auto it = m_receivedMidi.begin(), end = m_receivedMidi.end(); it != end; ++it)
   {
