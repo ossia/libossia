@@ -119,19 +119,26 @@ bool dmx_output_protocol_base::should_send(int universe)
 
 void dmx_input_protocol_base::create_channel_map()
 {
-  m_cache.fill(nullptr);
+  channel_map map{};
 
   ossia::net::visit_parameters(
       m_device->get_root_node(),
-      [this](ossia::net::node_base&, ossia::net::parameter_base& param) {
+      [this, &map](ossia::net::node_base&, ossia::net::parameter_base& param) {
     auto p = dynamic_cast<dmx_parameter*>(&param);
-    if(!p || p->channel() >= m_cache.size())
+    if(!p || p->channel() >= map.size())
       return;
     for(uint32_t c : p->channels())
       if(c >= m_conf.channels_per_universe)
         return;
-    m_cache[p->channel()] = p;
+    map[p->channel()] = p;
   });
+
+  apply_channel_map(map);
+}
+
+void dmx_input_protocol_base::apply_channel_map(const channel_map& map)
+{
+  m_cache = map;
 }
 
 void dmx_input_protocol_base::on_dmx(const uint8_t* dmx, int count)

@@ -259,8 +259,18 @@ void e131_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
 
-  // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) { on_packet(bytes, sz); });
+}
+
+void e131_input_protocol::apply_channel_map(const channel_map& map)
+{
+  // The receive handler runs on the socket's strand.
+  boost::asio::post(
+      m_socket.m_socket.get_executor(),
+      [this, map, alive = m_socket.m_lifetime.watch()] {
+    if(!alive.expired())
+      m_cache = map;
+  });
 }
 
 void e131_input_protocol::on_packet(const char* bytes, int sz)
