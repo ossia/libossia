@@ -9,11 +9,17 @@
 #include <ossia/protocols/artnet/dmx_led_parameter.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 #include <ossia/protocols/artnet/dmx_protocol_base.hpp>
+#include <ossia/protocols/artnet/artnet_protocol.hpp>
+#include <ossia/protocols/artnet/e131_protocol.hpp>
+
+#include <boost/asio/ip/udp.hpp>
 
 #include "include_catch.hpp"
 
 #include <array>
+#include <chrono>
 #include <limits>
+#include <thread>
 
 using namespace ossia::net;
 
@@ -322,4 +328,258 @@ TEST_CASE("Incoming DMX ignores channels outside the received universe", "[dmx]"
   CHECK(ossia::convert<int>(inside.value()) == 0x0100);
   CHECK(ossia::convert<int>(second.value()) == 0);
   CHECK(ossia::convert<int>(straddling.value()) == 0);
+}
+
+namespace
+{
+using udp = boost::asio::ip::udp;
+using namespace std::chrono_literals;
+
+//! Receives the datagrams a protocol sends to 127.0.0.1.
+struct udp_sink
+{
+  boost::asio::io_context io;
+  udp::socket sock{io};
+
+  udp_sink()
+  {
+    sock.open(udp::v4());
+    sock.bind({boost::asio::ip::make_address("127.0.0.1"), 0});
+    sock.non_blocking(true);
+  }
+
+  uint16_t port() const { return sock.local_endpoint().port(); }
+
+  std::vector<std::vector<uint8_t>> receive_for(std::chrono::milliseconds d)
+  {
+    std::vector<std::vector<uint8_t>> res;
+    const auto end = std::chrono::steady_clock::now() + d;
+    std::array<uint8_t, 2048> buf;
+    while(std::chrono::steady_clock::now() < end)
+    {
+      boost::system::error_code ec;
+      udp::endpoint from;
+      const auto n = sock.receive_from(boost::asio::buffer(buf), from, 0, ec);
+      if(ec)
+        std::this_thread::sleep_for(2ms);
+      else
+        res.emplace_back(buf.begin(), buf.begin() + n);
+    }
+    return res;
+  }
+};
+
+//! Runs a network context on its own thread for the lifetime of a device.
+struct net_thread
+{
+  std::shared_ptr<network_context> ctx = std::make_shared<network_context>();
+  std::thread thread{[c = ctx] { c->run(); }};
+  ~net_thread()
+  {
+    ctx->context.stop();
+    thread.join();
+  }
+};
+
+uint16_t free_port()
+{
+  boost::asio::io_context io;
+  udp::socket s{io, {boost::asio::ip::make_address("127.0.0.1"), 0}};
+  return s.local_endpoint().port();
+}
+
+dmx_parameter& add_channel(generic_device& dev, dmx_buffer& buffer, std::string name, int channel)
+{
+  auto node = dev.get_root_node().create_child(name);
+  auto param = std::make_unique<dmx_parameter>(*node, buffer, channel);
+  auto& p = *param;
+  node->set_parameter(std::move(param));
+  return p;
+}
+
+int artnet_universe(const std::vector<uint8_t>& pkt)
+{
+  return pkt[14] | (pkt[15] << 8);
+}
+
+int e131_universe(const std::vector<uint8_t>& pkt)
+{
+  return (pkt[113] << 8) | pkt[114];
+}
+}
+
+TEST_CASE("Art-Net sends the Net of universes above 255", "[dmx][artnet]")
+{
+  udp_sink sink;
+  net_thread net;
+  {
+    dmx_config conf;
+    conf.start_universe = 255;
+    auto proto = std::make_unique<artnet_protocol>(
+        net.ctx, conf, outbound_socket_configuration{"127.0.0.1", sink.port()});
+    auto& p = *proto;
+    p.buffer().set_universe_count(2);
+    generic_device dev{std::move(proto), "dmx"};
+    add_channel(dev, p.buffer(), "a", 3).push_value(7);
+    add_channel(dev, p.buffer(), "b", 512 + 3).push_value(9);
+
+    std::array<int, 2> seen{};
+    for(auto& pkt : sink.receive_for(200ms))
+    {
+      REQUIRE(pkt.size() == 18 + 512);
+      if(artnet_universe(pkt) == 255 && pkt[18 + 3] == 7)
+        seen[0]++;
+      if(artnet_universe(pkt) == 256 && pkt[18 + 3] == 9)
+        seen[1]++;
+      CHECK(artnet_universe(pkt) != 0);
+    }
+    CHECK(seen[0] > 0);
+    CHECK(seen[1] > 0);
+  }
+}
+
+TEST_CASE("Art-Net frames carry an even length and nothing after it", "[dmx][artnet]")
+{
+  for(int channels : {510, 511, 7})
+  {
+    udp_sink sink;
+    net_thread net;
+    dmx_config conf;
+    conf.channels_per_universe = channels;
+    auto proto = std::make_unique<artnet_protocol>(
+        net.ctx, conf, outbound_socket_configuration{"127.0.0.1", sink.port()});
+    auto& p = *proto;
+    generic_device dev{std::move(proto), "dmx"};
+    add_channel(dev, p.buffer(), "a", channels - 1).push_value(5);
+
+    const auto pkts = sink.receive_for(150ms);
+    REQUIRE(!pkts.empty());
+    const auto& pkt = pkts.back();
+    const int length = (pkt[16] << 8) | pkt[17];
+    CHECK(length == (channels + 1) / 2 * 2);
+    CHECK(pkt.size() == 18 + std::size_t(length));
+    CHECK(pkt[18 + channels - 1] == 5);
+  }
+}
+
+TEST_CASE("sACN universes have their own sequence and are kept alive", "[dmx][e131]")
+{
+  udp_sink sink;
+  net_thread net;
+  {
+    dmx_config conf;
+    conf.start_universe = 0; // not a valid sACN universe: never sent
+    conf.multicast = false;
+    auto proto = std::make_unique<e131_protocol>(
+        net.ctx, conf, outbound_socket_configuration{"127.0.0.1", sink.port()});
+    auto& p = *proto;
+    p.buffer().set_universe_count(3);
+    generic_device dev{std::move(proto), "dmx"};
+    add_channel(dev, p.buffer(), "u0", 0).push_value(1);
+    add_channel(dev, p.buffer(), "u1", 512).push_value(2);
+    add_channel(dev, p.buffer(), "u2", 1024).push_value(3);
+
+    // Nothing changes: each universe still goes out about once a second.
+    const auto pkts = sink.receive_for(2300ms);
+    std::array<std::vector<uint8_t>, 3> seq;
+    std::array<uint8_t, 16> cid{};
+    for(auto& pkt : pkts)
+    {
+      REQUIRE(pkt.size() == 638);
+      const int u = e131_universe(pkt);
+      REQUIRE(u >= 1);
+      REQUIRE(u <= 2);
+      seq[u].push_back(pkt[111]);
+      CHECK(pkt[126 + 0] == u + 1);
+      std::copy_n(pkt.begin() + 22, 16, cid.begin());
+    }
+    CHECK(seq[1].size() >= 3);
+    CHECK(seq[2].size() >= 3);
+    for(int u : {1, 2})
+      for(std::size_t i = 1; i < seq[u].size(); i++)
+        CHECK(uint8_t(seq[u][i] - seq[u][i - 1]) == 1);
+    CHECK(std::any_of(cid.begin(), cid.end(), [](uint8_t b) { return b != 0; }));
+  }
+}
+
+TEST_CASE("Art-Net input reads its own universe only", "[dmx][artnet]")
+{
+  net_thread net;
+  const uint16_t port = free_port();
+  dmx_config conf;
+  conf.mode = dmx_config::sink;
+  conf.start_universe = 3;
+  auto proto = std::make_unique<artnet_input_protocol>(
+      net.ctx, conf, inbound_socket_configuration{"127.0.0.1", port});
+  auto& p = *proto;
+  generic_device dev{std::move(proto), "dmx"};
+  auto& a = add_channel(dev, p.buffer(), "a", 2);
+  a.set_value(0);
+  p.create_channel_map();
+
+  auto send = [&](int universe, uint8_t value) {
+    std::vector<uint8_t> pkt{'A', 'r', 't', '-', 'N', 'e', 't', 0, 0x00, 0x50, 0, 14, 0, 0,
+                             uint8_t(universe & 0xFF), uint8_t(universe >> 8), 0, 4};
+    pkt.insert(pkt.end(), {0, 0, value, 0});
+    boost::asio::io_context io;
+    udp::socket s{io, udp::v4()};
+    s.send_to(boost::asio::buffer(pkt), {boost::asio::ip::make_address("127.0.0.1"), port});
+    std::this_thread::sleep_for(100ms);
+  };
+  send(3, 42);
+  CHECK(ossia::convert<int>(a.value()) == 42);
+  send(4, 99);
+  CHECK(ossia::convert<int>(a.value()) == 42);
+  send(3 + 256, 98);
+  CHECK(ossia::convert<int>(a.value()) == 42);
+}
+
+TEST_CASE("sACN input reads every slot, and short packets", "[dmx][e131]")
+{
+  net_thread net;
+  const uint16_t port = free_port();
+  dmx_config conf;
+  conf.mode = dmx_config::sink;
+  conf.start_universe = 1;
+  conf.multicast = false;
+  auto proto = std::make_unique<e131_input_protocol>(
+      net.ctx, conf, inbound_socket_configuration{"127.0.0.1", port});
+  auto& p = *proto;
+  generic_device dev{std::move(proto), "dmx"};
+  auto& low = add_channel(dev, p.buffer(), "low", 2);
+  auto& high = add_channel(dev, p.buffer(), "high", 400);
+  low.set_value(0);
+  high.set_value(0);
+  p.create_channel_map();
+
+  auto send = [&](std::vector<uint8_t> slots, uint8_t start_code = 0) {
+    std::vector<uint8_t> pkt(126, 0);
+    pkt[1] = 0x10;
+    std::memcpy(pkt.data() + 4, "ASC-E1.17", 9);
+    pkt[113] = 0;
+    pkt[114] = 1;
+    const int count = slots.size() + 1;
+    pkt[123] = count >> 8;
+    pkt[124] = count & 0xFF;
+    pkt[125] = start_code;
+    pkt.insert(pkt.end(), slots.begin(), slots.end());
+    boost::asio::io_context io;
+    udp::socket s{io, udp::v4()};
+    s.send_to(boost::asio::buffer(pkt), {boost::asio::ip::make_address("127.0.0.1"), port});
+    std::this_thread::sleep_for(100ms);
+  };
+
+  std::vector<uint8_t> full(512);
+  full[2] = 10;
+  full[400] = 20;
+  send(full);
+  CHECK(ossia::convert<int>(low.value()) == 10);
+  CHECK(ossia::convert<int>(high.value()) == 20);
+
+  send({0, 0, 11});
+  CHECK(ossia::convert<int>(low.value()) == 11);
+  CHECK(ossia::convert<int>(high.value()) == 20);
+
+  send({0, 0, 12}, 0xCC);
+  CHECK(ossia::convert<int>(low.value()) == 11);
 }
