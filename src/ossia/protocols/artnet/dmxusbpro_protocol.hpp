@@ -27,7 +27,7 @@ public:
   void set_device(ossia::net::device_base& dev) override;
 
 private:
-  void update_function_dmxusbpro(uint8_t command);
+  void update_function_dmxusbpro(uint8_t command, int universe);
   void update_function_opendmx();
 
   boost::asio::serial_port m_port;
