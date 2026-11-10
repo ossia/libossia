@@ -211,6 +211,19 @@ if(OSSIA_PROTOCOL_MINUIT)
   ossia_add_test(MinuitTest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/MinuitTest.cpp")
 endif()
 
+if(OSSIA_PROTOCOL_MINUIT AND OSSIA_DNSSD)
+  # The listener of ossia-max as it is, against a stand-in for the Max API
+  set(_minuit_listener_dir "${CMAKE_CURRENT_BINARY_DIR}/minuit_listener")
+  foreach(_file ZeroconfMinuitListener.cpp ZeroconfMinuitListener.hpp)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../src/ossia-max/src/${_file}"
+                   "${_minuit_listener_dir}/${_file}" COPYONLY)
+  endforeach()
+  ossia_add_test(ZeroconfMinuitListenerTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/ZeroconfMinuitListenerTest.cpp")
+  target_include_directories(ossia_ZeroconfMinuitListenerTest PRIVATE
+      "${_minuit_listener_dir}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/Network/max_listener_stub")
+endif()
+
 if(OSSIA_PROTOCOL_PHIDGETS)
   ossia_add_test(PhidgetTest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
 endif()
