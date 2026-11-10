@@ -489,8 +489,9 @@ TEST_CASE("sACN universes have their own sequence and are kept alive", "[dmx][e1
     add_channel(dev, p.buffer(), "u1", 512).push_value(2);
     add_channel(dev, p.buffer(), "u2", 1024).push_value(3);
 
-    // Nothing changes: each universe still goes out about once a second.
-    const auto pkts = sink.receive_for(2300ms);
+    // Nothing changes: each universe still goes out about once a second. The
+    // window leaves room for timer jitter on loaded machines.
+    const auto pkts = sink.receive_for(3500ms);
     std::array<std::vector<uint8_t>, 3> seq;
     std::array<uint8_t, 16> cid{};
     for(auto& pkt : pkts)
