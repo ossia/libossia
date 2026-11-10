@@ -10,15 +10,25 @@
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 #include <ossia/protocols/artnet/dmx_protocol_base.hpp>
 #include <ossia/protocols/artnet/artnet_protocol.hpp>
+#include <ossia/protocols/artnet/dmxusbpro_protocol.hpp>
 #include <ossia/protocols/artnet/e131_protocol.hpp>
 
 #include <boost/asio/ip/udp.hpp>
 
 #include "include_catch.hpp"
 
+#if __has_include(<pty.h>)
+#include <fcntl.h>
+#include <pty.h>
+#include <termios.h>
+#include <unistd.h>
+#define DMXTEST_HAS_PTY 1
+#endif
+
 #include <array>
 #include <chrono>
 #include <limits>
+#include <map>
 #include <thread>
 
 using namespace ossia::net;
@@ -583,3 +593,147 @@ TEST_CASE("sACN input reads every slot, and short packets", "[dmx][e131]")
   send({0, 0, 12}, 0xCC);
   CHECK(ossia::convert<int>(low.value()) == 11);
 }
+
+#if defined(DMXTEST_HAS_PTY)
+namespace
+{
+//! A pseudo-terminal standing in for the serial port of a DMX interface.
+struct fake_serial_port
+{
+  int master{-1};
+  int slave{-1};
+  std::string name;
+
+  fake_serial_port()
+  {
+    char path[256]{};
+    REQUIRE(openpty(&master, &slave, path, nullptr, nullptr) == 0);
+    name = path;
+    termios t{};
+    tcgetattr(master, &t);
+    cfmakeraw(&t);
+    tcsetattr(master, TCSANOW, &t);
+    fcntl(master, F_SETFL, fcntl(master, F_GETFL) | O_NONBLOCK);
+  }
+  ~fake_serial_port()
+  {
+    close(slave);
+    close(master);
+  }
+
+  std::vector<uint8_t> read_for(std::chrono::milliseconds d)
+  {
+    std::vector<uint8_t> res;
+    const auto end = std::chrono::steady_clock::now() + d;
+    std::array<uint8_t, 4096> buf;
+    while(std::chrono::steady_clock::now() < end)
+    {
+      const auto n = ::read(master, buf.data(), buf.size());
+      if(n > 0)
+        res.insert(res.end(), buf.begin(), buf.begin() + n);
+      else
+        std::this_thread::sleep_for(2ms);
+    }
+    return res;
+  }
+};
+
+//! The Enttec messages in a byte stream: 0x7E, label, length LSB / MSB, data, 0xE7.
+std::vector<std::pair<int, std::vector<uint8_t>>> enttec_messages(const std::vector<uint8_t>& bytes)
+{
+  std::vector<std::pair<int, std::vector<uint8_t>>> res;
+  std::size_t i = 0;
+  while(i + 4 < bytes.size())
+  {
+    if(bytes[i] != 0x7E)
+    {
+      i++;
+      continue;
+    }
+    const std::size_t len = bytes[i + 2] | (bytes[i + 3] << 8);
+    if(i + 4 + len >= bytes.size())
+      break;
+    if(bytes[i + 4 + len] == 0xE7)
+      res.emplace_back(
+          bytes[i + 1], std::vector<uint8_t>(
+                            bytes.begin() + i + 4, bytes.begin() + i + 4 + len));
+    i += 5 + len;
+  }
+  return res;
+}
+}
+
+TEST_CASE("A DMX USB Pro Mk2 sends universe 0 and 1 out of its two ports", "[dmx][dmxusbpro]")
+{
+  for(int start : {0, 1})
+  {
+    fake_serial_port tty;
+    net_thread net;
+    dmx_config conf;
+    conf.frequency = 40;
+    conf.start_universe = start;
+    serial_configuration serial;
+    serial.port = tty.name;
+    auto proto = std::make_unique<dmxusbpro_protocol>(
+        net.ctx, conf, serial, dmxusbpro_protocol::dmx_usb_pro_mk2);
+    auto& p = *proto;
+    p.buffer().set_universe_count(2);
+    generic_device dev{std::move(proto), "dmx"};
+    add_channel(dev, p.buffer(), "a", 3).push_value(7);
+    add_channel(dev, p.buffer(), "b", 512 + 3).push_value(9);
+
+    std::map<int, int> last_ch4;
+    for(auto& [label, data] : enttec_messages(tty.read_for(200ms)))
+    {
+      if(label != 0x06 && label != 0xCA)
+        continue;
+      REQUIRE(data.size() == 513);
+      CHECK(data[0] == 0);
+      last_ch4[label] = data[1 + 3];
+    }
+
+    if(start == 0)
+    {
+      // Universe 0 on the first port, universe 1 on the second.
+      CHECK(last_ch4[0x06] == 7);
+      CHECK(last_ch4[0xCA] == 9);
+    }
+    else
+    {
+      // Universe 1 is the start universe: buffer universe 0 goes to the second port.
+      CHECK(!last_ch4.contains(0x06));
+      CHECK(last_ch4[0xCA] == 7);
+    }
+  }
+}
+
+TEST_CASE("A DMX USB Pro sends a single universe", "[dmx][dmxusbpro]")
+{
+  fake_serial_port tty;
+  net_thread net;
+  dmx_config conf;
+  conf.frequency = 40;
+  conf.channels_per_universe = 100;
+  serial_configuration serial;
+  serial.port = tty.name;
+  auto proto = std::make_unique<dmxusbpro_protocol>(
+      net.ctx, conf, serial, dmxusbpro_protocol::dmx_usb_pro_mk1);
+  auto& p = *proto;
+  p.buffer().set_universe_count(2);
+  generic_device dev{std::move(proto), "dmx"};
+  add_channel(dev, p.buffer(), "a", 99).push_value(7);
+  add_channel(dev, p.buffer(), "b", 100).push_value(9);
+
+  int frames = 0;
+  for(auto& [label, data] : enttec_messages(tty.read_for(200ms)))
+  {
+    CHECK(label == 0x06);
+    REQUIRE(data.size() == 513);
+    CHECK(data[1 + 99] == 7);
+    // The channels past the universe's size are not the next universe's.
+    CHECK(data[1 + 100] == 0);
+    frames++;
+  }
+  CHECK(frames > 0);
+}
+#endif
