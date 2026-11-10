@@ -128,6 +128,7 @@ if(OSSIA_DATAFLOW)
   ossia_add_test(BackwardPlaybackTest        "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/BackwardPlaybackTest.cpp")
   ossia_add_test(BackwardAudioTest           "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/BackwardAudioTest.cpp")
   ossia_add_test(TimingInvariantsTest        "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TimingInvariantsTest.cpp")
+  ossia_add_test(TransportPositionTest       "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TransportPositionTest.cpp")
   ossia_add_test(MergeScenesTest             "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MergeScenesTest.cpp")
 
   # The Faust nodes are header-only: only the Faust architecture headers are needed.

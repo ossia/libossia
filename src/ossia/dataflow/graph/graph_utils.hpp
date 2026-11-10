@@ -648,6 +648,7 @@ struct OSSIA_EXPORT graph_util
 
     for(const auto& request : first_node.requested_tokens)
     {
+      first_node.begin_request(request, e);
       first_node.run(request, {&e});
       first_node.process_time(request, e);
 #if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
@@ -686,6 +687,7 @@ struct OSSIA_EXPORT graph_util
     log_inputs(first_node, logger);
     for(const auto& request : first_node.requested_tokens)
     {
+      first_node.begin_request(request, e);
       first_node.run(request, {&e});
       first_node.process_time(request, e);
 #if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
