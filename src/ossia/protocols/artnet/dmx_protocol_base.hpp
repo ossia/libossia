@@ -10,6 +10,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 namespace ossia::net
 {
@@ -48,7 +49,12 @@ public:
   void stop_processing();
 
 protected:
+  //! Called by the send timer for each universe: true when it changed, and once a
+  //! second after it was first sent, as receivers drop a source that goes silent.
+  bool should_send(int universe);
+
   ossia::timer m_timer;
+  std::vector<uint32_t> m_idle_ticks;
 };
 
 class OSSIA_EXPORT dmx_input_protocol_base : public dmx_protocol_base

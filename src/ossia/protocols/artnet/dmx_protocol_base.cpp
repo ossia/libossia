@@ -4,6 +4,9 @@
 #include <ossia/network/common/node_visitor.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
+#include <algorithm>
+#include <limits>
+
 namespace ossia::net
 {
 
@@ -95,6 +98,23 @@ dmx_output_protocol_base::dmx_output_protocol_base(
 void dmx_output_protocol_base::stop_processing()
 {
   m_timer.stop();
+}
+
+bool dmx_output_protocol_base::should_send(int universe)
+{
+  // Universes nothing has written to yet stay silent.
+  constexpr uint32_t never_sent = std::numeric_limits<uint32_t>::max();
+  if(std::ssize(m_idle_ticks) <= universe)
+    m_idle_ticks.resize(universe + 1, never_sent);
+
+  auto& idle = m_idle_ticks[universe];
+  const bool changed = m_buffer.dirty[universe].exchange(false);
+  if(changed || (idle != never_sent && ++idle >= std::max<uint32_t>(m_conf.frequency, 1)))
+  {
+    idle = 0;
+    return true;
+  }
+  return false;
 }
 
 void dmx_input_protocol_base::create_channel_map()

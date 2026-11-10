@@ -66,12 +66,14 @@ void artnet_protocol::update_function()
   for(int current_universe = 0; current_universe < m_buffer.universes();
       current_universe++)
   {
-    if(!m_buffer.dirty[current_universe])
+    if(!should_send(current_universe))
       continue;
 
     // Port-Address: 15 bits, Net in the high byte, Sub-Net and Universe in the low one.
     const int universe = (this->m_conf.start_universe + current_universe) & 0x7FFF;
-    auto data = m_buffer.read_universe(current_universe);
+    const std::span<const uint8_t> data{
+        m_buffer.data.data() + current_universe * m_buffer.universe_size,
+        std::size_t(m_buffer.universe_size)};
 
     // ArtDmx carries an even number of channels, 2 to 512.
     const std::size_t channels = std::min<std::size_t>(data.size(), 512);

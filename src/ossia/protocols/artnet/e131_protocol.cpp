@@ -201,8 +201,7 @@ void e131_protocol::update_function()
 
   for(int current_universe = 0; current_universe < universes; current_universe++)
   {
-    // Cleared before the copy: a value written meanwhile is sent on the next tick.
-    if(!m_buffer.dirty[current_universe].exchange(false))
+    if(!should_send(current_universe))
       continue;
 
     const int universe = this->m_conf.start_universe + current_universe;
