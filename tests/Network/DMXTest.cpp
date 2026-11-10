@@ -384,11 +384,24 @@ struct net_thread
 {
   std::shared_ptr<network_context> ctx = std::make_shared<network_context>();
   std::thread thread{[c = ctx] { c->run(); }};
-  ~net_thread()
+  void stop()
   {
-    ctx->context.stop();
-    thread.join();
+    if(thread.joinable())
+    {
+      ctx->context.stop();
+      thread.join();
+    }
   }
+  ~net_thread() { stop(); }
+};
+
+//! A protocol is destroyed once nothing runs on its context any more: its
+//! socket may have handlers queued there. Declared after the device, this
+//! stops the network thread before the device goes.
+struct stop_before_device
+{
+  net_thread& net;
+  ~stop_before_device() { net.stop(); }
 };
 
 uint16_t free_port()
@@ -524,6 +537,7 @@ TEST_CASE("Art-Net input reads its own universe only", "[dmx][artnet]")
       net.ctx, conf, inbound_socket_configuration{"127.0.0.1", port});
   auto& p = *proto;
   generic_device dev{std::move(proto), "dmx"};
+  stop_before_device stop_net{net};
   auto& a = add_channel(dev, p.buffer(), "a", 2);
   a.set_value(0);
   p.create_channel_map();
@@ -557,6 +571,7 @@ TEST_CASE("sACN input reads every slot, and short packets", "[dmx][e131]")
       net.ctx, conf, inbound_socket_configuration{"127.0.0.1", port});
   auto& p = *proto;
   generic_device dev{std::move(proto), "dmx"};
+  stop_before_device stop_net{net};
   auto& low = add_channel(dev, p.buffer(), "low", 2);
   auto& high = add_channel(dev, p.buffer(), "high", 400);
   low.set_value(0);
