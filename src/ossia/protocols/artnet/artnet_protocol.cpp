@@ -106,7 +106,6 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
 
   m_socket.open();
 
-  // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) {
     if(sz <= sizeof(art_dmx_packet_header) + 2)
       return;
@@ -125,6 +124,17 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
         boost::endian::big_to_native(dmx->length), sz - sizeof(art_dmx_packet_header));
 
     on_dmx((const uint8_t*)bytes + sizeof(art_dmx_packet_header), len);
+  });
+}
+
+void artnet_input_protocol::apply_channel_map(const channel_map& map)
+{
+  // The receive handler runs on the socket's strand.
+  boost::asio::post(
+      m_socket.m_socket.get_executor(),
+      [this, map, alive = m_socket.m_lifetime.watch()] {
+    if(!alive.expired())
+      m_cache = map;
   });
 }
 

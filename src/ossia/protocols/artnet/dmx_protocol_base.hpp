@@ -61,12 +61,22 @@ class OSSIA_EXPORT dmx_input_protocol_base : public dmx_protocol_base
 {
 public:
   using dmx_protocol_base::dmx_protocol_base;
-  // Caches the DMX address -> ossia parameter mapping for
-  // fast operation during input
+
+  //! Caches the DMX address -> ossia parameter mapping for fast operation
+  //! during input. Packets are applied only once it exists, so it is called
+  //! after the parameters are created, from the thread that created them.
   void create_channel_map();
+
+  //! Applies a received universe. Called where the packets are received.
   void on_dmx(const uint8_t* dmx, int count);
 
 protected:
-  std::array<dmx_parameter*, 512> m_cache{};
+  using channel_map = std::array<dmx_parameter*, 512>;
+
+  //! Gives the map to the thread that calls on_dmx: m_cache is only touched
+  //! there. Protocols that receive on another thread post it there.
+  virtual void apply_channel_map(const channel_map& map);
+
+  channel_map m_cache{};
 };
 }

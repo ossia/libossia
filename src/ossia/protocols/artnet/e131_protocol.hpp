@@ -49,6 +49,7 @@ public:
 
 private:
   void on_packet(const char* bytes, int sz);
+  void apply_channel_map(const channel_map& map) override;
 
   ossia::net::udp_receive_socket m_socket;
 };
