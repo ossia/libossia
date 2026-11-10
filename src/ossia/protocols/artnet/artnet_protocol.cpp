@@ -117,7 +117,12 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
     if(memcmp(dmx, &default_dmx_header, 12) != 0)
       return;
 
-    auto len = boost::endian::big_to_native(dmx->length);
+    const int universe = dmx->lo_uni | ((dmx->hi_uni & 0x7F) << 8);
+    if(universe != this->m_conf.start_universe)
+      return;
+
+    const int len = std::min<int>(
+        boost::endian::big_to_native(dmx->length), sz - sizeof(art_dmx_packet_header));
 
     on_dmx((const uint8_t*)bytes + sizeof(art_dmx_packet_header), len);
   });
