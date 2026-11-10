@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstddef>
+#include <cstring>
 #include <random>
 
 namespace
@@ -263,16 +265,25 @@ void e131_input_protocol::set_device(ossia::net::device_base& dev)
 
 void e131_input_protocol::on_packet(const char* bytes, int sz)
 {
-  if(sz != sizeof(e131_packet))
+  // A packet carries 1 to 512 slots after the start code.
+  constexpr int header = offsetof(e131_packet, dmp.prop_val) + 1;
+  if(sz <= header || sz > int(sizeof(e131_packet)))
     return;
 
-  auto& pkt = *reinterpret_cast<const e131_packet*>(bytes);
+  e131_packet pkt;
+  std::memcpy(&pkt, bytes, sz);
 
   int universe = ntohs(pkt.frame.universe);
   if(universe != this->m_conf.start_universe)
     return;
 
-  on_dmx(pkt.dmp.prop_val + 1, std::min(pkt.dmp.prop_val_cnt - 1, 512));
+  // DMX512 start code: other start codes (RDM, text, ...) are not channel levels.
+  if(pkt.dmp.prop_val[0] != 0)
+    return;
+
+  const int slots = std::min<int>(ntohs(pkt.dmp.prop_val_cnt) - 1, sz - header);
+  if(slots > 0)
+    on_dmx(pkt.dmp.prop_val + 1, std::min(slots, 512));
 }
 }
 
