@@ -7,6 +7,7 @@
 #include <ossia/detail/fmt.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
+#include <algorithm>
 #include <chrono>
 namespace ossia::net
 {
@@ -68,16 +69,22 @@ void artnet_protocol::update_function()
     if(!m_buffer.dirty[current_universe])
       continue;
 
-    int universe = this->m_conf.start_universe + current_universe;
+    // Port-Address: 15 bits, Net in the high byte, Sub-Net and Universe in the low one.
+    const int universe = (this->m_conf.start_universe + current_universe) & 0x7FFF;
     auto data = m_buffer.read_universe(current_universe);
 
-    art_dmx_packet pkt;
-    pkt.lo_uni = universe;
-    pkt.length = boost::asio::detail::socket_ops::host_to_network_short(
-        m_conf.channels_per_universe);
-    std::copy_n(data.data(), data.size(), pkt.data);
+    // ArtDmx carries an even number of channels, 2 to 512.
+    const std::size_t channels = std::min<std::size_t>(data.size(), 512);
+    const std::size_t length = std::max<std::size_t>(2, (channels + 1) & ~std::size_t(1));
 
-    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+    art_dmx_packet pkt{};
+    pkt.lo_uni = universe & 0xFF;
+    pkt.hi_uni = universe >> 8;
+    pkt.length = boost::asio::detail::socket_ops::host_to_network_short(length);
+    std::copy_n(data.data(), channels, pkt.data);
+
+    m_socket.write(
+        reinterpret_cast<const char*>(&pkt), sizeof(art_dmx_packet_header) + length);
   }
 }
 
