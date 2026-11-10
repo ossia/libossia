@@ -319,10 +319,15 @@ void graph_node::process_time(
 {
   auto [s, d] = exec_state_facade{&st}.timings(req);
   this->m_processed_frames += d;
+}
 
-  // A span length is never negative, so the counter above cannot follow a
+void graph_node::begin_request(
+    const ossia::token_request& req, execution_state& st) noexcept
+{
+  // A span length is never negative, so the frame counter cannot follow a
   // rewind. The playhead can: map the date of the tick's first sample through
-  // the same model -> sample map the spans are taken from.
+  // the same model -> sample map the spans are taken from. Set before the
+  // tick runs, so that run() sees where its own first sample is.
   if(req.speed != 0.)
     this->m_transport_frames = req.start_date_to_physical(st.modelToSamplesRatio);
 }

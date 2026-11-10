@@ -147,6 +147,9 @@ public:
   void set_executed(bool b) noexcept { m_executed = b; }
 
   void request(const ossia::token_request& req) noexcept;
+  //! Before run(): where the tick about to run starts on the timeline
+  void begin_request(const ossia::token_request& req, execution_state& st) noexcept;
+  //! After run(): the frames the tick that ran pushed through the node
   void process_time(const ossia::token_request& req, execution_state& st) noexcept;
 
   void disable() noexcept { requested_tokens.clear(); }
@@ -195,6 +198,9 @@ public:
    * and only ever rises, which is what a steady counter should do. This one
    * follows the transport and goes back down when the timeline runs backwards.
    * A plug-in wants the transport position, not the counter.
+   *
+   * Set before run(), by begin_request(). In frames at the tick's speed: at
+   * the tick's tempo, which carries the speed, they make its musical position.
    */
   [[nodiscard]]
   int64_t transport_frames() const noexcept

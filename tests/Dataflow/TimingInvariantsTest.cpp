@@ -689,29 +689,27 @@ TEST_CASE("transport_frames_follow_the_transport", "transport_frames_follow_the_
   const int64_t buffer_flicks = int64_t(64 / flicks_ratio_48k);
   const int n_fwd = 8;
 
-  for(int i = 0; i < n_fwd; i++)
-    n.process_time(tick(i * buffer_flicks, (i + 1) * buffer_flicks, 0, 1.), e);
+  // As the graph runs a tick: the position before run(), the frames after
+  const auto run = [&](const ossia::token_request& tk) {
+    n.begin_request(tk, e);
+    const auto at_run = n.transport_frames();
+    n.process_time(tk, e);
+    return at_run;
+  };
 
-  // Reported for the first sample of each tick, so the last one starts a buffer
-  // short of where it ends.
-  REQUIRE(n.transport_frames() == int64_t(n_fwd - 1) * 64);
+  // Reported for the first sample of each tick, while it runs
+  for(int i = 0; i < n_fwd; i++)
+    REQUIRE(run(tick(i * buffer_flicks, (i + 1) * buffer_flicks, 0, 1.)) == i * 64);
   REQUIRE(n.processed_frames() == int64_t(n_fwd) * 64);
 
-  // Rewind over the same ground: the playhead retraces its steps. It starts
-  // from where the forward run ended, which is a buffer past the last tick's
-  // own start.
-  int64_t prev = int64_t(n_fwd) * 64;
+  // Rewind over the same ground: the playhead retraces its steps, from where
+  // the forward run ended
   for(int i = n_fwd - 1; i >= 0; i--)
   {
-    n.process_time(tick((i + 1) * buffer_flicks, i * buffer_flicks, 0, -1.), e);
-    CAPTURE(i, n.transport_frames(), prev);
-    REQUIRE(n.transport_frames() <= prev);
-    prev = n.transport_frames();
+    CAPTURE(i);
+    REQUIRE(run(tick((i + 1) * buffer_flicks, i * buffer_flicks, 0, -1.)) == (i + 1) * 64);
   }
 
-  // Back to the buffer it started from - the first tick of the rewind began one
-  // buffer past the end, and the last one begins one buffer past zero.
-  REQUIRE(n.transport_frames() == 64);
   // Meanwhile the steady counter kept counting the audio it rendered.
   REQUIRE(n.processed_frames() == int64_t(2 * n_fwd) * 64);
 }
