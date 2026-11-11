@@ -8,7 +8,11 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/asio/ip/multicast.hpp>
 
+#include <algorithm>
 #include <chrono>
+#include <cstddef>
+#include <cstring>
+#include <random>
 
 namespace
 {
@@ -130,12 +134,18 @@ static_assert(sizeof(e131_packet) == 638);
 
 namespace ossia::net
 {
+//! 239.255.<universe high byte>.<universe low byte>
+static boost::asio::ip::address_v4 e131_multicast_address(int universe)
+{
+  return boost::asio::ip::address_v4(0xefff0000 | (universe & 0xFFFF));
+}
+
 static boost::asio::ip::address e131_host(
     const dmx_config& conf, const ossia::net::outbound_socket_configuration& socket)
 {
   if(conf.multicast)
   {
-    return boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
+    return e131_multicast_address(conf.start_universe);
   }
   else
   {
@@ -163,6 +173,13 @@ e131_protocol::e131_protocol(
         boost::asio::ip::multicast::join_group(mcast_address, outbound_address));
   }
 
+  // CID: E1.31 identifies each source by a UUID (version 4 here).
+  std::random_device rd;
+  for(auto& b : m_cid)
+    b = rd() & 0xFF;
+  m_cid[6] = (m_cid[6] & 0x0F) | 0x40;
+  m_cid[8] = (m_cid[8] & 0x3F) | 0x80;
+
   m_timer.set_delay(std::chrono::milliseconds{
       static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 }
@@ -180,34 +197,32 @@ void e131_protocol::set_device(ossia::net::device_base& dev)
 
 void e131_protocol::update_function()
 {
-  static std::atomic_int seq = 0;
-  for(int current_universe = 0; current_universe < m_buffer.universes();
-      current_universe++)
+  const int universes = m_buffer.universes();
+  if(std::ssize(m_sequence) < universes)
+    m_sequence.resize(universes);
+
+  for(int current_universe = 0; current_universe < universes; current_universe++)
   {
-    if(!m_buffer.dirty[current_universe])
+    if(!should_send(current_universe))
       continue;
-    try
-    {
-      int universe = this->m_conf.start_universe + current_universe;
-      e131_packet pkt;
-      e131_pkt_init(&pkt, universe, this->m_conf.channels_per_universe);
 
-      for(size_t pos = 0; pos < this->m_conf.channels_per_universe; pos++)
-        pkt.dmp.prop_val[pos + 1]
-            = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
-      pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
+    const int universe = this->m_conf.start_universe + current_universe;
+    e131_packet pkt;
+    if(e131_pkt_init(&pkt, universe, this->m_conf.channels_per_universe) < 0)
+      continue;
 
+    std::copy_n(m_cid.data(), m_cid.size(), pkt.root.cid);
+    for(size_t pos = 0; pos < this->m_conf.channels_per_universe; pos++)
+      pkt.dmp.prop_val[pos + 1]
+          = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
+    pkt.frame.seq_number = m_sequence[current_universe]++;
+
+    if(m_conf.multicast)
+      m_socket.write(
+          {e131_multicast_address(universe), m_socket.m_endpoint.port()},
+          reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+    else
       m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
-      m_buffer.dirty[current_universe] = false;
-    }
-    catch(std::exception& e)
-    {
-      ossia::logger().error("write failure: {}", e.what());
-    }
-    catch(...)
-    {
-      ossia::logger().error("write failure");
-    }
   }
 }
 
@@ -244,22 +259,41 @@ void e131_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
 
-  // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) { on_packet(bytes, sz); });
+}
+
+void e131_input_protocol::apply_channel_map(const channel_map& map)
+{
+  // The receive handler runs on the socket's strand.
+  boost::asio::post(
+      m_socket.m_socket.get_executor(),
+      [this, map, alive = m_socket.m_lifetime.watch()] {
+    if(!alive.expired())
+      m_cache = map;
+  });
 }
 
 void e131_input_protocol::on_packet(const char* bytes, int sz)
 {
-  if(sz != sizeof(e131_packet))
+  // A packet carries 1 to 512 slots after the start code.
+  constexpr int header = offsetof(e131_packet, dmp.prop_val) + 1;
+  if(sz <= header || sz > int(sizeof(e131_packet)))
     return;
 
-  auto& pkt = *reinterpret_cast<const e131_packet*>(bytes);
+  e131_packet pkt;
+  std::memcpy(&pkt, bytes, sz);
 
   int universe = ntohs(pkt.frame.universe);
   if(universe != this->m_conf.start_universe)
     return;
 
-  on_dmx(pkt.dmp.prop_val + 1, std::min(pkt.dmp.prop_val_cnt - 1, 512));
+  // DMX512 start code: other start codes (RDM, text, ...) are not channel levels.
+  if(pkt.dmp.prop_val[0] != 0)
+    return;
+
+  const int slots = std::min<int>(ntohs(pkt.dmp.prop_val_cnt) - 1, sz - header);
+  if(slots > 0)
+    on_dmx(pkt.dmp.prop_val + 1, std::min(slots, 512));
 }
 }
 

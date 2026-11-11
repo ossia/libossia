@@ -2,6 +2,8 @@
 
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
+#include <algorithm>
+
 namespace ossia::net
 {
 dmxusbpro_protocol::dmxusbpro_protocol(
@@ -63,11 +65,19 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
   switch(m_version)
   {
     case dmx_usb_pro_mk1:
-      m_timer.start([this] { this->update_function_dmxusbpro(0x06); });
+      m_timer.start([this] { this->update_function_dmxusbpro(0x06, 0); });
       break;
     case dmx_usb_pro_mk2: {
-      int command = this->m_conf.start_universe >= 1 ? 0xCA : 0x06;
-      m_timer.start([this, command] { this->update_function_dmxusbpro(command); });
+      // Universe 0 is the first output port, universe 1 the second one.
+      m_timer.start([this] {
+        for(int i = 0; i < m_buffer.universes(); i++)
+        {
+          const int universe = this->m_conf.start_universe + i;
+          if(universe > 1)
+            break;
+          this->update_function_dmxusbpro(universe == 0 ? 0x06 : 0xCA, i);
+        }
+      });
       break;
     }
     case open_dmx_usb:
@@ -76,9 +86,9 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
   }
 }
 
-void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command)
+void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command, int universe)
 {
-  const auto& buffer = m_buffer.read_universe(0);
+  const auto buffer = m_buffer.read_universe(universe);
   boost::system::error_code ec;
   // https://cdn.enttec.com/pdf/assets/70304/70304_DMX_USB_PRO_API.pdf
   // 1: 0x7E
@@ -100,8 +110,7 @@ void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command)
 
   unsigned char buf[buffer_size]{0x7E, command, data_size_lsb, data_size_msb, 0};
 
-  for(uint32_t i = 0; i < channels; i++)
-    buf[5 + i] = buffer[i];
+  std::copy_n(buffer.data(), std::min<std::size_t>(buffer.size(), channels), buf + 5);
   buf[buffer_size - 1] = 0xE7;
 
   boost::asio::write(m_port, boost::asio::buffer(buf));
@@ -111,7 +120,7 @@ void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command)
 
 void dmxusbpro_protocol::update_function_opendmx()
 {
-  const auto& buffer = m_buffer.read_universe(0);
+  const auto buffer = m_buffer.read_universe(0);
   boost::system::error_code ec;
   // <serial break>
   // 0
@@ -122,9 +131,9 @@ void dmxusbpro_protocol::update_function_opendmx()
 
   constexpr uint32_t buffer_size = 1 + 512;
 
-  unsigned char buf[buffer_size];
-  buf[0] = 0;                               // DMX start code
-  std::copy_n(buffer.data(), 512, buf + 1); // DMX channels
+  unsigned char buf[buffer_size]{};
+  buf[0] = 0; // DMX start code
+  std::copy_n(buffer.data(), std::min<std::size_t>(buffer.size(), 512), buf + 1);
 
   boost::asio::write(m_port, boost::asio::buffer(buf), ec);
   if(ec)

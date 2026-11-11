@@ -7,6 +7,7 @@
 #include <ossia/detail/fmt.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
+#include <algorithm>
 #include <chrono>
 namespace ossia::net
 {
@@ -65,19 +66,27 @@ void artnet_protocol::update_function()
   for(int current_universe = 0; current_universe < m_buffer.universes();
       current_universe++)
   {
-    if(!m_buffer.dirty[current_universe])
+    if(!should_send(current_universe))
       continue;
 
-    int universe = this->m_conf.start_universe + current_universe;
-    auto data = m_buffer.read_universe(current_universe);
+    // Port-Address: 15 bits, Net in the high byte, Sub-Net and Universe in the low one.
+    const int universe = (this->m_conf.start_universe + current_universe) & 0x7FFF;
+    const std::span<const uint8_t> data{
+        m_buffer.data.data() + current_universe * m_buffer.universe_size,
+        std::size_t(m_buffer.universe_size)};
 
-    art_dmx_packet pkt;
-    pkt.lo_uni = universe;
-    pkt.length = boost::asio::detail::socket_ops::host_to_network_short(
-        m_conf.channels_per_universe);
-    std::copy_n(data.data(), data.size(), pkt.data);
+    // ArtDmx carries an even number of channels, 2 to 512.
+    const std::size_t channels = std::min<std::size_t>(data.size(), 512);
+    const std::size_t length = std::max<std::size_t>(2, (channels + 1) & ~std::size_t(1));
 
-    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+    art_dmx_packet pkt{};
+    pkt.lo_uni = universe & 0xFF;
+    pkt.hi_uni = universe >> 8;
+    pkt.length = boost::asio::detail::socket_ops::host_to_network_short(length);
+    std::copy_n(data.data(), channels, pkt.data);
+
+    m_socket.write(
+        reinterpret_cast<const char*>(&pkt), sizeof(art_dmx_packet_header) + length);
   }
 }
 
@@ -97,7 +106,6 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
 
   m_socket.open();
 
-  // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) {
     if(sz <= sizeof(art_dmx_packet_header) + 2)
       return;
@@ -108,9 +116,25 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
     if(memcmp(dmx, &default_dmx_header, 12) != 0)
       return;
 
-    auto len = boost::endian::big_to_native(dmx->length);
+    const int universe = dmx->lo_uni | ((dmx->hi_uni & 0x7F) << 8);
+    if(universe != this->m_conf.start_universe)
+      return;
+
+    const int len = std::min<int>(
+        boost::endian::big_to_native(dmx->length), sz - sizeof(art_dmx_packet_header));
 
     on_dmx((const uint8_t*)bytes + sizeof(art_dmx_packet_header), len);
+  });
+}
+
+void artnet_input_protocol::apply_channel_map(const channel_map& map)
+{
+  // The receive handler runs on the socket's strand.
+  boost::asio::post(
+      m_socket.m_socket.get_executor(),
+      [this, map, alive = m_socket.m_lifetime.watch()] {
+    if(!alive.expired())
+      m_cache = map;
   });
 }
 

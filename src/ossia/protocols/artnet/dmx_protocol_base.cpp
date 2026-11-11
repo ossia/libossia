@@ -4,6 +4,9 @@
 #include <ossia/network/common/node_visitor.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
+#include <algorithm>
+#include <limits>
+
 namespace ossia::net
 {
 
@@ -53,12 +56,14 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
       break;
     case ossia::net::dmx_config::just_universes: {
       auto& root = dev.get_root_node();
-      m_buffer.set_universe_count(16);
-      for(int i = 0; i < 16; i++)
+      const int universes = std::max<int>(m_conf.universe_count, 1);
+      const int size = m_conf.channels_per_universe;
+      m_buffer.set_universe_count(universes);
+      for(int i = 0; i < universes; i++)
       {
         device_parameter::create_device_parameter<dmx_range_parameter>(
             root, std::to_string(m_conf.start_universe + i), std::vector<ossia::value>{},
-            m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0, 255);
+            m_buffer, ossia::net::dmx_range{i * size, size}, 0, 255);
       }
       break;
     }
@@ -95,24 +100,53 @@ void dmx_output_protocol_base::stop_processing()
   m_timer.stop();
 }
 
+bool dmx_output_protocol_base::should_send(int universe)
+{
+  // Universes nothing has written to yet stay silent.
+  constexpr uint32_t never_sent = std::numeric_limits<uint32_t>::max();
+  if(std::ssize(m_idle_ticks) <= universe)
+    m_idle_ticks.resize(universe + 1, never_sent);
+
+  auto& idle = m_idle_ticks[universe];
+  const bool changed = m_buffer.dirty[universe].exchange(false);
+  if(changed || (idle != never_sent && ++idle >= std::max<uint32_t>(m_conf.frequency, 1)))
+  {
+    idle = 0;
+    return true;
+  }
+  return false;
+}
+
 void dmx_input_protocol_base::create_channel_map()
 {
-  m_cache.fill(nullptr);
+  channel_map map{};
 
   ossia::net::visit_parameters(
       m_device->get_root_node(),
-      [this](ossia::net::node_base&, ossia::net::parameter_base& param) {
-    auto p = static_cast<dmx_parameter*>(&param);
-    if(auto c = p->channel(); c >= 0 && c < m_cache.size())
-      m_cache[p->channel()] = p;
-      });
+      [this, &map](ossia::net::node_base&, ossia::net::parameter_base& param) {
+    auto p = dynamic_cast<dmx_parameter*>(&param);
+    if(!p || p->channel() >= map.size())
+      return;
+    for(uint32_t c : p->channels())
+      if(c >= m_conf.channels_per_universe)
+        return;
+    map[p->channel()] = p;
+  });
+
+  apply_channel_map(map);
+}
+
+void dmx_input_protocol_base::apply_channel_map(const channel_map& map)
+{
+  m_cache = map;
 }
 
 void dmx_input_protocol_base::on_dmx(const uint8_t* dmx, int count)
 {
   for(int i = 0, N = std::min(count, (int)m_cache.size()); i < N; i++)
   {
-    this->m_cache[i]->set_dmx_value(dmx + i, dmx + count);
+    if(auto p = this->m_cache[i])
+      p->set_dmx_value(dmx, dmx + count);
   }
 }
 }

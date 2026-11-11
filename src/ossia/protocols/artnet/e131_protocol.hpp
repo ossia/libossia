@@ -5,6 +5,9 @@
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/protocols/artnet/dmx_protocol_base.hpp>
 
+#include <array>
+#include <vector>
+
 namespace ossia::net
 {
 // Implementation mostly based on https://github.com/hhromic/libe131
@@ -26,6 +29,8 @@ public:
 private:
   void update_function();
   ossia::net::udp_send_socket m_socket;
+  std::vector<uint8_t> m_sequence;
+  std::array<uint8_t, 16> m_cid{};
 };
 
 class OSSIA_EXPORT e131_input_protocol final : public ossia::net::dmx_input_protocol_base
@@ -44,6 +49,7 @@ public:
 
 private:
   void on_packet(const char* bytes, int sz);
+  void apply_channel_map(const channel_map& map) override;
 
   ossia::net::udp_receive_socket m_socket;
 };

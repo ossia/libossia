@@ -14,7 +14,7 @@ class OSSIA_EXPORT dmx_led_parameter : public device_parameter
 public:
   dmx_led_parameter(
       net::node_base& node, dmx_buffer& buffer, const unsigned int channel,
-      int8_t bytes_per_pixel, int num_pixels);
+      int8_t bytes_per_pixel, int num_pixels, bool reverse = false);
   ~dmx_led_parameter();
   int8_t m_bytes{};
 
@@ -26,6 +26,7 @@ private:
 
   int8_t m_bpp{};
   int m_num_pixels{};
+  bool m_reverse{};
 };
 
 }
