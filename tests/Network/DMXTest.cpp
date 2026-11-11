@@ -26,6 +26,7 @@
 #endif
 
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <limits>
 #include <map>
@@ -429,6 +430,60 @@ int e131_universe(const std::vector<uint8_t>& pkt)
 {
   return (pkt[113] << 8) | pkt[114];
 }
+}
+
+// The output protocols send from an ossia::timer and are destroyed while their
+// network thread runs: stop() is all that keeps the send function off a
+// protocol being destroyed.
+TEST_CASE("A timer stopped during a call calls nothing more", "[dmx][timer]")
+{
+  net_thread net;
+  std::atomic_int calls{0};
+  std::atomic_bool in_call{false};
+  ossia::timer timer{net.ctx->context};
+  timer.set_delay(1ms);
+  timer.start([&] {
+    calls++;
+    in_call = true;
+    std::this_thread::sleep_for(20ms);
+    in_call = false;
+  });
+
+  while(!in_call)
+    std::this_thread::sleep_for(100us);
+  timer.stop();
+  CHECK_FALSE(in_call);
+
+  const int after_stop = calls;
+  std::this_thread::sleep_for(100ms);
+  CHECK(calls == after_stop);
+}
+
+TEST_CASE("A timer restarts after a stop, and keeps running when moved", "[dmx][timer]")
+{
+  net_thread net;
+  std::atomic_int calls{0};
+  auto count_for = [&](std::chrono::milliseconds d) {
+    const int before = calls;
+    std::this_thread::sleep_for(d);
+    return calls - before;
+  };
+
+  auto first = std::make_unique<ossia::timer>(net.ctx->context);
+  first->set_delay(1ms);
+  first->start([&] { calls++; });
+  CHECK(count_for(100ms) > 0);
+  first->stop();
+  CHECK(count_for(50ms) == 0);
+
+  first->start([&] { calls++; });
+  CHECK(count_for(100ms) > 0);
+
+  ossia::timer moved{std::move(*first)};
+  first.reset();
+  CHECK(count_for(100ms) > 0);
+  moved.stop();
+  CHECK(count_for(50ms) == 0);
 }
 
 TEST_CASE("Art-Net sends the Net of universes above 255", "[dmx][artnet]")
