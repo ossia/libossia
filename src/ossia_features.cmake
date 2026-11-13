@@ -134,13 +134,13 @@ endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
   target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl3>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
 endif()
 
 if(OSSIA_PROTOCOL_HID)
   target_sources(ossia PRIVATE ${OSSIA_HID_SRCS} ${OSSIA_HID_HEADERS})
-  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl3>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HID)
 endif()
 
@@ -286,7 +286,7 @@ if(OSSIA_DATAFLOW)
 
   #SDL support
   if(OSSIA_ENABLE_SDL)
-    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl3>)
   endif()
 
   # MiniAudio (WASAPI on Windows, CoreAudio on macOS, ALSA on Linux, Web Audio
