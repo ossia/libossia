@@ -16,7 +16,7 @@ class logger;
 namespace ossia
 {
 struct edge_pool;
-struct bench_map;
+struct bench_state;
 struct connection;
 class time_interval;
 class OSSIA_EXPORT graph_interface
@@ -73,7 +73,7 @@ struct graph_setup_options
   bool parallel{};
   int parallel_threads = 8;
   std::shared_ptr<ossia::logger_type> log{};
-  std::shared_ptr<bench_map> bench{};
+  std::shared_ptr<bench_state> bench{};
 };
 
 struct tick_setup_options
