@@ -24,10 +24,14 @@ public:
   virtual void stop();
 
   void gc();
-  void sync();
+  //! Waits for the audio thread to pick up everything set_tick() sent it.
+  //! False when it did not in time (or, on WASM, cannot be waited for): the
+  //! previous tick may still be running.
+  bool sync();
 
   using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
-  void set_tick(fun_type&& t);
+  //! The audio thread runs `t` from its next buffer on; true once it does.
+  bool set_tick(fun_type&& t);
   void load_audio_tick();
 
   // From main thread to audio thread

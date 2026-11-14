@@ -52,7 +52,7 @@ void audio_engine::stop()
   gc();
 }
 
-void audio_engine::sync()
+bool audio_engine::sync()
 {
   int64_t req = request.load();
   req++;
@@ -62,7 +62,7 @@ void audio_engine::sync()
   // On WASM, the audio runs in a worklet thread. We cannot spin-wait
   // on the main thread as it blocks the browser event loop entirely.
   // The tick will pick up the new request on its next callback.
-  return;
+  return false;
 #endif
 
   // The engine has started running, we wait for a couple iterations
@@ -73,18 +73,21 @@ void audio_engine::sync()
     buffer_length_in_ms
         = std::ceil(this->effective_buffer_size * 1000. / this->effective_sample_rate);
 
-  if(running())
+  // Not running, or failed (the stream died; miniaudio's callbacks stop
+  // running ticks then): no tick runs, there is nothing to wait for.
+  if(!running() || failed())
+    return true;
+
+  while(this->reply.load() < req)
   {
-    while(this->reply.load() < req)
+    if(k++ > 20)
     {
-      if(k++ > 20)
-      {
-        ossia::logger().error("Audio engine seems stuck?");
-        break;
-      }
-      this->wait(2 * buffer_length_in_ms);
+      ossia::logger().error("Audio engine seems stuck?");
+      return false;
     }
+    this->wait(2 * buffer_length_in_ms);
   }
+  return true;
 }
 
 void audio_engine::gc()
@@ -95,26 +98,33 @@ void audio_engine::gc()
     ;
 }
 
-void audio_engine::set_tick(audio_engine::fun_type&& t)
+bool audio_engine::set_tick(audio_engine::fun_type&& t)
 {
   if(t.allocated())
     tick_funlist.enqueue(std::move(t));
   else
     tick_funlist.enqueue(default_audio_tick{});
 
-  sync();
+  const bool done = sync();
   gc();
+  return done;
 }
 
 void audio_engine::load_audio_tick()
 {
+  // The request is read before the queue: set_tick() enqueues before it bumps
+  // the request, so every tick up to this request is in the queue now. Read
+  // after, a request made while the queue was being drained would be answered
+  // with its tick still in the queue - and the previous one ran for a whole
+  // buffer after set_tick() returned.
+  const auto req = request.load(std::memory_order_acquire);
   fun_type tick;
   while(tick_funlist.try_dequeue(tick))
   {
     tick_gc.enqueue(std::move(audio_tick));
     audio_tick = std::move(tick);
   }
-  reply.store(request.load());
+  reply.store(req, std::memory_order_release);
 }
 
 ossia::audio_engine* make_audio_engine(
