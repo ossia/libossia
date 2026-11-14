@@ -24,7 +24,15 @@ class sdl_protocol final : public audio_engine
 public:
   sdl_protocol(int rate, int bs)
   {
-    SDL_Init(SDL_INIT_AUDIO);
+    // Each successful init is undone by exactly one quit, in stop(): the
+    // subsystem is reference-counted, and the previous engine is destroyed
+    // after the next one started.
+    if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
+    {
+      using namespace std::literals;
+      throw std::runtime_error("SDL: Couldn't initialize audio: "s + SDL_GetError());
+    }
+    m_initialized = true;
     m_desired.freq = rate;
     m_desired.format = AUDIO_F32SYS;
     m_desired.channels = outputs;
@@ -37,7 +45,10 @@ public:
     if(m_deviceId < 2)
     {
       using namespace std::literals;
-      throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
+      std::string err = SDL_GetError();
+      SDL_QuitSubSystem(SDL_INIT_AUDIO);
+      m_initialized = false;
+      throw std::runtime_error("SDL: Couldn't open audio: "s + err);
     }
 
     this->effective_sample_rate = m_obtained.freq;
@@ -71,7 +82,11 @@ public:
     }
     // Not SDL_Quit(): other parts of ossia (joystick, gamecontroller, sensors,
     // haptics) may be using SDL at the same time.
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    if(m_initialized)
+    {
+      SDL_QuitSubSystem(SDL_INIT_AUDIO);
+      m_initialized = false;
+    }
   }
 
 private:
@@ -159,6 +174,7 @@ private:
   uint64_t m_total_frames{};
   std::optional<std::chrono::steady_clock::time_point> m_start;
   bool m_activated{};
+  bool m_initialized{};
 };
 }
 
