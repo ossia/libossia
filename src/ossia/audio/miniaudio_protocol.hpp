@@ -51,6 +51,19 @@
 
 #include <miniaudio.h>
 
+#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
+#include <Block.h>
+#include <unistd.h>
+#include <CoreAudio/CoreAudio.h>
+#endif
+
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <string>
+#include <string_view>
+#include <thread>
+
 #if defined(__EMSCRIPTEN__)
 #include <emscripten/em_asm.h>
 #endif
@@ -113,18 +126,27 @@ public:
     if(outputs > 0)
     {
       config.playback.pDeviceID = is_default_id(card_out) ? nullptr : &card_out;
-      config.playback.channels = outputs;
+      // The device's own channel count: miniaudio's channel conversion, from
+      // the count score asks for, mixes channels together (all those past the
+      // 32nd into each other) and is far too slow at hundreds of channels.
+      // score's channels are mapped one to one onto the device's in the
+      // callback instead.
+      config.playback.channels = 0;
       config.playback.format = ma_format_f32;
     }
 
     if(inputs > 0)
     {
       config.capture.pDeviceID = is_default_id(card_in) ? nullptr : &card_in;
-      config.capture.channels = inputs;
+      config.capture.channels = 0;
       config.capture.format = ma_format_f32;
     }
 
+    // An input and an output on two devices: one clock for both.
+    join_devices(config);
+
     config.dataCallback = callback;
+    config.notificationCallback = on_notification;
 
     config.performanceProfile = ma_performance_profile_low_latency;
     config.noFixedSizedCallback = false;
@@ -139,36 +161,59 @@ public:
     this->effective_inputs = inputs;
     this->effective_outputs = outputs;
 
-    ins_data.resize(effective_inputs * bs + 16);
-    outs_data.resize(effective_outputs * bs + 16);
-    ins.resize(effective_inputs + 2);
-    outs.resize(effective_outputs + 2);
+    // An explicit device that the backend moves elsewhere (CoreAudio does
+    // when it goes away) is a device lost: score must not play somewhere else.
+    m_explicit_device = (outputs > 0 && config.playback.pDeviceID)
+                        || (inputs > 0 && config.capture.pDeviceID);
 
-    // Exclusive access (ALSA "hw:") gives a period of bs frames; shared access
-    // goes through the system mixer (ALSA dmix), whose own period is used
-    // whatever bs is. A device another program holds can only be shared.
-    ma_result res = MA_ERROR;
-    for(ma_share_mode mode : {share, ma_share_mode_shared})
+    allow_rate_switch(config, rate);
+
+    ma_result res = open_device(config, share);
+
+    // Never resample: a device that runs at another rate than asked (it does
+    // not support it, another program uses it) is reopened at its own rate,
+    // which score then adopts.
+    // Nor reblock: with CoreAudio the period is the device's buffer, clamped
+    // to what it supports, and callbacks of another size come at uneven
+    // intervals. Other backends' periods are the system mixer's, whatever is
+    // asked: these keep the size asked for.
+    if(res == MA_SUCCESS)
     {
-      config.playback.shareMode = mode;
-      config.capture.shareMode = mode;
-      // The performance profile only matters without a period size: no
-      // retry with another one.
-      res = ma_device_init(&m_ctx->context, &config, &m_stream);
-      if(res == MA_SUCCESS)
+      const ma_uint32 device_rate = outputs > 0 ? m_stream.playback.internalSampleRate
+                                                : m_stream.capture.internalSampleRate;
+      const ma_uint32 device_period = outputs > 0
+                                          ? m_stream.playback.internalPeriodSizeInFrames
+                                          : m_stream.capture.internalPeriodSizeInFrames;
+      bool reopen = false;
+      if(device_rate > 0 && device_rate != config.sampleRate)
       {
-        m_exclusive = mode == ma_share_mode_exclusive;
-        if(mode != share)
-          ossia::logger().warn(
-              "miniaudio: exclusive access refused, using the device in shared mode");
-        break;
+        config.sampleRate = device_rate;
+        reopen = true;
       }
-      if(mode == ma_share_mode_shared)
-        break;
+      if(m_ctx->context.backend == ma_backend_coreaudio && device_period > 0
+         && device_period != config.periodSizeInFrames)
+      {
+        config.periodSizeInFrames = device_period;
+        reopen = true;
+      }
+      if(reopen)
+      {
+        config.periods
+            = int64_t(config.periodSizeInFrames) * 1000 < 2 * int64_t(config.sampleRate) ? 4 : 3;
+        ma_device_uninit(&m_stream);
+        res = open_device(config, share);
+      }
     }
     if(res != MA_SUCCESS)
       throw std::runtime_error(
           std::string("miniaudio: cannot open the device: ") + ma_result_description(res));
+    this->effective_sample_rate = config.sampleRate;
+    this->effective_buffer_size = config.periodSizeInFrames;
+
+    ins_data.resize(effective_inputs * effective_buffer_size + 16);
+    outs_data.resize(effective_outputs * effective_buffer_size + 16);
+    ins.resize(effective_inputs + 2);
+    outs.resize(effective_outputs + 2);
 
     if(res = ma_device_start(&m_stream); res != MA_SUCCESS)
     {
@@ -178,7 +223,12 @@ public:
           + ma_result_description(res));
     }
 
-    auto to_client_frames = [rate](ma_uint32 frames, ma_uint32 device_rate) {
+    m_device_outputs = outputs > 0 ? (int)m_stream.playback.channels : 0;
+    m_device_inputs = inputs > 0 ? (int)m_stream.capture.channels : 0;
+
+    watch_devices();
+
+    auto to_client_frames = [rate = effective_sample_rate](ma_uint32 frames, ma_uint32 device_rate) {
       return device_rate > 0 ? int(int64_t(frames) * rate / device_rate) : int(frames);
     };
     if(outputs > 0)
@@ -209,6 +259,9 @@ public:
     m_active = true;
   }
 
+  //! The device as miniaudio opened it: formats, channels, rates it negotiated.
+  const ma_device& device() const noexcept { return m_stream; }
+
   //! Whether the device is used exclusively, without the system mixer.
   bool exclusive() const noexcept { return m_exclusive; }
 
@@ -217,10 +270,31 @@ public:
     return m_active && ma_device_get_state(&m_stream) == ma_device_state_started;
   }
 
+  //! Once true, stays true: the callbacks run no tick any more, so that
+  //! nothing plays on whatever device the backend moved the stream to.
   bool failed() const noexcept override
   {
-    return m_active && !stop_processing
-           && ma_device_get_state(&m_stream) == ma_device_state_stopped;
+    if(!m_active || stop_processing)
+      return false;
+    if(m_lost.load(std::memory_order_acquire))
+      return true;
+
+    bool lost = m_hal->dead.load(std::memory_order_acquire)
+                || ma_device_get_state(&m_stream) == ma_device_state_stopped;
+
+    // No callback for a long while: the backend stalled without telling.
+    if(const auto last = m_last_callback.load(std::memory_order_acquire); last > 0)
+    {
+      const auto period = std::chrono::nanoseconds(
+          int64_t(1e9 * effective_buffer_size / std::max(1, effective_sample_rate)));
+      const auto limit = std::max<std::chrono::nanoseconds>(std::chrono::seconds(2), 8 * period);
+      if(std::chrono::steady_clock::now().time_since_epoch().count() - last > limit.count())
+        lost = true;
+    }
+
+    if(lost)
+      m_lost.store(true, std::memory_order_release);
+    return lost;
   }
 
   void stop() override
@@ -229,10 +303,12 @@ public:
 
     if(m_active)
     {
+      unwatch_devices();
       ma_device_stop(&m_stream);
       ma_device_uninit(&m_stream);
     }
     m_active = false;
+    m_aggregate.reset();
   }
 
   ~miniaudio_engine() override { stop(); }
@@ -256,8 +332,16 @@ private:
 
     auto& self = *static_cast<miniaudio_engine*>(pDevice->pUserData);
     self.tick_start();
+    self.m_last_callback.store(
+        std::chrono::steady_clock::now().time_since_epoch().count(),
+        std::memory_order_release);
+    // Zero when the backend does not report it
+    self.observed_sample_rate.store(
+        self.m_hal->rate.load(std::memory_order_relaxed), std::memory_order_relaxed);
 
-    if(self.stop_processing)
+    // Output pre-silenced by miniaudio: nothing plays.
+    if(self.stop_processing || self.m_lost.load(std::memory_order_acquire)
+       || self.m_hal->dead.load(std::memory_order_acquire))
     {
       self.tick_clear();
       return;
@@ -268,10 +352,20 @@ private:
     for(int i = 0; i < self.effective_inputs; i++)
       ins[i] = ins_data + i * nframes;
 
+    // score's input c is the device's input c; those past the device's last
+    // one are silent.
     const float* in_samples = static_cast<const float*>(input);
-    for(int c = 0; c < self.effective_inputs; c++)
-      for(ma_uint32 f = 0; f < nframes; f++)
-        ins[c][f] = in_samples[f * self.effective_inputs + c];
+    const int dev_in = self.m_device_inputs;
+    const int mapped_in
+        = std::max(0, std::min(self.effective_inputs, dev_in - self.m_input_offset));
+    for(ma_uint32 f = 0; f < nframes; f++)
+    {
+      const float* frame = in_samples + f * dev_in + self.m_input_offset;
+      for(int c = 0; c < mapped_in; c++)
+        ins[c][f] = frame[c];
+    }
+    for(int c = mapped_in; c < self.effective_inputs; c++)
+      std::fill_n(ins[c], nframes, 0.f);
 
     auto outs = self.outs.data();
     auto outs_data = self.outs_data.data();
@@ -301,11 +395,344 @@ private:
 
     self.tick_end();
 
+    // score's output c is the device's output c; the device's other outputs
+    // keep miniaudio's pre-silencing.
     float* out_samples = static_cast<float*>(output);
-    for(int c = 0; c < self.effective_outputs; c++)
-      for(ma_uint32 f = 0; f < nframes; f++)
-        out_samples[f * self.effective_outputs + c] = outs[c][f];
+    const int dev_out = self.m_device_outputs;
+    const int mapped_out = std::min(self.effective_outputs, dev_out);
+    for(ma_uint32 f = 0; f < nframes; f++)
+    {
+      float* frame = out_samples + f * dev_out;
+      for(int c = 0; c < mapped_out; c++)
+        frame[c] = outs[c][f];
+    }
   }
+
+  ma_result open_device(ma_device_config& config, ma_share_mode share)
+  {
+    // Exclusive access (ALSA "hw:") gives a period of bs frames; shared access
+    // goes through the system mixer (ALSA dmix), whose own period is used
+    // whatever bs is. A device another program holds can only be shared.
+    ma_result res = MA_ERROR;
+    for(ma_share_mode mode : {share, ma_share_mode_shared})
+    {
+      config.playback.shareMode = mode;
+      config.capture.shareMode = mode;
+      // The performance profile only matters without a period size: no
+      // retry with another one.
+      res = ma_device_init(&m_ctx->context, &config, &m_stream);
+      if(res == MA_SUCCESS)
+      {
+        m_exclusive = mode == ma_share_mode_exclusive;
+        if(mode != share)
+          ossia::logger().warn(
+              "miniaudio: exclusive access refused, using the device in shared mode");
+        break;
+      }
+      if(mode == ma_share_mode_shared)
+        break;
+    }
+    return res;
+  }
+
+  static void on_notification(const ma_device_notification* n)
+  {
+    auto& self = *static_cast<miniaudio_engine*>(n->pDevice->pUserData);
+    switch(n->type)
+    {
+      case ma_device_notification_type_stopped:
+        // Also sent for the stops we ask for ourselves
+        if(!self.stop_processing)
+          self.m_lost.store(true, std::memory_order_release);
+        break;
+      case ma_device_notification_type_rerouted:
+        if(self.m_explicit_device)
+          self.m_lost.store(true, std::memory_order_release);
+        break;
+      default:
+        break;
+    }
+  }
+
+#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
+  //! What the HAL listeners report; they may still run once removed, so they
+  //! co-own this rather than reach into the engine.
+  struct hal_state
+  {
+    std::atomic_bool dead{};
+    std::atomic_int rate{};
+  };
+
+  static AudioObjectID hal_object(const ma_device_id* id, bool playback)
+  {
+    AudioObjectID dev{};
+    UInt32 size = sizeof(dev);
+    if(!id)
+    {
+      const AudioObjectPropertyAddress addr{
+          playback ? kAudioHardwarePropertyDefaultOutputDevice
+                   : kAudioHardwarePropertyDefaultInputDevice,
+          kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
+      AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, nullptr, &size, &dev);
+      return dev;
+    }
+    CFStringRef uid
+        = CFStringCreateWithCString(nullptr, id->coreaudio, kCFStringEncodingUTF8);
+    if(!uid)
+      return 0;
+    const AudioObjectPropertyAddress addr{
+        kAudioHardwarePropertyTranslateUIDToDevice, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain};
+    AudioObjectGetPropertyData(
+        kAudioObjectSystemObject, &addr, sizeof(uid), &uid, &size, &dev);
+    CFRelease(uid);
+    return dev;
+  }
+
+  static double hal_rate(AudioObjectID dev)
+  {
+    Float64 r{};
+    UInt32 size = sizeof(r);
+    const AudioObjectPropertyAddress addr{
+        kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain};
+    AudioObjectGetPropertyData(dev, &addr, 0, nullptr, &size, &r);
+    return r;
+  }
+
+  //! The device may be switched to `rate`: it supports it, and no other
+  //! program is using it (their audio would change pitch or break).
+  static bool hal_may_switch(AudioObjectID dev, int rate)
+  {
+    if(!dev)
+      return false;
+    if(hal_rate(dev) == rate)
+      return true;
+
+    UInt32 running{};
+    UInt32 size = sizeof(running);
+    const AudioObjectPropertyAddress somewhere{
+        kAudioDevicePropertyDeviceIsRunningSomewhere, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain};
+    if(AudioObjectGetPropertyData(dev, &somewhere, 0, nullptr, &size, &running) != noErr
+       || running)
+      return false;
+
+    const AudioObjectPropertyAddress rates{
+        kAudioDevicePropertyAvailableNominalSampleRates, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain};
+    if(AudioObjectGetPropertyDataSize(dev, &rates, 0, nullptr, &size) != noErr)
+      return false;
+    std::vector<AudioValueRange> ranges(size / sizeof(AudioValueRange));
+    if(AudioObjectGetPropertyData(dev, &rates, 0, nullptr, &size, ranges.data()) != noErr)
+      return false;
+    return std::any_of(ranges.begin(), ranges.end(), [rate](const AudioValueRange& r) {
+      return r.mMinimum <= rate && rate <= r.mMaximum;
+    });
+  }
+
+  static int hal_channels(AudioObjectID dev, bool input)
+  {
+    const AudioObjectPropertyAddress addr{
+        kAudioDevicePropertyStreamConfiguration,
+        input ? kAudioObjectPropertyScopeInput : kAudioObjectPropertyScopeOutput,
+        kAudioObjectPropertyElementMain};
+    UInt32 size{};
+    if(AudioObjectGetPropertyDataSize(dev, &addr, 0, nullptr, &size) != noErr || size == 0)
+      return 0;
+    std::vector<char> data(size);
+    auto list = reinterpret_cast<AudioBufferList*>(data.data());
+    if(AudioObjectGetPropertyData(dev, &addr, 0, nullptr, &size, list) != noErr)
+      return 0;
+    int n = 0;
+    for(UInt32 i = 0; i < list->mNumberBuffers; i++)
+      n += list->mBuffers[i].mNumberChannels;
+    return n;
+  }
+
+  //! A private aggregate device: only this process sees it, and it goes with
+  //! the engine (also when the engine fails to open it).
+  struct aggregate_device
+  {
+    AudioObjectID id{};
+    ma_device_id uid{};
+    ~aggregate_device()
+    {
+      if(id)
+        AudioHardwareDestroyAggregateDevice(id);
+    }
+  };
+
+  // Each device has its own clock: separately, they drift apart, and
+  // miniaudio's ring buffer between the two then under- or overruns - the
+  // input skips or repeats. In an aggregate device the input device is
+  // resampled to the output's clock (drift compensation), and miniaudio sees
+  // a single device.
+  void join_devices(ma_device_config& config)
+  {
+    if(m_ctx->context.backend != ma_backend_coreaudio
+       || config.deviceType != ma_device_type_duplex || !config.playback.pDeviceID
+       || !config.capture.pDeviceID
+       || std::string_view{config.playback.pDeviceID->coreaudio}
+              == std::string_view{config.capture.pDeviceID->coreaudio})
+      return;
+
+    const AudioObjectID out = hal_object(config.playback.pDeviceID, true);
+    const AudioObjectID in = hal_object(config.capture.pDeviceID, false);
+    if(!out || !in)
+      return;
+
+    static std::atomic_int counter{};
+    const std::string uid = "io.ossia.score.duplex." + std::to_string(getpid()) + "."
+                            + std::to_string(counter++);
+
+    auto cfstr = [](std::string_view s) {
+      return CFStringCreateWithBytes(
+          nullptr, (const UInt8*)s.data(), s.size(), kCFStringEncodingUTF8, false);
+    };
+    auto desc = CFDictionaryCreateMutable(
+        nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    auto name = cfstr("ossia score");
+    auto cfuid = cfstr(uid);
+    auto out_uid = cfstr(config.playback.pDeviceID->coreaudio);
+    auto in_uid = cfstr(config.capture.pDeviceID->coreaudio);
+    int one = 1;
+    auto yes = CFNumberCreate(nullptr, kCFNumberIntType, &one);
+    CFDictionarySetValue(desc, CFSTR(kAudioAggregateDeviceNameKey), name);
+    CFDictionarySetValue(desc, CFSTR(kAudioAggregateDeviceUIDKey), cfuid);
+    CFDictionarySetValue(desc, CFSTR(kAudioAggregateDeviceIsPrivateKey), yes);
+    CFDictionarySetValue(desc, CFSTR(kAudioAggregateDeviceMainSubDeviceKey), out_uid);
+
+    auto subs = CFArrayCreateMutable(nullptr, 0, &kCFTypeArrayCallBacks);
+    auto out_sub = CFDictionaryCreateMutable(
+        nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(out_sub, CFSTR(kAudioSubDeviceUIDKey), out_uid);
+    auto in_sub = CFDictionaryCreateMutable(
+        nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(in_sub, CFSTR(kAudioSubDeviceUIDKey), in_uid);
+    CFDictionarySetValue(in_sub, CFSTR(kAudioSubDeviceDriftCompensationKey), yes);
+    CFArrayAppendValue(subs, out_sub);
+    CFArrayAppendValue(subs, in_sub);
+    CFDictionarySetValue(desc, CFSTR(kAudioAggregateDeviceSubDeviceListKey), subs);
+
+    auto agg = std::make_unique<aggregate_device>();
+    const OSStatus st = AudioHardwareCreateAggregateDevice(desc, &agg->id);
+    for(CFTypeRef r : {(CFTypeRef)in_sub, (CFTypeRef)out_sub, (CFTypeRef)subs,
+                       (CFTypeRef)yes, (CFTypeRef)in_uid, (CFTypeRef)out_uid,
+                       (CFTypeRef)cfuid, (CFTypeRef)name, (CFTypeRef)desc})
+      CFRelease(r);
+    if(st != noErr || !agg->id)
+    {
+      ossia::logger().warn(
+          "miniaudio: could not join the input and output devices ({}): they will "
+          "drift apart",
+          (int)st);
+      agg->id = 0;
+      return;
+    }
+
+    std::copy_n(uid.data(), std::min(uid.size(), sizeof(agg->uid.coreaudio) - 1), agg->uid.coreaudio);
+    // The HAL publishes the device and its streams asynchronously
+    const int expected = hal_channels(out, true) + hal_channels(in, true);
+    for(int i = 0; i < 100 && hal_channels(agg->id, true) < expected; i++)
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    m_input_offset = hal_channels(out, true);
+    m_subdevices = {out, in};
+    m_aggregate = std::move(agg);
+    config.playback.pDeviceID = &m_aggregate->uid;
+    config.capture.pDeviceID = &m_aggregate->uid;
+  }
+  std::unique_ptr<aggregate_device> m_aggregate;
+  std::vector<AudioObjectID> m_subdevices;
+
+  void allow_rate_switch(ma_device_config& config, int rate)
+  {
+    if(m_ctx->context.backend != ma_backend_coreaudio)
+      return;
+    bool ok = true;
+    if(config.deviceType != ma_device_type_capture)
+      ok &= hal_may_switch(hal_object(config.playback.pDeviceID, true), rate);
+    if(config.deviceType != ma_device_type_playback)
+      ok &= hal_may_switch(hal_object(config.capture.pDeviceID, false), rate);
+    config.coreaudio.allowNominalSampleRateChange = ok ? MA_TRUE : MA_FALSE;
+  }
+
+  // The HAL tells when a device dies (a removed aggregate, an unplugged
+  // card) and when its rate changes under the engine.
+  void watch_devices()
+  {
+    if(m_ctx->context.backend != ma_backend_coreaudio)
+      return;
+    std::vector<AudioObjectID> devices{
+        (AudioObjectID)m_stream.coreaudio.deviceObjectIDPlayback,
+        (AudioObjectID)m_stream.coreaudio.deviceObjectIDCapture};
+    // Joined devices: the aggregate lives on when one of them goes away
+    devices.insert(devices.end(), m_subdevices.begin(), m_subdevices.end());
+    for(AudioObjectID dev : devices)
+    {
+      if(dev == 0
+         || std::find_if(
+                m_watched.begin(), m_watched.end(),
+                [dev](const auto& w) { return w.first == dev; })
+                != m_watched.end())
+        continue;
+      if(m_watched.empty())
+        m_hal->rate = (int)hal_rate(dev);
+
+      auto hal = m_hal;
+      // The rate reported is the first device's: the one the callbacks follow
+      const bool main = m_watched.empty();
+      auto block = Block_copy(^(UInt32 n, const AudioObjectPropertyAddress* addrs) {
+        for(UInt32 i = 0; i < n; i++)
+        {
+          if(addrs[i].mSelector == kAudioDevicePropertyDeviceIsAlive)
+            hal->dead.store(true, std::memory_order_release);
+          else if(main && addrs[i].mSelector == kAudioDevicePropertyNominalSampleRate)
+            hal->rate.store((int)hal_rate(dev), std::memory_order_release);
+        }
+      });
+      for(auto sel : {kAudioDevicePropertyDeviceIsAlive, kAudioDevicePropertyNominalSampleRate})
+      {
+        const AudioObjectPropertyAddress addr{
+            sel, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
+        AudioObjectAddPropertyListenerBlock(dev, &addr, nullptr, block);
+      }
+      m_watched.emplace_back(dev, block);
+    }
+  }
+  void unwatch_devices()
+  {
+    for(auto& [dev, block] : m_watched)
+    {
+      for(auto sel : {kAudioDevicePropertyDeviceIsAlive, kAudioDevicePropertyNominalSampleRate})
+      {
+        const AudioObjectPropertyAddress addr{
+            sel, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
+        AudioObjectRemovePropertyListenerBlock(dev, &addr, nullptr, block);
+      }
+      Block_release(block);
+    }
+    m_watched.clear();
+  }
+  std::vector<std::pair<AudioObjectID, AudioObjectPropertyListenerBlock>> m_watched;
+  std::shared_ptr<hal_state> m_hal = std::make_shared<hal_state>();
+#else
+  struct hal_state
+  {
+    std::atomic_bool dead{};
+    std::atomic_int rate{};
+  };
+  void allow_rate_switch(ma_device_config&, int) { }
+  void join_devices(ma_device_config&) { }
+  struct aggregate_device
+  {
+  };
+  std::unique_ptr<aggregate_device> m_aggregate;
+  void watch_devices() { }
+  void unwatch_devices() { }
+  std::shared_ptr<hal_state> m_hal = std::make_shared<hal_state>();
+#endif
 
   std::shared_ptr<miniaudio_context> m_ctx;
   ma_device m_stream;
@@ -322,6 +749,16 @@ private:
 
   bool m_active{};
   bool m_exclusive{};
+  bool m_explicit_device{};
+  //! Channels the device was opened with, which score's map onto
+  int m_device_inputs{};
+  int m_device_outputs{};
+  //! score's first input is the device's input at this index: with two
+  //! devices joined, the output device's own inputs come first.
+  int m_input_offset{};
+  mutable std::atomic_bool m_lost{};
+  //! steady_clock time of the last callback, 0 before the first one
+  std::atomic<int64_t> m_last_callback{};
 };
 }
 
