@@ -29,9 +29,11 @@ public:
 private:
   void update_function_dmxusbpro(uint8_t command, int universe);
   void update_function_opendmx();
+  void report_write(const boost::system::error_code& ec);
 
   boost::asio::serial_port m_port;
   int m_version = devices::dmx_usb_pro_mk1;
+  bool m_write_failed{};
 };
 }
 #endif

@@ -782,10 +782,15 @@ struct fake_serial_port
     tcsetattr(master, TCSANOW, &t);
     fcntl(master, F_SETFL, fcntl(master, F_GETFL) | O_NONBLOCK);
   }
-  ~fake_serial_port()
+  ~fake_serial_port() { unplug(); }
+
+  void unplug()
   {
-    close(slave);
-    close(master);
+    if(slave >= 0)
+      close(slave);
+    if(master >= 0)
+      close(master);
+    slave = master = -1;
   }
 
   std::vector<uint8_t> read_for(std::chrono::milliseconds d)
@@ -832,7 +837,7 @@ std::vector<std::pair<int, std::vector<uint8_t>>> enttec_messages(const std::vec
 
 TEST_CASE("A DMX USB Pro Mk2 sends universe 0 and 1 out of its two ports", "[dmx][dmxusbpro]")
 {
-  for(int start : {0, 1})
+  for(int start : {0, 1, 2})
   {
     fake_serial_port tty;
     net_thread net;
@@ -867,7 +872,7 @@ TEST_CASE("A DMX USB Pro Mk2 sends universe 0 and 1 out of its two ports", "[dmx
     }
     else
     {
-      // Universe 1 is the start universe: buffer universe 0 goes to the second port.
+      // The device starts past universe 0: its first universe goes to the second port.
       CHECK(!last_ch4.contains(0x06));
       CHECK(last_ch4[0xCA] == 7);
     }
@@ -902,5 +907,34 @@ TEST_CASE("A DMX USB Pro sends a single universe", "[dmx][dmxusbpro]")
     frames++;
   }
   CHECK(frames > 0);
+}
+
+TEST_CASE("A DMX USB Pro unplugged while sending stops nothing else", "[dmx][dmxusbpro]")
+{
+  fake_serial_port tty;
+  net_thread net;
+  std::atomic_int other{0};
+  ossia::timer timer{net.ctx->context};
+  timer.set_delay(5ms);
+  timer.start([&] { other++; });
+
+  dmx_config conf;
+  conf.frequency = 40;
+  serial_configuration serial;
+  serial.port = tty.name;
+  auto proto = std::make_unique<dmxusbpro_protocol>(
+      net.ctx, conf, serial, dmxusbpro_protocol::dmx_usb_pro_mk1);
+  auto& p = *proto;
+  generic_device dev{std::move(proto), "dmx"};
+  add_channel(dev, p.buffer(), "a", 0).push_value(7);
+  tty.read_for(100ms);
+  tty.unplug();
+
+  // The writes now fail: the network thread keeps serving the other timer.
+  std::this_thread::sleep_for(200ms);
+  const int before = other;
+  std::this_thread::sleep_for(100ms);
+  CHECK(other > before);
+  timer.stop();
 }
 #endif
