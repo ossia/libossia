@@ -145,7 +145,8 @@ public:
 #else
       // The other backends do not open the device's own count when asked for
       // none: ALSA and Web Audio open two channels, WASAPI its mix format
-      // whatever is asked.
+      // whatever is asked. They are asked for score's, then reopened at the
+      // device's if it differs.
       config.playback.channels = outputs;
 #endif
       config.playback.format = ma_format_f32;
@@ -161,6 +162,19 @@ public:
 #endif
       config.capture.format = ma_format_f32;
     }
+
+    // score's channels are linear: channel c is the device's channel c, with
+    // no speaker layout. miniaudio's channel conversion, from one count to
+    // another, mixes them by speaker position (and every channel past the
+    // 32nd into each other): it never runs. The device's own count is opened
+    // instead, and the callback maps score's channels one to one.
+    // ALSA's plug layer would convert the count too.
+    config.alsa.noAutoChannels = MA_TRUE;
+#if defined(__EMSCRIPTEN__)
+    // Web Audio opens the playback's count for the capture as well
+    if(inputs > 0 && outputs > 0)
+      config.playback.channels = config.capture.channels = std::max(inputs, outputs);
+#endif
 
     // An input and an output on two devices: one clock for both.
     join_devices(config);
@@ -192,7 +206,7 @@ public:
 
     // Never resample: a device that runs at another rate than asked (it does
     // not support it, another program uses it) is reopened at its own rate,
-    // which score then adopts.
+    // which score then adopts. Never convert the channels either.
     // Nor reblock: with CoreAudio the period is the device's buffer, clamped
     // to what it supports, and callbacks of another size come at uneven
     // intervals. Other backends' periods are the system mixer's, whatever is
@@ -220,6 +234,16 @@ public:
       }
 #else
       (void)device_period;
+      if(outputs > 0 && m_stream.playback.internalChannels != config.playback.channels)
+      {
+        config.playback.channels = m_stream.playback.internalChannels;
+        reopen = true;
+      }
+      if(inputs > 0 && m_stream.capture.internalChannels != config.capture.channels)
+      {
+        config.capture.channels = m_stream.capture.internalChannels;
+        reopen = true;
+      }
 #endif
       if(reopen)
       {
@@ -272,14 +296,32 @@ public:
     // other reason, plays nothing at all. Connecting an already connected node
     // is a no-op, so doing it here costs nothing and makes playback independent
     // of capture.
+    //
+    // The browser up- and downmixes by speaker layout too: channels stay
+    // discrete, as many on the output as score has (the most it can take).
     EM_ASM(
         {
           const node = emscriptenGetAudioObject($0);
           const ctx = emscriptenGetAudioObject($1);
           if(node && ctx)
+          {
+            try
+            {
+              node.channelInterpretation = 'discrete';
+              const out = ctx.destination;
+              out.channelCount = Math.max(1, Math.min($2, out.maxChannelCount));
+              out.channelCountMode = 'explicit';
+              out.channelInterpretation = 'discrete';
+            }
+            catch(e)
+            {
+              console.warn('ossia: cannot make the output channels discrete', e);
+            }
             node.connect(ctx.destination);
+          }
         },
-        m_stream.webaudio.audioWorklet, m_stream.webaudio.audioContext);
+        m_stream.webaudio.audioWorklet, m_stream.webaudio.audioContext,
+        outputs > 0 ? outputs : 2);
 #endif
 
     m_active = true;
