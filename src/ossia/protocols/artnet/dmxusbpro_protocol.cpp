@@ -73,7 +73,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
         for(int i = 0; i < m_buffer.universes(); i++)
         {
           const int universe = this->m_conf.start_universe + i;
-          if(universe > 1)
+          if(i > 0 && universe > 1)
             break;
           this->update_function_dmxusbpro(universe == 0 ? 0x06 : 0xCA, i);
         }
@@ -83,6 +83,16 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
     case open_dmx_usb:
       m_timer.start([this] { this->update_function_opendmx(); });
       break;
+  }
+}
+
+void dmxusbpro_protocol::report_write(const boost::system::error_code& ec)
+{
+  if(bool(ec) != m_write_failed)
+  {
+    m_write_failed = bool(ec);
+    if(ec)
+      ossia::logger().error("DMX write failure: {}", ec.message());
   }
 }
 
@@ -113,9 +123,8 @@ void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command, int universe
   std::copy_n(buffer.data(), std::min<std::size_t>(buffer.size(), channels), buf + 5);
   buf[buffer_size - 1] = 0xE7;
 
-  boost::asio::write(m_port, boost::asio::buffer(buf));
-  if(ec)
-    ossia::logger().error("DMX write failure");
+  boost::asio::write(m_port, boost::asio::buffer(buf), ec);
+  report_write(ec);
 }
 
 void dmxusbpro_protocol::update_function_opendmx()
@@ -136,7 +145,6 @@ void dmxusbpro_protocol::update_function_opendmx()
   std::copy_n(buffer.data(), std::min<std::size_t>(buffer.size(), 512), buf + 1);
 
   boost::asio::write(m_port, boost::asio::buffer(buf), ec);
-  if(ec)
-    ossia::logger().error("DMX write failure");
+  report_write(ec);
 }
 }
