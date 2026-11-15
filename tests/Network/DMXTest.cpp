@@ -619,6 +619,35 @@ TEST_CASE("sACN universes have their own sequence and are kept alive", "[dmx][e1
   }
 }
 
+TEST_CASE("An sACN packet ends with its last slot", "[dmx][e131]")
+{
+  for(int slots : {1, 100, 511, 512})
+  {
+    udp_sink sink;
+    net_thread net;
+    dmx_config conf;
+    conf.start_universe = 1;
+    conf.multicast = false;
+    conf.channels_per_universe = slots;
+    auto proto = std::make_unique<e131_protocol>(
+        net.ctx, conf, outbound_socket_configuration{"127.0.0.1", sink.port()});
+    auto& p = *proto;
+    generic_device dev{std::move(proto), "dmx"};
+    add_channel(dev, p.buffer(), "a", slots - 1).push_value(5);
+
+    const auto pkts = sink.receive_for(150ms);
+    REQUIRE(!pkts.empty());
+    const auto& pkt = pkts.back();
+    // Root, framing and DMP layers end where the datagram ends.
+    CHECK(pkt.size() == 126 + std::size_t(slots));
+    CHECK((((pkt[16] & 0x0F) << 8) | pkt[17]) == int(pkt.size()) - 16);
+    CHECK((((pkt[38] & 0x0F) << 8) | pkt[39]) == int(pkt.size()) - 38);
+    CHECK((((pkt[115] & 0x0F) << 8) | pkt[116]) == int(pkt.size()) - 115);
+    CHECK(((pkt[123] << 8) | pkt[124]) == slots + 1);
+    CHECK(pkt.back() == 5);
+  }
+}
+
 TEST_CASE("Art-Net input reads its own universe only", "[dmx][artnet]")
 {
   net_thread net;

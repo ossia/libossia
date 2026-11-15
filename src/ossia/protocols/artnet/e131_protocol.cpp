@@ -217,12 +217,14 @@ void e131_protocol::update_function()
           = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
     pkt.frame.seq_number = m_sequence[current_universe]++;
 
+    const std::size_t size
+        = offsetof(e131_packet, dmp.prop_val) + 1 + this->m_conf.channels_per_universe;
     if(m_conf.multicast)
       m_socket.write(
           {e131_multicast_address(universe), m_socket.m_endpoint.port()},
-          reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+          reinterpret_cast<const char*>(&pkt), size);
     else
-      m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+      m_socket.write(reinterpret_cast<const char*>(&pkt), size);
   }
 }
 
