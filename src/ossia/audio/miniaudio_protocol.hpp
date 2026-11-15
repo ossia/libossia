@@ -51,7 +51,16 @@
 
 #include <miniaudio.h>
 
-#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+// The HAL (devices, their properties, aggregates) is macOS only: iOS has
+// AVAudioSession instead.
+#if defined(__APPLE__) && TARGET_OS_OSX && !defined(__EMSCRIPTEN__)
+#define OSSIA_MINIAUDIO_COREAUDIO_HAL 1
+#endif
+
+#if defined(OSSIA_MINIAUDIO_COREAUDIO_HAL)
 #include <Block.h>
 #include <unistd.h>
 #include <CoreAudio/CoreAudio.h>
@@ -126,19 +135,30 @@ public:
     if(outputs > 0)
     {
       config.playback.pDeviceID = is_default_id(card_out) ? nullptr : &card_out;
+#if defined(OSSIA_MINIAUDIO_COREAUDIO_HAL)
       // The device's own channel count: miniaudio's channel conversion, from
       // the count score asks for, mixes channels together (all those past the
       // 32nd into each other) and is far too slow at hundreds of channels.
       // score's channels are mapped one to one onto the device's in the
       // callback instead.
       config.playback.channels = 0;
+#else
+      // The other backends do not open the device's own count when asked for
+      // none: ALSA and Web Audio open two channels, WASAPI its mix format
+      // whatever is asked.
+      config.playback.channels = outputs;
+#endif
       config.playback.format = ma_format_f32;
     }
 
     if(inputs > 0)
     {
       config.capture.pDeviceID = is_default_id(card_in) ? nullptr : &card_in;
+#if defined(OSSIA_MINIAUDIO_COREAUDIO_HAL)
       config.capture.channels = 0;
+#else
+      config.capture.channels = inputs;
+#endif
       config.capture.format = ma_format_f32;
     }
 
@@ -177,6 +197,8 @@ public:
     // to what it supports, and callbacks of another size come at uneven
     // intervals. Other backends' periods are the system mixer's, whatever is
     // asked: these keep the size asked for.
+#if !defined(__EMSCRIPTEN__)
+    // Not on WASM: the AudioWorklet cannot be created twice in a page.
     if(res == MA_SUCCESS)
     {
       const ma_uint32 device_rate = outputs > 0 ? m_stream.playback.internalSampleRate
@@ -190,12 +212,15 @@ public:
         config.sampleRate = device_rate;
         reopen = true;
       }
-      if(m_ctx->context.backend == ma_backend_coreaudio && device_period > 0
-         && device_period != config.periodSizeInFrames)
+#if defined(OSSIA_MINIAUDIO_COREAUDIO_HAL)
+      if(device_period > 0 && device_period != config.periodSizeInFrames)
       {
         config.periodSizeInFrames = device_period;
         reopen = true;
       }
+#else
+      (void)device_period;
+#endif
       if(reopen)
       {
         config.periods
@@ -204,6 +229,7 @@ public:
         res = open_device(config, share);
       }
     }
+#endif
     if(res != MA_SUCCESS)
       throw std::runtime_error(
           std::string("miniaudio: cannot open the device: ") + ma_result_description(res));
@@ -332,9 +358,14 @@ private:
 
     auto& self = *static_cast<miniaudio_engine*>(pDevice->pUserData);
     self.tick_start();
+#if !defined(__EMSCRIPTEN__)
+    // Not on WASM: steady_clock is unavailable in an AudioWorklet, and a
+    // browser suspends the audio of a page in the background, which is not
+    // a device lost.
     self.m_last_callback.store(
         std::chrono::steady_clock::now().time_since_epoch().count(),
         std::memory_order_release);
+#endif
     // Zero when the backend does not report it
     self.observed_sample_rate.store(
         self.m_hal->rate.load(std::memory_order_relaxed), std::memory_order_relaxed);
@@ -454,7 +485,7 @@ private:
     }
   }
 
-#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
+#if defined(OSSIA_MINIAUDIO_COREAUDIO_HAL)
   //! What the HAL listeners report; they may still run once removed, so they
   //! co-own this rather than reach into the engine.
   struct hal_state
@@ -529,6 +560,24 @@ private:
     return std::any_of(ranges.begin(), ranges.end(), [rate](const AudioValueRange& r) {
       return r.mMinimum <= rate && rate <= r.mMaximum;
     });
+  }
+
+  //! Whether the system lists the device: miniaudio looks devices up there
+  static bool hal_listed(AudioObjectID dev)
+  {
+    const AudioObjectPropertyAddress addr{
+        kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain};
+    UInt32 size{};
+    if(AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &addr, 0, nullptr, &size)
+       != noErr)
+      return false;
+    std::vector<AudioObjectID> ids(size / sizeof(AudioObjectID));
+    if(AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0, nullptr, &size, ids.data())
+       != noErr)
+      return false;
+    ids.resize(size / sizeof(AudioObjectID));
+    return std::find(ids.begin(), ids.end(), dev) != ids.end();
   }
 
   static int hal_channels(AudioObjectID dev, bool input)
@@ -632,10 +681,23 @@ private:
     }
 
     std::copy_n(uid.data(), std::min(uid.size(), sizeof(agg->uid.coreaudio) - 1), agg->uid.coreaudio);
-    // The HAL publishes the device and its streams asynchronously
-    const int expected = hal_channels(out, true) + hal_channels(in, true);
-    for(int i = 0; i < 100 && hal_channels(agg->id, true) < expected; i++)
+    // The HAL publishes the device and its streams asynchronously, and
+    // miniaudio only finds it once it is listed with streams both ways
+    const int inputs = hal_channels(out, true) + hal_channels(in, true);
+    const int outputs = hal_channels(out, false) + hal_channels(in, false);
+    auto ready = [&] {
+      return hal_listed(agg->id) && hal_channels(agg->id, true) >= inputs
+             && hal_channels(agg->id, false) >= outputs;
+    };
+    for(int i = 0; i < 200 && !ready(); i++)
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    if(!ready())
+    {
+      ossia::logger().warn(
+          "miniaudio: the device joining the input and output did not come up: they "
+          "will drift apart");
+      return;
+    }
 
     m_input_offset = hal_channels(out, true);
     m_subdevices = {out, in};
