@@ -70,7 +70,9 @@ void artnet_protocol::update_function()
       continue;
 
     // Port-Address: 15 bits, Net in the high byte, Sub-Net and Universe in the low one.
-    const int universe = (this->m_conf.start_universe + current_universe) & 0x7FFF;
+    const int universe = this->m_conf.start_universe + current_universe;
+    if(universe > 0x7FFF)
+      break;
     const std::span<const uint8_t> data{
         m_buffer.data.data() + current_universe * m_buffer.universe_size,
         std::size_t(m_buffer.universe_size)};
@@ -107,7 +109,7 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
   m_socket.open();
 
   m_socket.receive([this](const char* bytes, int sz) {
-    if(sz <= sizeof(art_dmx_packet_header) + 2)
+    if(sz < int(sizeof(art_dmx_packet_header)) + 1)
       return;
 
     static constexpr auto default_dmx_header = art_dmx_packet_header{};

@@ -531,6 +531,29 @@ TEST_CASE("Art-Net sends the Net of universes above 255", "[dmx][artnet]")
   }
 }
 
+TEST_CASE("Art-Net sends nothing past its last Port-Address", "[dmx][artnet]")
+{
+  udp_sink sink;
+  net_thread net;
+  dmx_config conf;
+  conf.start_universe = 32767;
+  auto proto = std::make_unique<artnet_protocol>(
+      net.ctx, conf, outbound_socket_configuration{"127.0.0.1", sink.port()});
+  auto& p = *proto;
+  p.buffer().set_universe_count(2);
+  generic_device dev{std::move(proto), "dmx"};
+  add_channel(dev, p.buffer(), "a", 3).push_value(7);
+  add_channel(dev, p.buffer(), "b", 512 + 3).push_value(9);
+
+  const auto pkts = sink.receive_for(200ms);
+  REQUIRE(!pkts.empty());
+  for(auto& pkt : pkts)
+  {
+    CHECK(artnet_universe(pkt) == 32767);
+    CHECK(pkt[18 + 3] == 7);
+  }
+}
+
 TEST_CASE("Art-Net frames carry an even length and nothing after it", "[dmx][artnet]")
 {
   for(int channels : {510, 511, 7})
@@ -627,6 +650,35 @@ TEST_CASE("Art-Net input reads its own universe only", "[dmx][artnet]")
   CHECK(ossia::convert<int>(a.value()) == 42);
   send(3 + 256, 98);
   CHECK(ossia::convert<int>(a.value()) == 42);
+}
+
+TEST_CASE("Art-Net input reads the shortest frame", "[dmx][artnet]")
+{
+  net_thread net;
+  const uint16_t port = free_port();
+  dmx_config conf;
+  conf.mode = dmx_config::sink;
+  auto proto = std::make_unique<artnet_input_protocol>(
+      net.ctx, conf, inbound_socket_configuration{"127.0.0.1", port});
+  auto& p = *proto;
+  generic_device dev{std::move(proto), "dmx"};
+  stop_before_device stop_net{net};
+  auto& a = add_channel(dev, p.buffer(), "a", 0);
+  auto& b = add_channel(dev, p.buffer(), "b", 1);
+  a.set_value(0);
+  b.set_value(0);
+  p.create_channel_map();
+
+  // An ArtDmx frame carries at least two channels: 20 bytes in all.
+  const std::vector<uint8_t> pkt{'A', 'r', 't', '-', 'N', 'e', 't', 0, 0x00, 0x50,
+                                 0,   14,  0,   0,   0,   0,   0,   2, 7,    9};
+  boost::asio::io_context io;
+  udp::socket s{io, udp::v4()};
+  s.send_to(
+      boost::asio::buffer(pkt), {boost::asio::ip::make_address("127.0.0.1"), port});
+  std::this_thread::sleep_for(100ms);
+  CHECK(ossia::convert<int>(a.value()) == 7);
+  CHECK(ossia::convert<int>(b.value()) == 9);
 }
 
 TEST_CASE("sACN input reads every slot, and short packets", "[dmx][e131]")
