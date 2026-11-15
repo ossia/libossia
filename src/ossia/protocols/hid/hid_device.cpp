@@ -2,13 +2,8 @@
 
 #include <ossia/detail/fmt.hpp>
 
-#if __has_include(<SDL2/SDL.h>)
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_hidapi.h>
-#else
-#include <SDL.h>
-#include <SDL_hidapi.h>
-#endif
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_hidapi.h>
 
 #include <cstdio>
 #include <fstream>
@@ -191,7 +186,7 @@ void hid_device::open(const hid_device_configuration& conf)
     throw std::runtime_error(fmt::format(
         "HID: no device {:04x}:{:04x} {}", conf.vendor_id, conf.product_id, conf.serial));
 
-  auto* h = SDL_hid_open_path(info->path.c_str(), 0);
+  auto* h = SDL_hid_open_path(info->path.c_str());
   if(!h)
     throw std::runtime_error(
         fmt::format("HID: could not open {}: {}", info->path, sdl_error()));

@@ -6,8 +6,8 @@
 #include <ossia/protocols/joystick/game_controller_protocol.hpp>
 #include <ossia/protocols/joystick/joystick_protocol.hpp>
 
-#if __has_include(<SDL2/SDL.h>)
-#include <SDL2/SDL.h>
+#if __has_include(<SDL3/SDL.h>)
+#include <SDL3/SDL.h>
 #else
 #include <SDL.h>
 #endif
@@ -25,17 +25,17 @@ struct sdl_joystick_context
     //  Prevent SDL from setting SIGINT handler on Posix Systems
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
-    if(int ret = SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER); ret < 0)
+    if(!SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD))
       throw std::runtime_error(fmt::format("SDL Init failure: {}", SDL_GetError()));
 
     // Optional: absent from some SDL builds (the Emscripten port has no haptic
     // support at all), and no joystick API here needs them to be up. Sensors
-    // are read through SDL_GameControllerHasSensor, which simply reports none.
+    // are read through SDL_GamepadHasSensor, which simply reports none.
     SDL_InitSubSystem(SDL_INIT_HAPTIC);
     SDL_InitSubSystem(SDL_INIT_SENSOR);
 
-    SDL_JoystickEventState(SDL_ENABLE);
-    SDL_GameControllerEventState(SDL_ENABLE);
+    SDL_SetJoystickEventsEnabled(true);
+    SDL_SetGamepadEventsEnabled(true);
   }
 
   static sdl_joystick_context& instance()
@@ -48,11 +48,30 @@ struct sdl_joystick_context
   {
     //  To be sure to quit the event loop
     SDL_Event ev;
-    ev.type = SDL_FIRSTEVENT;
+    ev.type = SDL_EVENT_FIRST;
     SDL_PushEvent(&ev);
 
     SDL_Quit();
   }
+};
+
+struct sdl_joystick_ids
+{
+  sdl_joystick_ids() { m_ids = SDL_GetJoysticks(&m_count); }
+  sdl_joystick_ids(const sdl_joystick_ids&) = delete;
+  sdl_joystick_ids& operator=(const sdl_joystick_ids&) = delete;
+  ~sdl_joystick_ids() { SDL_free(m_ids); }
+
+  int count() const noexcept { return m_ids ? m_count : 0; }
+
+  SDL_JoystickID operator[](int index) const noexcept
+  {
+    return (m_ids && index >= 0 && index < m_count) ? m_ids[index] : 0;
+  }
+
+private:
+  SDL_JoystickID* m_ids{};
+  int m_count{};
 };
 
 class joystick_protocol_manager
@@ -216,7 +235,7 @@ struct joystick_event_processor
     using namespace std::literals;
     // To be sure to quit the event loop
     SDL_Event ev;
-    ev.type = SDL_FIRSTEVENT;
+    ev.type = SDL_EVENT_FIRST;
     SDL_PushEvent(&ev);
 
     for(auto& tm : m_timers)
@@ -238,7 +257,7 @@ struct joystick_event_processor
     }
   }
 
-  void push_axis(const SDL_ControllerAxisEvent& ev)
+  void push_axis(const SDL_GamepadAxisEvent& ev)
   {
     if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
     {
@@ -251,19 +270,19 @@ struct joystick_event_processor
   {
     if(auto p = m_manager.get_protocol_by_id<joystick_protocol>(ev.which))
     {
-      push(p, p->m_button_parameters[ev.button], bool(ev.state == SDL_PRESSED));
+      push(p, p->m_button_parameters[ev.button], bool(ev.down));
     }
   }
 
-  void push_button(const SDL_ControllerButtonEvent& ev)
+  void push_button(const SDL_GamepadButtonEvent& ev)
   {
     if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
     {
-      push(p, p->m_button_parameters[ev.button], bool(ev.state == SDL_PRESSED));
+      push(p, p->m_button_parameters[ev.button], bool(ev.down));
     }
   }
 
-  void push_sensor(const SDL_ControllerSensorEvent& ev)
+  void push_sensor(const SDL_GamepadSensorEvent& ev)
   {
     if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
     {
@@ -273,7 +292,7 @@ struct joystick_event_processor
     }
   }
 
-  void push_touchpad(const SDL_ControllerTouchpadEvent& ev)
+  void push_touchpad(const SDL_GamepadTouchpadEvent& ev)
   {
     if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
     {
@@ -317,36 +336,34 @@ struct joystick_event_processor
   {
     switch(ev.type)
     {
-      case SDL_JOYAXISMOTION:
+      case SDL_EVENT_JOYSTICK_AXIS_MOTION:
         push_axis(ev.jaxis);
         break;
 
-      case SDL_JOYBUTTONDOWN:
-      case SDL_JOYBUTTONUP:
+      case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+      case SDL_EVENT_JOYSTICK_BUTTON_UP:
         push_button(ev.jbutton);
         break;
 
-      case SDL_JOYHATMOTION:
+      case SDL_EVENT_JOYSTICK_HAT_MOTION:
         push_hat(ev.jhat);
         break;
 
-      case SDL_CONTROLLERAXISMOTION:
-        push_axis(ev.caxis);
+      case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        push_axis(ev.gaxis);
         break;
-      case SDL_CONTROLLERBUTTONDOWN:
-      case SDL_CONTROLLERBUTTONUP:
-        push_button(ev.cbutton);
+      case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+      case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        push_button(ev.gbutton);
         break;
-      case SDL_CONTROLLERTOUCHPADDOWN:
-      case SDL_CONTROLLERTOUCHPADMOTION:
-      case SDL_CONTROLLERTOUCHPADUP:
-        push_touchpad(ev.ctouchpad);
+      case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+      case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+      case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+        push_touchpad(ev.gtouchpad);
         break;
-      case SDL_CONTROLLERSENSORUPDATE:
-        push_sensor(ev.csensor);
+      case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+        push_sensor(ev.gsensor);
         break;
-        // case SDL_CONTROLLERUPDATECOMPLETE_RESERVED_FOR_SDL3:
-        // case SDL_CONTROLLERSTEAMHANDLEUPDATED:
 
       default:
         break;
