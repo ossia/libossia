@@ -486,6 +486,21 @@ TEST_CASE("A timer restarts after a stop, and keeps running when moved", "[dmx][
   CHECK(count_for(50ms) == 0);
 }
 
+TEST_CASE("A running timer follows a new delay", "[dmx][timer]")
+{
+  net_thread net;
+  std::atomic_int calls{0};
+  ossia::timer timer{net.ctx->context};
+  timer.set_delay(1000ms);
+  timer.start([&] { calls++; });
+  timer.set_delay(2ms);
+
+  // The wait in progress keeps its one second; the following ones last 2 ms.
+  std::this_thread::sleep_for(1300ms);
+  CHECK(calls > 20);
+  timer.stop();
+}
+
 TEST_CASE("Art-Net sends the Net of universes above 255", "[dmx][artnet]")
 {
   udp_sink sink;

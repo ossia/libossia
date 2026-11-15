@@ -61,10 +61,16 @@ public:
 
   ~timer() { stop(); }
 
-  void set_delay(std::chrono::milliseconds ms) noexcept { m_delay = ms; }
+  //! Applies from the next wait on when the timer runs.
+  void set_delay(std::chrono::milliseconds ms) noexcept
+  {
+    m_delay = ms;
+    if(m_state)
+      m_state->delay = ms.count();
+  }
   void set_delay(std::chrono::microseconds ms) noexcept
   {
-    m_delay = std::chrono::duration_cast<std::chrono::milliseconds>(ms);
+    set_delay(std::chrono::duration_cast<std::chrono::milliseconds>(ms));
   }
 
   template <typename F>
@@ -73,7 +79,8 @@ public:
     // Handlers of a stopped run may still be queued: they keep the old state.
     if(!m_state || m_state->stopped)
       m_state = std::make_shared<state>(m_executor);
-    arm(m_state, m_delay, std::move(f));
+    m_state->delay = m_delay.count();
+    arm(m_state, std::move(f));
   }
 
   void stop()
@@ -102,14 +109,15 @@ private:
 
     boost::asio::steady_timer timer;
     std::atomic_bool stopped{false};
+    std::atomic<std::chrono::milliseconds::rep> delay{};
   };
 
   template <typename F>
-  static void arm(std::shared_ptr<state> st, std::chrono::milliseconds delay, F f)
+  static void arm(std::shared_ptr<state> st, F f)
   {
     auto& t = st->timer;
-    t.expires_after(delay);
-    t.async_wait([st = std::move(st), delay, ff = std::move(f)](auto ec) mutable {
+    t.expires_after(std::chrono::milliseconds{st->delay.load()});
+    t.async_wait([st = std::move(st), ff = std::move(f)](auto ec) mutable {
       if(ec == boost::asio::error::operation_aborted || st->stopped)
         return;
       else if(ec)
@@ -120,7 +128,7 @@ private:
 
       ff();
       if(!st->stopped)
-        arm(std::move(st), delay, std::move(ff));
+        arm(std::move(st), std::move(ff));
     });
   }
 
