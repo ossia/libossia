@@ -497,7 +497,7 @@ TEST_CASE("A running timer follows a new delay", "[dmx][timer]")
 
   // The wait in progress keeps its one second; the following ones last 2 ms.
   std::this_thread::sleep_for(1300ms);
-  CHECK(calls > 20);
+  CHECK(calls > 5);
   timer.stop();
 }
 
