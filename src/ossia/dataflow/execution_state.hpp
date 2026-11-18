@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
+#include <ossia/dataflow/midi_note_tracker.hpp>
 #include <ossia/dataflow/value_vector.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/detail/ptr_set.hpp>
@@ -55,6 +56,9 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   void register_port(const ossia::outlet& port);
   void unregister_port(const ossia::inlet& port);
   void unregister_port(const ossia::outlet& port);
+
+  //! Stops on the device a MIDI outlet is bound to the notes it holds
+  void release_held_notes(const ossia::outlet& port);
 
   const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const noexcept
   {
@@ -169,7 +173,28 @@ private:
   //! The stream each MIDI inlet registered with. Unregistering an inlet goes
   //! through this rather than its address: the device the address points into
   //! may be destroyed by then.
-  ossia::ptr_map<const ossia::inlet*, ossia::net::midi::midi_stream*> m_midiInlets;
+  struct midi_inlet_binding
+  {
+    ossia::net::midi::midi_stream* stream{};
+    //! The notes the inlet got from its address and that are not yet stopped:
+    //! an inlet that stops reading it never sees their note offs, and whatever
+    //! plays them would hold them. They are stopped in the inlet instead.
+    ossia::midi_note_tracker held;
+  };
+  ossia::ptr_map<const ossia::inlet*, midi_inlet_binding> m_midiInlets;
+  void track_midi_input(const ossia::inlet& in, std::size_t from);
+  static void release_midi_input(const ossia::inlet& in, midi_inlet_binding& b);
+
+  //! Where each MIDI outlet bound to a device sends, to stop there the notes
+  //! the outlet holds when it is unbound. Kept here for the same reason: the
+  //! address cannot be followed once its device may be gone.
+  struct midi_outlet_binding
+  {
+    ossia::net::midi::midi_stream* stream{};
+    //! 1-16 when the outlet is bound to one channel of the stream
+    int channel{};
+  };
+  ossia::ptr_map<const ossia::outlet*, midi_outlet_binding> m_midiOutlets;
 
   friend struct local_pull_visitor;
   friend struct global_pull_visitor;

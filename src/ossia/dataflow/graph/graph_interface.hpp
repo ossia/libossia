@@ -98,4 +98,13 @@ struct tick_setup_options
 OSSIA_EXPORT
 std::shared_ptr<ossia::graph_interface> make_graph(const graph_setup_options&);
 
+/**
+ * Stops, on the devices they are bound to, the notes the MIDI outlets of the
+ * graph hold. For when the graph stops being run while they sound: a pause,
+ * or the end of the execution. The outlets still hold them: a node that goes
+ * on later ends its notes itself.
+ */
+OSSIA_EXPORT
+void release_held_notes(const graph_interface&, execution_state&);
+
 }

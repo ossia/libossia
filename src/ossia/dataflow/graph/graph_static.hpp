@@ -163,7 +163,7 @@ public:
       auto log = g_exec_log.log_executed_nodes(m_graph, m_all_nodes);
 #endif
 
-      finish_nodes(m_nodes);
+      finish_nodes(m_nodes, e);
     }
     catch(const boost::not_a_dag&)
     {

@@ -296,6 +296,34 @@ midi_inlet::~midi_inlet() = default;
 
 midi_outlet::~midi_outlet() = default;
 
+void midi_outlet::post_process()
+{
+  auto& msgs = data.messages;
+  if(m_release_at < 0)
+  {
+    [[likely]];
+    held.track(msgs.data(), msgs.data() + msgs.size());
+    return;
+  }
+
+  // The messages before the release were played before the node's process
+  // stopped or jumped: they are stopped along with what was held, and the
+  // note offs go between them and what the node played afterwards.
+  const int64_t ts = std::exchange(m_release_at, -1);
+  std::size_t split = 0;
+  while(split < msgs.size() && msgs[split].timestamp < ts)
+    split++;
+
+  held.track(msgs.data(), msgs.data() + split);
+  ossia::midi_port offs;
+  held.release(offs.messages, ts);
+  held.clear();
+
+  msgs.insert(msgs.begin() + split, offs.messages.begin(), offs.messages.end());
+  const std::size_t rest = split + offs.messages.size();
+  held.track(msgs.data() + rest, msgs.data() + msgs.size());
+}
+
 void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out)
 {
   ossia::audio_port& o = *audio_out;
