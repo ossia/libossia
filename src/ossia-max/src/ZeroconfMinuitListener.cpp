@@ -78,9 +78,12 @@ void ZeroconfMinuitListener::add_instance(const std::string& instance)
     data.host = ip;
     data.remote_port = boost::lexical_cast<int>(port);
 
+    // Not announced: the listener would see the announcement as a new
+    // instance, and build a device for it, which would announce itself in turn.
     auto clt = std::make_unique<ossia::net::generic_device>(
         std::make_unique<ossia::net::minuit_protocol>(
-            instance, ip, boost::lexical_cast<int>(port), (rand() % 64512) + 1024),
+            instance, ip, boost::lexical_cast<int>(port), (rand() % 64512) + 1024,
+            false),
         instance);
 
     s_devices.push_back(std::move(clt));
