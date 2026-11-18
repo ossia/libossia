@@ -839,6 +839,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge_helpers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/midi_note_tracker.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/midi_port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
