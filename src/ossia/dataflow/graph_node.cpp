@@ -4,6 +4,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/for_each_port.hpp>
 #include <ossia/dataflow/fx_node.hpp>
+#include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
@@ -168,6 +169,15 @@ void graph_edge::clear() noexcept
     ossia::for_each_outlet(*out_node, [&](ossia::outlet& e) { found_out |= &e == out; });
     if(found_in && found_out)
     {
+      // Whatever the source left sounding through this cable would never be
+      // stopped: the sink finds the note offs in its inlet the next time it
+      // runs.
+      if(out->which() == midi_port::which && in->which() == midi_port::which)
+      {
+        static_cast<const midi_outlet*>(out)->held.release(
+            static_cast<midi_inlet*>(in)->data.messages);
+      }
+
       out->disconnect(this);
       in->disconnect(this);
     }
@@ -333,6 +343,13 @@ void graph_node::begin_request(
 }
 
 void graph_node::all_notes_off() noexcept { }
+
+void release_held_notes(const graph_interface& g, execution_state& e)
+{
+  for(ossia::graph_node* n : g.get_nodes())
+    for(ossia::outlet* out : n->root_outputs())
+      e.release_held_notes(*out);
+}
 
 nonowning_graph_node::~nonowning_graph_node()
 {

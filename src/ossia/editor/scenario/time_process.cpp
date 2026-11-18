@@ -8,20 +8,33 @@ namespace ossia
 {
 time_process::~time_process() = default;
 
+// The process is about to play from somewhere else: what its node holds from
+// where it was is not going to be stopped by what comes next.
+static void release_notes_on_jump(time_process& p)
+{
+#if defined(OSSIA_SCENARIO_DATAFLOW)
+  if(p.node)
+    p.node->request_note_release();
+#endif
+}
+
 void time_process::offset(time_value date)
 {
   // TODO looping
   offset_impl(date);
+  release_notes_on_jump(*this);
 }
 
 void time_process::transport(time_value date)
 {
   transport_impl(date, ossia::tick_transport_info{});
+  release_notes_on_jump(*this);
 }
 
 void time_process::transport(time_value date, const tick_transport_info& info)
 {
   transport_impl(date, info);
+  release_notes_on_jump(*this);
 }
 
 void time_process::start() { }
