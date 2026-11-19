@@ -7,3 +7,4 @@ max oblist "Ossia" ossia.device;
 max oblist "Ossia" ossia.client;
 max oblist "Ossia" ossia.logger;
 max oblist "Ossia" ossia;
+max oblist "Ossia" ossia.v8connector;
