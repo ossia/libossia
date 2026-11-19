@@ -46,3 +46,35 @@ TEST_CASE("oscquery_mirror_push_bundle", "oscquery_mirror_push_bundle")
   REQUIRE(server.sink.messages[1234].first == "/load/p1234");
   REQUIRE(server.sink.messages[1234].second == 1234.f);
 }
+
+// An OSCQuery server under a multiplex, as ossia-max exposes a device, sends
+// a bundle as one OSC bundle to each client; before, the multiplex pushed its
+// values one by one.
+TEST_CASE("oscquery_multiplex_push_bundle", "oscquery_multiplex_push_bundle")
+{
+  const int n = 40;
+  sink_server server{n};
+  udp_sink client_sink{free_port(false)};
+  raw_client client{server.url()};
+  REQUIRE(client.ws.connected());
+  client.stream_to(client_sink.socket.local_endpoint().port());
+  client.listen_load(n);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+  std::vector<const ossia::net::parameter_base*> params;
+  for(int i = 0; i < n; i++)
+  {
+    auto* p = ossia::net::find_node(server.dev->get_root_node(), "/load/p" + std::to_string(i))
+                  ->get_parameter();
+    p->set_value(ossia::value(float(i)));
+    params.push_back(p);
+  }
+  client_sink.clear();
+  server.dev->get_protocol().push_bundle(params);
+  const bool all = client_sink.wait_messages(n, 3000);
+  std::lock_guard lock{client_sink.mutex};
+  INFO("datagrams " << client_sink.datagrams.size() << ", messages " << client_sink.messages.size());
+  REQUIRE(all);
+  REQUIRE(client_sink.datagrams.size() == 1);
+  REQUIRE(client_sink.messages.size() == std::size_t(n));
+}

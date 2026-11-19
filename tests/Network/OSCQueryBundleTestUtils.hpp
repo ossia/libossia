@@ -9,6 +9,8 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/sockets/websocket_client.hpp>
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
@@ -164,5 +166,46 @@ struct sink_server
     net.join();
   }
   std::string url() const { return "ws://127.0.0.1:" + std::to_string(ws); }
+};
+
+// A client of an OSCQuery server reduced to its WebSocket: it asks the server
+// to send its values over UDP to a port of the test (START_OSC_STREAMING),
+// and listens to the addresses it wants, as any client.
+struct raw_client
+{
+  ossia::net::websocket_client ws{
+      [](auto, websocketpp::frame::opcode::value, const std::string&) {}};
+  std::thread thread;
+
+  explicit raw_client(const std::string& url)
+  {
+    thread = std::thread([this, url] {
+      try
+      {
+        ws.connect_and_run(url);
+      }
+      catch(...)
+      {
+      }
+    });
+    for(int i = 0; i < 400 && !ws.connected(); i++)
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+  ~raw_client()
+  {
+    ws.stop();
+    thread.join();
+  }
+  void stream_to(uint16_t udp_port)
+  {
+    auto msg = ossia::oscquery::json_writer::start_osc_streaming(udp_port, 0);
+    ws.send_message(std::string(msg.GetString(), msg.GetSize()));
+  }
+  void listen_load(int n, const std::string& prefix = "/load/p")
+  {
+    for(int i = 0; i < n; i++)
+      ws.send_message(ossia::oscquery::json_writer::listen(prefix + std::to_string(i)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  }
 };
 }
