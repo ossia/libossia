@@ -428,10 +428,29 @@ const ossia::net::full_parameter_data& bundle_parameter(const ossia::net::full_p
 {
   return p;
 }
+const ossia::net::parameter_base& bundle_parameter(const ossia::bundle_element& e)
+{
+  return *e.parameter;
+}
+
+// The value sent: the parameter's current one, or the one of the element,
+// so that a parameter may appear several times with different values.
+ossia::value bundle_value(const ossia::net::parameter_base* p)
+{
+  return p->value();
+}
+ossia::value bundle_value(const ossia::net::full_parameter_data& p)
+{
+  return p.value();
+}
+const ossia::value& bundle_value(const ossia::bundle_element& e)
+{
+  return e.values;
+}
 }
 
 template <typename Parameters>
-bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters)
+bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters, bool bounded)
 {
   if(!m_feedback)
     return false;
@@ -444,7 +463,7 @@ bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters)
     const auto& param = bundle_parameter(p);
     if(param.get_access() == ossia::access_mode::GET)
       continue;
-    auto val = bound_value(param, param.value());
+    ossia::value val = bounded ? ossia::value(bundle_value(p)) : bound_value(param, bundle_value(p));
     if(!val.valid())
       continue;
     const bool critical = param.get_critical();
@@ -485,6 +504,16 @@ bool oscquery_mirror_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   return push_bundle_impl(addresses);
+}
+
+bool oscquery_mirror_protocol::push_bundle(std::span<ossia::bundle_element> elements)
+{
+  return push_bundle_impl(elements);
+}
+
+bool oscquery_mirror_protocol::push_bundle_bounded(std::span<ossia::bundle_element> elements)
+{
+  return push_bundle_impl(elements, true);
 }
 
 bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable)
