@@ -5,7 +5,10 @@
 
 #include <array>
 #include <cinttypes>
+#include <complex>
 #include <cstddef>
+#include <memory>
+#include <span>
 
 #if defined(OSSIA_FFT_FFTW)
 #if defined(OSSIA_FFTW_SINGLE_ONLY)
@@ -134,5 +137,36 @@ private:
   fft_complex* m_input{};
   fft_real* m_output{};
   fft_temp_storage m_storage;
+};
+
+//! Exact-length transforms, including lengths that are not powers of two.
+//! Construct off the audio thread. Execution does not allocate. Use one plan
+//! per concurrent execution.
+class OSSIA_EXPORT exact_fft
+{
+public:
+  enum class kind { real_forward, real_inverse, complex_forward, complex_inverse };
+
+  exact_fft(std::size_t size, kind mode);
+  ~exact_fft();
+  exact_fft(const exact_fft&) = delete;
+  exact_fft& operator=(const exact_fft&) = delete;
+
+  //! N real samples to N/2+1 complex bins (DC through the nonnegative half).
+  void execute(std::span<const float> input, std::span<std::complex<float>> output) noexcept;
+  //! N/2+1 Hermitian bins to N real samples. No implicit 1/N normalization.
+  void execute(
+      std::span<const std::complex<float>> input, std::span<float> output,
+      float scale = 1.f) noexcept;
+  //! N complex samples to N bins, or an output prefix for a forward transform.
+  //! The buffers may have the same start but must not otherwise overlap.
+  //! No implicit 1/N normalization.
+  void execute(
+      std::span<const std::complex<float>> input, std::span<std::complex<float>> output,
+      float scale = 1.f) noexcept;
+
+private:
+  struct plan;
+  std::unique_ptr<plan> m_plan;
 };
 }
