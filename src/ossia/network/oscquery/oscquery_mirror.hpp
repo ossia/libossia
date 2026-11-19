@@ -153,6 +153,9 @@ private:
 
   void on_ws_disconnected() { m_hasWS = false; }
 
+  template <typename Parameters>
+  bool push_bundle_impl(const Parameters& parameters);
+
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<ossia::net::websocket_client> m_websocketClient;

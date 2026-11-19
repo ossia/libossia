@@ -20,6 +20,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
+#include <boost/endian/conversion.hpp>
 namespace ossia::oscquery
 {
 struct http_answer
@@ -360,43 +361,130 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   return false;
 }
 
+namespace
+{
+// OSC bundles built from messages already encoded. Over UDP a bundle stays
+// under a usual Ethernet MTU: the messages are split into several bundles,
+// and a message too large for a bundle of its own goes alone. Over the
+// WebSocket, which has no such limit, all the messages make one bundle.
+constexpr std::size_t osc_bundle_header_size = 16; // "#bundle\0" and the time tag
+constexpr std::size_t osc_udp_bundle_limit = 1400;
+
+void append_osc_bundle_element(std::string& bundle, const std::string& message)
+{
+  const uint32_t size = boost::endian::native_to_big(static_cast<uint32_t>(message.size()));
+  bundle.append(reinterpret_cast<const char*>(&size), 4);
+  bundle.append(message);
+}
+
+std::string make_osc_bundle(const std::vector<std::string>& messages)
+{
+  std::string bundle;
+  std::size_t size = osc_bundle_header_size;
+  for(const auto& m : messages)
+    size += 4 + m.size();
+  bundle.reserve(size);
+  bundle.append("#bundle\0", 8);
+  // time tag 1: immediately
+  static constexpr char immediately[8] = {0, 0, 0, 0, 0, 0, 0, 1};
+  bundle.append(immediately, 8);
+  for(const auto& m : messages)
+    append_osc_bundle_element(bundle, m);
+  return bundle;
+}
+
+// Calls send(data, size) once per datagram.
+template <typename Send>
+void split_osc_bundles(const std::vector<std::string>& messages, Send&& send)
+{
+  std::vector<std::string> group;
+  std::size_t size = osc_bundle_header_size;
+  auto flush = [&] {
+    if(group.size() == 1)
+      send(group.front().data(), group.front().size());
+    else if(!group.empty())
+    {
+      const auto bundle = make_osc_bundle(group);
+      send(bundle.data(), bundle.size());
+    }
+    group.clear();
+    size = osc_bundle_header_size;
+  };
+  for(const auto& m : messages)
+  {
+    if(!group.empty() && size + 4 + m.size() > osc_udp_bundle_limit)
+      flush();
+    group.push_back(m);
+    size += 4 + m.size();
+  }
+  flush();
+}
+
+const ossia::net::parameter_base& bundle_parameter(const ossia::net::parameter_base* p)
+{
+  return *p;
+}
+const ossia::net::full_parameter_data& bundle_parameter(const ossia::net::full_parameter_data& p)
+{
+  return p;
+}
+}
+
+template <typename Parameters>
+bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters)
+{
+  if(!m_feedback)
+    return false;
+
+  // Same routing as push: UDP unless the parameter is critical and the
+  // WebSocket is up.
+  std::vector<std::string> udp, ws;
+  for(const auto& p : parameters)
+  {
+    const auto& param = bundle_parameter(p);
+    if(param.get_access() == ossia::access_mode::GET)
+      continue;
+    auto val = bound_value(param, param.value());
+    if(!val.valid())
+      continue;
+    const bool critical = param.get_critical();
+    if((!critical || !m_hasWS) && m_oscSender)
+      udp.push_back(osc_writer::to_message(param, val));
+    else if(m_hasWS)
+      ws.push_back(osc_writer::to_message(param, val));
+  }
+
+  if(!udp.empty())
+  {
+    split_osc_bundles(udp, [this](const char* data, std::size_t size) {
+      try
+      {
+        m_oscSender->socket().Send(data, size);
+      }
+      catch(...)
+      {
+      }
+    });
+  }
+  if(!ws.empty())
+    ws_send_binary_message(ws.size() == 1 ? ws.front() : make_osc_bundle(ws));
+
+  if(m_logger.outbound_logger && (!udp.empty() || !ws.empty()))
+    m_logger.outbound_logger->info("Out: bundle of {} messages", udp.size() + ws.size());
+
+  return !udp.empty() || !ws.empty();
+}
+
 bool oscquery_mirror_protocol::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& addresses)
 {
-  /* TODO
-  json_bundle_builder b;
-  for(auto a : addresses)
-  {
-    const ossia::net::parameter_base& addr = *a;
-    ossia::value val = net::filter_value(addr);
-    if (val.valid())
-    {
-      b.add_message(addr, val);
-    }
-  }
-
-  m_websocketClient->send_binary_message(b.finish());
-  */
-  return false;
+  return push_bundle_impl(addresses);
 }
 
 bool oscquery_mirror_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  /* TODO
-  json_bundle_builder b;
-  for(const auto& addr : addresses)
-  {
-    ossia::value val = net::filter_value(addr);
-    if (val.valid())
-    {
-      b.add_message(addr, val);
-    }
-  }
-
-  m_websocketClient->send_message(b.finish());
-  */
-  return false;
+  return push_bundle_impl(addresses);
 }
 
 bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable)
