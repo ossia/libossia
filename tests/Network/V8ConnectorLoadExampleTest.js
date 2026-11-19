@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // Test of the load example scripts (examples/ossia.v8connector.load.*.js)
 // outside Max, with a fake v8 / v8ui, a fake patcher and fake connectors.
 // Run with: node tests/Network/V8ConnectorLoadExampleTest.js

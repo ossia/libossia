@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
+
 #pragma once
 
 // ossia.v8connector: a node of the ossia tree whose parameters are declared

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // Emitter of the load example of ossia.v8connector: declares N leaves
 // (load/p0 to load/p<N-1>, float 0 to 1) and sets them all at each bang.
 // The connector sends the values set during a tick together, in OSC bundles

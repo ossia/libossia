@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // v8ui grid for ossia.v8connector: each cell the user turns on is a parameter.
 // A click on an empty cell declares cell/<x>/<y> (float, 0 to 1) through the
 // helper; a second click removes it. The script reaches the connector by its

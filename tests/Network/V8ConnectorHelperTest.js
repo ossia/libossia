@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // Test of the ossia.v8connector.js helper outside Max, with a fake patcher and
 // a fake Maxobj. Run with: node tests/Network/V8ConnectorHelperTest.js
 

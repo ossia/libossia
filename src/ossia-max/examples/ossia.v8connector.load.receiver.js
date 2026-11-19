@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // Receiver of the load example of ossia.v8connector: follows the N leaves of
 // the emitter through an ossia.client (bind load/p0 to load/p<N-1>) and draws
 // them as a cloud of points, leaf i at x = i, y = its value. The values are

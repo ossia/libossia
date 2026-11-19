@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
+
 #pragma once
 
 // Max-independent part of ossia.v8connector: a branch of an ossia device

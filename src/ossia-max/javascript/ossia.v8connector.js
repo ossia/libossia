@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // ossia.v8connector.js: helper for v8 and v8ui scripts around [ossia.v8connector].
 //
 // The script reaches the object without a patch cord, through its scripting

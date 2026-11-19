@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // v8ui demo for ossia.v8connector: three parameters drawn as sliders.
 // The state lives in this script; the connector only puts it in the ossia tree.
 //

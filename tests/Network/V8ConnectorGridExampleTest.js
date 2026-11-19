@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 CNRS
+// SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
 // Test of the grid example script (examples/ossia.v8connector.grid.js) outside
 // Max, with a fake v8ui (box, mgraphics), a fake patcher and a fake connector.
 // Run with: node tests/Network/V8ConnectorGridExampleTest.js
