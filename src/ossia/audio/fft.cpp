@@ -1,11 +1,15 @@
 #include <ossia/audio/fft.hpp>
 
 #include <algorithm>
-#include <new>
 #include <bit>
+#include <cassert>
+#include <new>
+#include <stdexcept>
 
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
+#include <limits>
+#include <mutex>
 namespace ossia
 {
 namespace
@@ -18,6 +22,8 @@ static const constexpr auto create_plan_r2c = ::fftwf_plan_dft_r2c_1d;
 static const constexpr auto run_plan_r2c = ::fftwf_execute_dft_r2c;
 static const constexpr auto create_plan_c2r = ::fftwf_plan_dft_c2r_1d;
 static const constexpr auto run_plan_c2r = ::fftwf_execute_dft_c2r;
+static const constexpr auto create_plan_complex = ::fftwf_plan_dft_1d;
+static const constexpr auto run_plan = ::fftwf_execute;
 static const constexpr auto destroy_plan = ::fftwf_destroy_plan;
 static const constexpr auto cleanup = ::fftwf_cleanup;
 
@@ -29,6 +35,8 @@ static const constexpr auto create_plan_r2c = ::fftw_plan_dft_r2c_1d;
 static const constexpr auto run_plan_r2c = ::fftw_execute_dft_r2c;
 static const constexpr auto create_plan_c2r = ::fftw_plan_dft_c2r_1d;
 static const constexpr auto run_plan_c2r = ::fftw_execute_dft_c2r;
+static const constexpr auto create_plan_complex = ::fftw_plan_dft_1d;
+static const constexpr auto run_plan = ::fftw_execute;
 static const constexpr auto destroy_plan = ::fftw_destroy_plan;
 // static const constexpr auto cleanup = ::fftw_cleanup;
 #else
@@ -60,6 +68,22 @@ auto run_plan_c2r(fft_plan, void*, void*)
   return fft_plan{};
 }
 #endif
+
+// FFTW execution is thread-safe, planning and plan destruction are not.
+std::mutex& fftw_planner_mutex()
+{
+  static std::mutex mutex;
+  return mutex;
+}
+
+void release_plan(fft_plan plan) noexcept
+{
+  if(plan)
+  {
+    const std::lock_guard lock{fftw_planner_mutex()};
+    destroy_plan(plan);
+  }
+}
 }
 
 void fft::build(std::size_t newSize, bool measure) noexcept
@@ -80,6 +104,7 @@ void fft::build(std::size_t newSize, bool measure) noexcept
   m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   // Measuring runs transforms to choose the plan: not on the audio thread,
   // where a size nothing was prepared for has to be planned
+  const std::lock_guard lock{fftw_planner_mutex()};
   m_fw = create_plan_r2c(
       m_storage_size, m_input, m_output,
       FFTW_DESTROY_INPUT | (measure ? FFTW_MEASURE : FFTW_ESTIMATE));
@@ -87,7 +112,7 @@ void fft::build(std::size_t newSize, bool measure) noexcept
 
 void fft::release() noexcept
 {
-  destroy_plan(m_fw);
+  release_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -128,13 +153,14 @@ rfft::rfft(std::size_t newSize) noexcept
   }
   m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   m_output = alloc_real(m_storage_size);
+  const std::lock_guard lock{fftw_planner_mutex()};
   m_fw = create_plan_c2r(
       m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 rfft::~rfft()
 {
-  destroy_plan(m_fw);
+  release_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -165,6 +191,7 @@ fft_real* rfft::execute() noexcept
 
 #include <kfr/dft.hpp>
 #include <kfr/kfr.h>
+#include <variant>
 
 struct fftw_plan_s : kfr::dft_plan_real<double>
 {
@@ -310,6 +337,7 @@ fft_real* rfft::execute() noexcept
 
 #else
 #include <ossia/detail/math.hpp>
+#include <ossia/audio/fft_exact_portable.hpp>
 
 #include <complex>
 
@@ -542,5 +570,265 @@ void fft::use(std::size_t newSize, bool measure)
   m_input = nullptr;
   m_output = nullptr;
   build(newSize, measure);
+}
+}
+
+namespace ossia
+{
+namespace
+{
+using complex_sample = std::complex<float>;
+using fft_kind = exact_fft::kind;
+
+bool inverse(fft_kind mode) noexcept
+{
+  return mode == fft_kind::real_inverse || mode == fft_kind::complex_inverse;
+}
+
+#if defined(OSSIA_FFT_FFTW) || defined(OSSIA_FFT_KFR)
+bool real_transform(fft_kind mode) noexcept
+{
+  return mode == fft_kind::real_inverse || mode == fft_kind::real_forward;
+}
+#endif
+
+#if !defined(OSSIA_FFT_FFTW)
+void expand_hermitian(
+    std::span<const complex_sample> input, std::span<complex_sample> output) noexcept
+{
+  const auto n = output.size();
+  output[0] = input[0].real();
+  for(std::size_t i = 1; i <= (n - 1) / 2; ++i)
+  {
+    output[i] = input[i];
+    output[n - i] = std::conj(input[i]);
+  }
+  if(n % 2 == 0)
+    output[n / 2] = input[n / 2].real();
+}
+#endif
+}
+
+struct exact_fft::plan
+{
+  const std::size_t size;
+  const kind mode;
+
+#if defined(OSSIA_FFT_FFTW)
+  std::unique_ptr<fft_real, decltype(fft_free)> time{nullptr, fft_free};
+  std::unique_ptr<fft_complex, decltype(fft_free)> frequency{nullptr, fft_free};
+  std::unique_ptr<fft_complex, decltype(fft_free)> signal{nullptr, fft_free};
+  fft_plan native{};
+
+  plan(std::size_t n, kind k) : size{n}, mode{k}
+  {
+    if(n > std::size_t(std::numeric_limits<int>::max()))
+      throw std::length_error("FFTW length exceeds INT_MAX");
+    const bool real = real_transform(k);
+    frequency.reset(alloc_complex(real ? n / 2 + 1 : n));
+    if(real)
+      time.reset(alloc_real(n));
+    else
+      signal.reset(alloc_complex(n));
+    if(!frequency || (real ? !time : !signal))
+      throw std::bad_alloc{};
+
+    const std::lock_guard lock{fftw_planner_mutex()};
+    constexpr unsigned flags = FFTW_ESTIMATE | FFTW_DESTROY_INPUT;
+    if(k == kind::real_forward)
+      native = create_plan_r2c(int(n), time.get(), frequency.get(), flags);
+    else if(k == kind::real_inverse)
+      native = create_plan_c2r(int(n), frequency.get(), time.get(), flags);
+    else
+      native = create_plan_complex(
+          int(n), signal.get(), frequency.get(),
+          inverse(k) ? FFTW_BACKWARD : FFTW_FORWARD, flags);
+    if(!native)
+      throw std::runtime_error("Could not create an FFTW plan");
+  }
+
+  ~plan() { release_plan(native); }
+
+  static void copy_in(std::span<const complex_sample> in, fft_complex* out) noexcept
+  {
+    for(std::size_t i = 0; i < in.size(); ++i)
+    {
+      out[i][0] = in[i].real();
+      out[i][1] = in[i].imag();
+    }
+  }
+
+  void copy_bins(std::span<complex_sample> out, float scale) const noexcept
+  {
+    const auto* bins = frequency.get();
+    for(std::size_t i = 0; i < out.size(); ++i)
+      out[i] = {float(bins[i][0] * scale), float(bins[i][1] * scale)};
+  }
+
+  void forward(std::span<const float> in, std::span<complex_sample> out) noexcept
+  {
+    std::copy(in.begin(), in.end(), time.get());
+    run_plan(native);
+    copy_bins(out, 1.f);
+  }
+
+  void backward(
+      std::span<const complex_sample> in, std::span<float> out, float scale) noexcept
+  {
+    copy_in(in, frequency.get());
+    run_plan(native);
+    const auto* result = time.get();
+    for(std::size_t i = 0; i < out.size(); ++i)
+      out[i] = float(result[i] * scale);
+  }
+
+  void complex(
+      std::span<const complex_sample> in, std::span<complex_sample> out,
+      float scale) noexcept
+  {
+    copy_in(in, signal.get());
+    run_plan(native);
+    copy_bins(out, scale);
+  }
+#elif defined(OSSIA_FFT_KFR)
+  using real_plan = kfr::dft_plan_real<float>;
+  using complex_plan = kfr::dft_plan<float>;
+  std::variant<real_plan, complex_plan> native;
+  kfr::univector<kfr::u8> scratch;
+  kfr::univector<complex_sample> input, output;
+
+  plan(std::size_t n, kind k) : size{n}, mode{k}
+  {
+    if(real_transform(k) && n % 2 == 0)
+    {
+      scratch.resize(native.emplace<real_plan>(n).temp_size);
+    }
+    else
+    {
+      scratch.resize(native.emplace<complex_plan>(n).temp_size);
+      if(real_transform(k))
+        input.resize(n);
+      if(k != kind::complex_inverse)
+        output.resize(n);
+    }
+  }
+
+  void forward(std::span<const float> in, std::span<complex_sample> out) noexcept
+  {
+    if(auto* p = std::get_if<real_plan>(&native))
+    {
+      p->execute(out.data(), in.data(), scratch.data(), kfr::cdirect_t{});
+    }
+    else
+    {
+      std::copy(in.begin(), in.end(), input.begin());
+      std::get<complex_plan>(native).execute(
+          output.data(), input.data(), scratch.data(), kfr::cfalse);
+      std::copy_n(output.begin(), out.size(), out.begin());
+    }
+  }
+
+  void backward(
+      std::span<const complex_sample> in, std::span<float> out, float scale) noexcept
+  {
+    if(auto* p = std::get_if<real_plan>(&native))
+    {
+      p->execute(out.data(), in.data(), scratch.data(), kfr::cinvert_t{});
+      if(scale != 1.f)
+        for(auto& value : out)
+          value *= scale;
+    }
+    else
+    {
+      expand_hermitian(in, {input.data(), size});
+      std::get<complex_plan>(native).execute(
+          output.data(), input.data(), scratch.data(), kfr::ctrue);
+      for(std::size_t i = 0; i < out.size(); ++i)
+        out[i] = output[i].real() * scale;
+    }
+  }
+
+  void complex(
+      std::span<const complex_sample> in, std::span<complex_sample> out,
+      float scale) noexcept
+  {
+    auto& p = std::get<complex_plan>(native);
+    auto* result = out.size() == size ? out.data() : output.data();
+    if(mode == kind::complex_inverse)
+      p.execute(result, in.data(), scratch.data(), kfr::ctrue);
+    else
+      p.execute(result, in.data(), scratch.data(), kfr::cfalse);
+    if(result != out.data() || scale != 1.f)
+      for(std::size_t i = 0; i < out.size(); ++i)
+        out[i] = result[i] * scale;
+  }
+#else
+  detail::exact_fft_portable native;
+
+  plan(std::size_t n, kind k) : size{n}, mode{k}, native{n, inverse(k)} { }
+
+  void forward(std::span<const float> in, std::span<complex_sample> out) noexcept
+  {
+    std::copy(in.begin(), in.end(), native.input().begin());
+    native.execute();
+    std::copy_n(native.output().begin(), out.size(), out.begin());
+  }
+
+  void backward(
+      std::span<const complex_sample> in, std::span<float> out, float scale) noexcept
+  {
+    expand_hermitian(in, native.input());
+    native.execute();
+    const auto result = native.output();
+    for(std::size_t i = 0; i < out.size(); ++i)
+      out[i] = result[i].real() * scale;
+  }
+
+  void complex(
+      std::span<const complex_sample> in, std::span<complex_sample> out,
+      float scale) noexcept
+  {
+    std::copy(in.begin(), in.end(), native.input().begin());
+    native.execute();
+    const auto result = native.output();
+    for(std::size_t i = 0; i < out.size(); ++i)
+      out[i] = result[i] * scale;
+  }
+#endif
+};
+
+exact_fft::exact_fft(std::size_t size, kind mode)
+{
+  if(size == 0)
+    throw std::invalid_argument("A transform must have a nonzero length");
+  m_plan = std::make_unique<plan>(size, mode);
+}
+
+exact_fft::~exact_fft() = default;
+
+void exact_fft::execute(
+    std::span<const float> input, std::span<complex_sample> output) noexcept
+{
+  assert(m_plan->mode == kind::real_forward);
+  assert(input.size() == m_plan->size && output.size() == input.size() / 2 + 1);
+  m_plan->forward(input, output);
+}
+
+void exact_fft::execute(
+    std::span<const complex_sample> input, std::span<float> output, float scale) noexcept
+{
+  assert(m_plan->mode == kind::real_inverse);
+  assert(output.size() == m_plan->size && input.size() == output.size() / 2 + 1);
+  m_plan->backward(input, output, scale);
+}
+
+void exact_fft::execute(
+    std::span<const complex_sample> input, std::span<complex_sample> output,
+    float scale) noexcept
+{
+  assert(m_plan->mode == kind::complex_forward || m_plan->mode == kind::complex_inverse);
+  assert(input.size() == m_plan->size && output.size() <= input.size());
+  assert(m_plan->mode == kind::complex_forward || output.size() == input.size());
+  m_plan->complex(input, output, scale);
 }
 }

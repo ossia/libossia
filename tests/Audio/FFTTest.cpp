@@ -97,3 +97,50 @@ TEST_CASE("fft_power_of_two_short_input", "fft")
   auto signal = ramp(20);
   check_spectrum(fft.execute(signal.data(), signal.size()), padded_dft(signal, size));
 }
+
+TEST_CASE("exact FFT preserves bin spacing and inverse scaling", "fft")
+{
+  using kind = ossia::exact_fft::kind;
+  using sample = std::complex<float>;
+  for(std::size_t n : {1, 2, 17, 64, 100, 480})
+  {
+    CAPTURE(n);
+    auto real = ramp(n);
+    std::vector<sample> half(n / 2 + 1);
+    ossia::exact_fft real_forward{n, kind::real_forward};
+    real_forward.execute(real, half);
+    const auto expected_real = padded_dft(real, int(n));
+    for(std::size_t k = 0; k < half.size(); ++k)
+      CHECK(std::abs(std::complex<double>{half[k]} - expected_real[k]) < 1e-3);
+
+    std::vector<float> roundtrip(n);
+    ossia::exact_fft real_inverse{n, kind::real_inverse};
+    real_inverse.execute(half, roundtrip, 1.f / n);
+    for(std::size_t i = 0; i < n; ++i)
+      CHECK(std::abs(roundtrip[i] - real[i]) < 1e-4);
+
+    std::vector<sample> signal(n), transformed(n);
+    constexpr std::size_t bin = 3;
+    for(std::size_t i = 0; i < n; ++i)
+      signal[i] = std::polar(1.f, float(-2. * std::numbers::pi * bin * i / n));
+    ossia::exact_fft complex_forward{n, kind::complex_forward};
+    complex_forward.execute(signal, transformed);
+    for(std::size_t k = 0; k < n; ++k)
+    {
+      const auto expected = k == (n - bin % n) % n ? sample{float(n), 0.f} : sample{};
+      CHECK(std::abs(transformed[k] - expected) < 1e-3);
+    }
+
+    ossia::exact_fft complex_inverse{n, kind::complex_inverse};
+    complex_inverse.execute(transformed, transformed, 1.f / n);
+    for(std::size_t i = 0; i < n; ++i)
+      CHECK(std::abs(transformed[i] - signal[i]) < 1e-4);
+
+    complex_forward.execute(signal, std::span<sample>{signal}.first(half.size()));
+    for(std::size_t k = 0; k < half.size(); ++k)
+    {
+      const auto expected = k == (n - bin % n) % n ? sample{float(n), 0.f} : sample{};
+      CHECK(std::abs(signal[k] - expected) < 1e-3);
+    }
+  }
+}
