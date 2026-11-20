@@ -9,7 +9,6 @@
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
 #include <limits>
-#include <mutex>
 namespace ossia
 {
 namespace
@@ -68,22 +67,6 @@ auto run_plan_c2r(fft_plan, void*, void*)
   return fft_plan{};
 }
 #endif
-
-// FFTW execution is thread-safe, planning and plan destruction are not.
-std::mutex& fftw_planner_mutex()
-{
-  static std::mutex mutex;
-  return mutex;
-}
-
-void release_plan(fft_plan plan) noexcept
-{
-  if(plan)
-  {
-    const std::lock_guard lock{fftw_planner_mutex()};
-    destroy_plan(plan);
-  }
-}
 }
 
 void fft::build(std::size_t newSize, bool measure) noexcept
@@ -104,7 +87,6 @@ void fft::build(std::size_t newSize, bool measure) noexcept
   m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   // Measuring runs transforms to choose the plan: not on the audio thread,
   // where a size nothing was prepared for has to be planned
-  const std::lock_guard lock{fftw_planner_mutex()};
   m_fw = create_plan_r2c(
       m_storage_size, m_input, m_output,
       FFTW_DESTROY_INPUT | (measure ? FFTW_MEASURE : FFTW_ESTIMATE));
@@ -112,7 +94,7 @@ void fft::build(std::size_t newSize, bool measure) noexcept
 
 void fft::release() noexcept
 {
-  release_plan(m_fw);
+  destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -153,14 +135,13 @@ rfft::rfft(std::size_t newSize) noexcept
   }
   m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
   m_output = alloc_real(m_storage_size);
-  const std::lock_guard lock{fftw_planner_mutex()};
   m_fw = create_plan_c2r(
       m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 rfft::~rfft()
 {
-  release_plan(m_fw);
+  destroy_plan(m_fw);
   fft_free(m_input);
   fft_free(m_output);
   //  cleanup();
@@ -633,7 +614,6 @@ struct exact_fft::plan
     if(!frequency || (real ? !time : !signal))
       throw std::bad_alloc{};
 
-    const std::lock_guard lock{fftw_planner_mutex()};
     constexpr unsigned flags = FFTW_ESTIMATE | FFTW_DESTROY_INPUT;
     if(k == kind::real_forward)
       native = create_plan_r2c(int(n), time.get(), frequency.get(), flags);
@@ -647,7 +627,7 @@ struct exact_fft::plan
       throw std::runtime_error("Could not create an FFTW plan");
   }
 
-  ~plan() { release_plan(native); }
+  ~plan() { destroy_plan(native); }
 
   static void copy_in(std::span<const complex_sample> in, fft_complex* out) noexcept
   {
