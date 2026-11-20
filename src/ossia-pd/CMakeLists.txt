@@ -13,7 +13,8 @@ endif()
 message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
 if(OSSIA_PURR_DATA)
   if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/purr-data")
-    execute_process(COMMAND git clone --recursive -j16 https://github.com/jcelerier/purr-data
+    # Only pd/src headers are needed; Purr Data's bundled externals are not built.
+    execute_process(COMMAND git clone --no-recurse-submodules https://github.com/jcelerier/purr-data
                     WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}"
                     COMMAND_ERROR_IS_FATAL ANY)
   endif()

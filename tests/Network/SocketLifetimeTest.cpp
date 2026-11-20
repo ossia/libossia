@@ -15,7 +15,9 @@
 
 #include <boost/asio/io_context.hpp>
 
+#include <chrono>
 #include <memory>
+#include <optional>
 
 /**
  * Destroying a socket that still has a read outstanding.
@@ -189,7 +191,8 @@ TEST_CASE("test_tcp_client_destroyed_with_pending_read", "test_socket_lifetime")
   // The accepted socket has to stay alive, otherwise the client's read would
   // complete with eof instead of staying pending.
   boost::asio::ip::tcp::socket peer{ctx};
-  acceptor.async_accept(peer, [](boost::system::error_code) { });
+  std::optional<boost::system::error_code> accept_result;
+  acceptor.async_accept(peer, [&](boost::system::error_code ec) { accept_result = ec; });
 
   ossia::net::outbound_socket_configuration conf;
   conf.host = "127.0.0.1";
@@ -203,8 +206,12 @@ TEST_CASE("test_tcp_client_destroyed_with_pending_read", "test_socket_lifetime")
   sock->on_open.connect(&connected);
   sock->connect();
 
-  drain(ctx);
+  // Wait for the OS to complete both sides of the handshake before arming the read.
+  ctx.run_for(std::chrono::seconds{5});
+  REQUIRE(accept_result.has_value());
+  REQUIRE(!*accept_result);
   REQUIRE(connected.value);
+  ctx.restart();
 
   bool got_message = false;
   sock->receive([&](const unsigned char*, std::size_t) { got_message = true; });
