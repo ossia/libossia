@@ -60,6 +60,9 @@ struct value_read
   std::atomic_flag done = ATOMIC_FLAG_INIT;
   //! The answer is applied only if it changes the value
   bool only_if_differs{};
+  //! For a read of our own, when it was asked: a value this client writes
+  //! after is newer than the answer
+  std::chrono::steady_clock::time_point asked{};
 
   void succeed()
   {
@@ -85,7 +88,12 @@ struct http_value_answer
   {
     if(status >= 200 && status < 300)
     {
-      self.on_value_read(read->address, body, read->only_if_differs);
+      // An answer older than a write of this client would bring back the
+      // value the write replaced
+      const bool stale = read->asked != std::chrono::steady_clock::time_point{}
+                         && self.written_since(read->address, read->asked);
+      if(!stale)
+        self.on_value_read(read->address, body, read->only_if_differs);
       read->succeed();
     }
     else
@@ -1061,6 +1069,14 @@ void oscquery_mirror_protocol::record_sent(
       address, crossing_state::sent_value{std::chrono::steady_clock::now(), v});
 }
 
+bool oscquery_mirror_protocol::written_since(
+    const std::string& address, std::chrono::steady_clock::time_point t)
+{
+  std::lock_guard lock{m_crossing->mutex};
+  auto it = m_crossing->sent.find(address);
+  return it != m_crossing->sent.end() && it->second.time > t;
+}
+
 void oscquery_mirror_protocol::check_crossing(std::string_view address)
 {
   if(!m_rereadCrossings)
@@ -1103,6 +1119,7 @@ void oscquery_mirror_protocol::check_crossing(std::string_view address)
     auto read = std::make_shared<value_read>();
     read->address = path;
     read->only_if_differs = true;
+    read->asked = std::chrono::steady_clock::now();
     read_value(std::move(read));
   });
 }

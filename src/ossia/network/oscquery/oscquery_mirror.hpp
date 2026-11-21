@@ -191,6 +191,9 @@ private:
   std::atomic_bool m_rereadCrossings{false};
   void record_sent(const std::string& address, const ossia::value& v);
   void check_crossing(std::string_view address);
+  // Whether this client wrote address after t
+  bool
+  written_since(const std::string& address, std::chrono::steady_clock::time_point t);
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;

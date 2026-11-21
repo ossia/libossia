@@ -6,7 +6,10 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 #include <ossia/network/value/value_conversion.hpp>
+
+#include <oscpack/osc/OscOutboundPacketStream.h>
 
 #include "include_catch.hpp"
 
@@ -38,6 +41,67 @@ bool wait_for(F f, std::chrono::milliseconds timeout = 2000ms)
   }
   return f();
 }
+
+// A server of the test, with a float /level, that answers its value reads
+// 300 ms late and sends values when it is told to
+struct slow_server
+{
+  std::mutex mutex;
+  ossia::net::websocket_server::connection_handler client;
+  std::atomic_bool connected{false};
+  std::atomic_int value_reads{0};
+  ossia::net::websocket_server server;
+  std::thread thread;
+
+  explicit slow_server(int port)
+  {
+    server.set_open_handler([this](auto hdl) {
+      std::lock_guard l{mutex};
+      client = hdl;
+      connected = true;
+    });
+    server.set_close_handler([](auto) { });
+    server.set_message_handler(
+        [this](auto, auto, const std::string& resource) -> ossia::net::server_reply {
+      if(resource.find("HOST_INFO") != std::string::npos)
+        return reply(R"({"NAME":"slow","EXTENSIONS":{"TYPE":true,"VALUE":true}})");
+      if(resource == "/")
+        return reply(
+            R"({"FULL_PATH":"/","CONTENTS":{"level":{"FULL_PATH":"/level","TYPE":"f","VALUE":[0.0],"ACCESS":3}}})");
+      if(resource == "/level?VALUE")
+      {
+        value_reads++;
+        std::this_thread::sleep_for(300ms);
+        return reply(R"({"VALUE":100.0})");
+      }
+      // A WebSocket command of the mirror (LISTEN...)
+      return reply("");
+    });
+    server.listen(port);
+    thread = std::thread{[this] { server.run(); }};
+  }
+  ~slow_server()
+  {
+    server.stop();
+    thread.join();
+  }
+  static ossia::net::server_reply reply(const std::string& json)
+  {
+    ossia::net::server_reply r;
+    r.type = ossia::net::server_reply::data_type::json;
+    r.data = json;
+    return r;
+  }
+  // A value of /level, as OSC over the WebSocket
+  void send_level(float v)
+  {
+    char buf[256];
+    oscpack::OutboundPacketStream p(buf, sizeof(buf));
+    p << oscpack::BeginMessage("/level") << v << oscpack::EndMessage();
+    std::lock_guard l{mutex};
+    server.send_binary_message(client, std::string_view{p.Data(), p.Size()});
+  }
+};
 
 // A server that does not answer crossed writes, and a mirror of it
 struct setup
@@ -160,4 +224,38 @@ TEST_CASE("test_oscquery_mirror_read_again_unchanged", "[oscquery]")
   std::this_thread::sleep_for(
       ossia::oscquery::oscquery_mirror_protocol::settle_delay + 300ms);
   CHECK(s.values() == std::vector<float>{100.f});
+}
+
+TEST_CASE("test_oscquery_mirror_read_older_than_a_write", "[oscquery]")
+{
+  // The read after a crossing is answered after the client wrote again: the
+  // answer is older than that write and does not undo it
+  slow_server server{5799};
+  auto proto = new ossia::oscquery::oscquery_mirror_protocol(
+      "ws://127.0.0.1:5799", uint16_t(10799));
+  proto->set_reread_crossings(true);
+  generic_device mirror{std::unique_ptr<protocol_base>(proto), "slow_mirror"};
+  proto->update(mirror.get_root_node());
+  auto node = find_node(mirror.get_root_node(), "/level");
+  REQUIRE(node);
+  auto remote = node->get_parameter();
+  REQUIRE(remote);
+  std::mutex mutex;
+  std::vector<float> received;
+  remote->add_callback([&](const ossia::value& v) {
+    std::lock_guard lock{mutex};
+    received.push_back(ossia::convert<float>(v));
+  });
+  REQUIRE(wait_for([&] { return server.connected.load(); }));
+
+  remote->push_value_quiet(200.f);
+  // Crosses the write: read again settle_delay later
+  server.send_level(100.f);
+  REQUIRE(wait_for([&] { return server.value_reads > 0; }));
+  remote->push_value_quiet(300.f);
+  std::this_thread::sleep_for(600ms);
+
+  CHECK(ossia::convert<float>(remote->value()) == 300.f);
+  std::lock_guard lock{mutex};
+  CHECK(received == std::vector<float>{100.f});
 }
