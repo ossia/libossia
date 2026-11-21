@@ -3,6 +3,8 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_functions.hpp>
 
+#include <utility>
+
 namespace ossia
 {
 audio_protocol::audio_protocol()
@@ -53,16 +55,24 @@ void audio_protocol::setup_tree(int inputs, int outputs)
       = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/in/main");
   main_audio_out
       = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/out/main");
+  main_audio_in->stage = audio_parameter::gain_stage::pull;
+  main_audio_out->stage = audio_parameter::gain_stage::external;
   for(int i = 0; i < inputs; i++)
   {
     audio_ins.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/in/" + std::to_string(i + 1)));
+    audio_ins.back()->stage = audio_parameter::gain_stage::pull;
+    audio_ins.back()->upstream = main_audio_in;
   }
   for(int i = 0; i < outputs; i++)
   {
     audio_outs.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/out/" + std::to_string(i + 1)));
+    audio_outs.back()->stage = audio_parameter::gain_stage::external;
   }
+  m_out_gains.assign(outputs, 1.f);
+  m_main_gain_reset = true;
+  main_audio_in->hardware_inputs = &audio_ins;
 
   main_audio_in->audio.resize(inputs);
   for(int i = 0; i < inputs; i++)
@@ -70,10 +80,65 @@ void audio_protocol::setup_tree(int inputs, int outputs)
     audio_ins[i]->audio.resize(1);
   }
 
+  for(auto p : in_mappings)
+  {
+    p->upstream = main_audio_in;
+    p->hardware_inputs = &audio_ins;
+  }
+  for(auto p : out_mappings)
+    p->hardware_inputs = &audio_ins;
+
   main_audio_out->audio.resize(outputs);
   for(int i = 0; i < outputs; i++)
   {
     audio_outs[i]->audio.resize(1);
+  }
+}
+
+namespace
+{
+void scale(float* out, std::size_t frames, float start, float target) noexcept
+{
+  if(start == target)
+  {
+    if(target == 1.f)
+      return;
+    for(std::size_t i = 0; i < frames; i++)
+      out[i] *= target;
+  }
+  else
+  {
+    const float step = (target - start) / float(frames);
+    for(std::size_t i = 0; i < frames; i++)
+      out[i] *= start + step * float(i + 1);
+  }
+}
+}
+
+void audio_protocol::apply_main_gain(const audio_tick_state& state) noexcept
+{
+  const float main = main_audio_out ? main_audio_out->gain() : 1.f;
+  const std::size_t channels = std::min(audio_outs.size(), m_out_gains.size());
+  if(m_main_gain_reset.exchange(false, std::memory_order_relaxed))
+  {
+    m_main_gain = main;
+    for(std::size_t c = 0; c < channels; c++)
+      m_out_gains[c] = audio_outs[c]->gain();
+  }
+  const float main_start = std::exchange(m_main_gain, main);
+
+  for(int c = 0; c < state.n_out; c++)
+  {
+    float start = main_start;
+    float target = main;
+    if(std::size_t(c) < channels)
+    {
+      const float g = audio_outs[c]->gain();
+      start *= std::exchange(m_out_gains[c], g);
+      target *= g;
+    }
+    if(state.frames > 0)
+      scale(state.outputs[c], state.frames, start, target);
   }
 }
 
@@ -111,7 +176,7 @@ void audio_protocol::advance_tick(std::size_t count)
     }
   }
 
-  for(auto in : in_mappings)
+  for(auto in : m_live.in_mappings)
   {
     for(auto& chan : in->audio)
     {
@@ -133,7 +198,7 @@ void audio_protocol::advance_tick(std::size_t count)
     }
   }
 
-  for(auto out : out_mappings)
+  for(auto out : m_live.out_mappings)
   {
     for(auto& chan : out->audio)
     {
@@ -185,40 +250,69 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
   m_dev = &dev;
 }
 
+namespace
+{
+template <typename T>
+void erase_one(std::vector<T*>& v, T* p)
+{
+  if(auto it = ossia::find(v, p); it != v.end())
+    v.erase(it);
+}
+}
+
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
 {
+  p.hardware_inputs = &audio_ins;
   if(p.is_output)
+  {
     out_mappings.push_back(&p);
+  }
   else
+  {
+    p.upstream = main_audio_in;
     in_mappings.push_back(&p);
+  }
+  if(!m_deferred)
+    m_live = current_ports();
 }
 
 void audio_protocol::unregister_parameter(mapped_audio_parameter& p)
 {
-  if(p.is_output)
-  {
-    auto it = ossia::find(out_mappings, &p);
-    if(it != out_mappings.end())
-      out_mappings.erase(it);
-  }
-  else
-  {
-    auto it = ossia::find(in_mappings, &p);
-    if(it != in_mappings.end())
-      in_mappings.erase(it);
-  }
+  // Wherever it is: its direction may have changed since it was registered.
+  erase_one(out_mappings, &p);
+  erase_one(in_mappings, &p);
+  if(!m_deferred)
+    m_live = current_ports();
 }
 
 void audio_protocol::register_parameter(virtual_audio_parameter& p)
 {
   virtaudio.push_back(&p);
+  if(!m_deferred)
+    m_live = current_ports();
 }
 
 void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
 {
-  auto it = ossia::find(virtaudio, &p);
-  if(it != virtaudio.end())
-    virtaudio.erase(it);
+  erase_one(virtaudio, &p);
+  if(!m_deferred)
+    m_live = current_ports();
+}
+
+void audio_protocol::defer_port_changes(bool b)
+{
+  m_deferred = b;
+  m_live = current_ports();
+}
+
+audio_protocol::ports audio_protocol::current_ports() const
+{
+  return {in_mappings, out_mappings, virtaudio};
+}
+
+void audio_protocol::swap_ports(ports& p) noexcept
+{
+  std::swap(m_live, p);
 }
 
 void audio_protocol::setup_buffers(ossia::audio_tick_state state)
@@ -232,7 +326,7 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
   const std::span<float>::size_type fc = state.frames;
 
   // Prepare virtual audio inputs
-  for(auto virt : virtaudio)
+  for(auto virt : m_live.virtaudio)
   {
     virt->set_buffer_size(state.frames);
   }
@@ -244,7 +338,7 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
     audio_ins[i]->audio[0] = {state.inputs[i], fc};
   }
 
-  for(auto mapped : in_mappings)
+  for(auto mapped : m_live.in_mappings)
   {
     mapped->audio.resize(mapped->mapping.size());
     for(std::size_t i = 0; i < mapped->mapping.size(); i++)
@@ -272,7 +366,7 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
     audio_outs[i]->audio[0] = {state.outputs[i], fc};
   }
 
-  for(auto mapped : out_mappings)
+  for(auto mapped : m_live.out_mappings)
   {
     mapped->audio.resize(mapped->mapping.size());
     for(std::size_t i = 0; i < mapped->mapping.size(); i++)
