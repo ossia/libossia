@@ -130,10 +130,15 @@ public:
 private:
   friend struct http_answer;
   friend struct http_value_answer;
+  friend struct http_path_answer;
 
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
+  // The structure of an address that changed, and what comes of it
+  void read_path(const std::string& path);
+  void on_path_read(const std::string& path, const std::string& message);
+  void on_path_gone(const std::string& path);
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
   // A value read, and its answer for the address it was asked for
   void read_value(std::shared_ptr<value_read> read);
