@@ -12,7 +12,12 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/write.hpp>
+
 #include <spdlog/sinks/ostream_sink.h>
+#include <websocketpp/base64/base64.hpp>
+#include <websocketpp/sha1/sha1.hpp>
 
 #include <sstream>
 #include <thread>
@@ -226,4 +231,82 @@ TEST_CASE(
   });
   INFO(log);
   REQUIRE(log.find("on_connectionOpen") == std::string::npos);
+}
+
+namespace
+{
+// A WebSocket server of the test: it accepts one client, then sends it a
+// close frame and keeps the connection, as a server slow to end it
+struct closing_server
+{
+  boost::asio::io_context ctx;
+  boost::asio::ip::tcp::acceptor acceptor{
+      ctx, {boost::asio::ip::make_address("127.0.0.1"), 0}};
+  std::atomic_bool done{false};
+  std::thread thread;
+
+  closing_server()
+  {
+    thread = std::thread([this] {
+      boost::system::error_code ec;
+      boost::asio::ip::tcp::socket client{ctx};
+      acceptor.accept(client, ec);
+      if(ec)
+        return;
+      std::string request;
+      char buf[1024];
+      while(request.find("\r\n\r\n") == std::string::npos)
+      {
+        auto n = client.read_some(boost::asio::buffer(buf), ec);
+        if(ec || n == 0)
+          return;
+        request.append(buf, n);
+      }
+      const std::string field = "Sec-WebSocket-Key: ";
+      auto k = request.find(field) + field.size();
+      auto key = request.substr(k, request.find("\r\n", k) - k);
+      const auto salted = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+      unsigned char hash[20];
+      websocketpp::sha1::calc(salted.data(), salted.size(), hash);
+      const auto accept = websocketpp::base64_encode(hash, sizeof(hash));
+      boost::asio::write(
+          client,
+          boost::asio::buffer(
+              "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+              "Connection: Upgrade\r\nSec-WebSocket-Accept: "
+              + accept + "\r\n\r\n"),
+          ec);
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      // Close, 1001: going away
+      const unsigned char close_frame[] = {0x88, 0x02, 0x03, 0xE9};
+      boost::asio::write(client, boost::asio::buffer(close_frame), ec);
+      while(!done)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    });
+  }
+  ~closing_server()
+  {
+    done = true;
+    boost::system::error_code ec;
+    acceptor.close(ec);
+    thread.join();
+  }
+  int port() const { return acceptor.local_endpoint().port(); }
+};
+}
+
+TEST_CASE(
+    "test_websocket_client_stopped_as_server_closes",
+    "test_websocket_client_stopped_as_server_closes")
+{
+  // The server is closing the connection when the client is stopped: the
+  // client stops all the same, without raising "invalid state"
+  closing_server s;
+  ossia_test::raw_ws_client c{s.port()};
+  REQUIRE(c.connected());
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  REQUIRE_NOTHROW(c.client.stop());
+  if(c.thread.joinable())
+    c.thread.join();
 }
