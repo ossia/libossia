@@ -1034,6 +1034,13 @@ void json_parser::parse_value(net::parameter_base& addr, const rapidjson::Value&
 void json_parser::parse_parameter_value(
     net::node_base& root, const rapidjson::Value& obj, ossia::net::device_base& dev)
 {
+  parse_parameter_value(root, obj, dev, false);
+}
+
+void json_parser::parse_parameter_value(
+    net::node_base& root, const rapidjson::Value& obj, ossia::net::device_base& dev,
+    bool apply_access)
+{
   for(auto it = obj.MemberBegin(), end = obj.MemberEnd(); it != end; ++it)
   {
     auto path = get_string_view(it->name);
@@ -1045,6 +1052,9 @@ void json_parser::parse_parameter_value(
         auto addr = node->get_parameter();
         if(addr)
         {
+          if(apply_access && addr->get_access() == ossia::access_mode::GET)
+            continue;
+
           auto val = addr->value();
           val.apply(detail::json_to_value_unchecked{it->value});
 

@@ -28,7 +28,7 @@ struct json_query_answerer
       const auto& arr = doc.GetArray();
       for(const auto& e : arr)
       {
-        json_parser::parse_parameter_value(root, e, dev);
+        json_parser::parse_parameter_value(root, e, dev, proto.get_apply_access());
       }
     }
     else
@@ -45,7 +45,7 @@ struct json_query_answerer
           handle_ignore(proto, hdl, doc);
           break;
         default:
-          json_parser::parse_parameter_value(root, doc, dev);
+          json_parser::parse_parameter_value(root, doc, dev, proto.get_apply_access());
           break;
       }
     }

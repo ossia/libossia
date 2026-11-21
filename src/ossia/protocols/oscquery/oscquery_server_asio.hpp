@@ -85,6 +85,20 @@ public:
   bool force_ws() const noexcept { return m_forceWS.load(std::memory_order_relaxed); }
   void set_force_ws(bool forceWS) noexcept;
 
+  /**
+   * @brief Whether the server applies the ACCESS of its parameters to what
+   * clients do, as the OSCQuery proposal says.
+   *
+   * With this on, what a client writes to a read-only parameter (by OSC, over
+   * UDP or WebSocket, or by JSON) is ignored, and the VALUE of a write-only
+   * parameter is not served to an attribute query. For a host whose
+   * parameters have an access mode its clients must keep to (a server
+   * exposing measurements that clients must not overwrite). Off by default:
+   * clients write and read every parameter, as before.
+   */
+  void set_apply_access(bool b) noexcept { m_applyAccess = b; }
+  bool get_apply_access() const noexcept { return m_applyAccess; }
+
   const std::vector<ossia::net::osc_server_configuration>&
   get_transports() const noexcept
   {
@@ -158,6 +172,9 @@ protected:
 
   // Will only send changes through WS
   std::atomic_bool m_forceWS{};
+
+  // See set_apply_access
+  std::atomic_bool m_applyAccess{};
 };
 
 class OSSIA_EXPORT oscquery_server_protocol : public oscquery_server_protocol_base

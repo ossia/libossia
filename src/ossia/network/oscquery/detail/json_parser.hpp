@@ -23,6 +23,10 @@ struct OSSIA_EXPORT json_parser
   static void parse_parameter_value(
       ossia::net::node_base& root, const rapidjson::Value& obj,
       ossia::net::device_base& dev);
+  //! With apply_access, a value for a read-only parameter is ignored
+  static void parse_parameter_value(
+      ossia::net::node_base& root, const rapidjson::Value& obj,
+      ossia::net::device_base& dev, bool apply_access);
   static void parse_path_added(
       ossia::net::node_base& map, const std::string& full_path,
       const rapidjson::Value& obj);
