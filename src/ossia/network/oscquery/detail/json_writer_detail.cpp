@@ -581,6 +581,8 @@ json_writer::string_t json_writer::query_host_info(
   wr.Bool(true);
   wr.Key("UNIT");
   wr.Bool(true);
+  wr.Key("EXTENDED_TYPE");
+  wr.Bool(true);
   wr.Key("CRITICAL");
   wr.Bool(true);
   wr.Key("DESCRIPTION");
