@@ -22,6 +22,8 @@
 #include <boost/algorithm/string/erase.hpp>
 
 #include <atomic>
+#include <deque>
+#include <optional>
 #include <stdexcept>
 namespace ossia::oscquery
 {
@@ -130,6 +132,31 @@ struct http_path_error
   }
 };
 
+// Run when a request is over, whatever its outcome: when the last of its
+// callbacks, which hold it, is destroyed with the request
+struct request_done
+{
+  std::function<void()> f;
+  ~request_done()
+  {
+    if(f)
+      try
+      {
+        f();
+      }
+      catch(...)
+      {
+      }
+  }
+};
+
+// A callback of a request in one of the queues of set_request_queues
+template <typename F>
+struct queued_callback : F
+{
+  std::shared_ptr<request_done> done;
+};
+
 struct http_client_context
 {
   ossia::thread thread;
@@ -158,6 +185,42 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 }
 */
 
+struct oscquery_mirror_protocol::http_queues
+{
+  std::mutex mutex;
+  bool alive{true};
+
+  // Values, HOST_INFO, commands: in order, one at a time. A value read has
+  // its read; the others their target.
+  bool value_busy{};
+  struct queued
+  {
+    std::string target;
+    std::shared_ptr<value_read> read;
+  };
+  std::deque<queued> values;
+
+  // The tree: the reading under way, and those to come
+  struct tree_reading
+  {
+    std::string path;
+    bool name_space{};
+  };
+  std::optional<tree_reading> tree_current;
+  std::deque<tree_reading> tree_pending;
+};
+
+namespace
+{
+// a is the path p or one of its ancestors
+bool covers(std::string_view a, std::string_view p)
+{
+  if(a == "/" || a == p)
+    return true;
+  return p.size() > a.size() && p.substr(0, a.size()) == a && p[a.size()] == '/';
+}
+}
+
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
     : protocol_base{flags{SupportsMultiplex}}
@@ -167,6 +230,7 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
     , m_http{std::make_unique<http_client_context>()}
     , m_id{*this, {}}
 {
+  m_queues = std::make_shared<http_queues>();
   auto port_idx = m_queryHost.find_last_of(':');
   if(port_idx != std::string::npos)
     m_queryPort = m_queryHost.substr(port_idx + 1);
@@ -190,6 +254,13 @@ void oscquery_mirror_protocol::stop()
 
 void oscquery_mirror_protocol::cleanup_connections()
 {
+  {
+    // No request after the connections are gone
+    std::lock_guard lock{m_queues->mutex};
+    m_queues->alive = false;
+    m_queues->values.clear();
+    m_queues->tree_pending.clear();
+  }
   try
   {
     m_oscServer->stop();
@@ -243,6 +314,8 @@ void oscquery_mirror_protocol::cleanup_connections()
 
 void oscquery_mirror_protocol::http_send_message(const std::string& str)
 {
+  if(m_requestQueues)
+    return queue_value_request(str, nullptr);
   auto hrq = std::make_shared<http_request>(
       http_answer{*this}, http_error{}, m_http->context, m_httpHost, str);
   hrq->resolve(m_httpHost, m_queryPort);
@@ -250,18 +323,165 @@ void oscquery_mirror_protocol::http_send_message(const std::string& str)
 
 void oscquery_mirror_protocol::http_send_message(const rapidjson::StringBuffer& str)
 {
+  if(m_requestQueues)
+    return queue_value_request(str.GetString(), nullptr);
   auto hrq = std::make_shared<http_request>(
       http_answer{*this}, http_error{}, m_http->context, m_httpHost, str.GetString());
   hrq->resolve(m_httpHost, m_queryPort);
 }
 
+void oscquery_mirror_protocol::queue_value_request(
+    std::string target, std::shared_ptr<value_read> read)
+{
+  {
+    std::lock_guard lock{m_queues->mutex};
+    if(!m_queues->alive)
+      return;
+    m_queues->values.push_back({std::move(target), std::move(read)});
+  }
+  pump_value_queue();
+}
+
+void oscquery_mirror_protocol::pump_value_queue()
+{
+  auto queues = m_queues;
+  http_queues::queued next;
+  {
+    std::lock_guard lock{queues->mutex};
+    if(!queues->alive || queues->value_busy || queues->values.empty())
+      return;
+    queues->value_busy = true;
+    next = std::move(queues->values.front());
+    queues->values.pop_front();
+  }
+  // Once the connections are gone (alive false), this is not touched again
+  auto done = std::make_shared<request_done>();
+  done->f = [this, weak = std::weak_ptr<http_queues>{queues}] {
+    auto q = weak.lock();
+    if(!q)
+      return;
+    {
+      std::lock_guard lock{q->mutex};
+      if(!q->alive)
+        return;
+      q->value_busy = false;
+    }
+    pump_value_queue();
+  };
+  if(next.read)
+  {
+    using answer = queued_callback<http_value_answer>;
+    using error = queued_callback<http_value_error>;
+    using request = ossia::net::http_client_request<answer, error>;
+    auto path = next.read->address;
+    path += detail::query_value();
+    auto hrq = std::make_shared<request>(
+        answer{{*this, next.read}, done}, error{{next.read}, done}, m_http->context,
+        "GET", m_httpHost, path);
+    hrq->resolve(m_httpHost, m_queryPort);
+  }
+  else
+  {
+    using answer = queued_callback<http_answer>;
+    using error = queued_callback<http_error>;
+    using request = ossia::net::http_get_request<answer, error>;
+    auto hrq = std::make_shared<request>(
+        answer{{*this}, done}, error{{}, done}, m_http->context, m_httpHost,
+        next.target);
+    hrq->resolve(m_httpHost, m_queryPort);
+  }
+}
+
 void oscquery_mirror_protocol::read_path(const std::string& path)
 {
+  if(m_requestQueues)
+    return queue_tree_reading(path, false);
   using request = ossia::net::http_client_request<http_path_answer, http_path_error>;
   auto hrq = std::make_shared<request>(
       http_path_answer{*this, path}, http_path_error{}, m_http->context, "GET",
       m_httpHost, path);
   hrq->resolve(m_httpHost, m_queryPort);
+}
+
+void oscquery_mirror_protocol::queue_tree_reading(std::string path, bool name_space)
+{
+  {
+    std::lock_guard lock{m_queues->mutex};
+    auto& q = *m_queues;
+    if(!q.alive)
+      return;
+    if(name_space)
+    {
+      q.tree_pending.push_back({std::move(path), true});
+    }
+    else
+    {
+      // A reading of it or of an ancestor still to be asked is asked after
+      // this change: it covers it
+      for(const auto& r : q.tree_pending)
+        if(covers(r.path, path))
+          return;
+      // The reading under way of it or of an ancestor was asked before this
+      // change: that reading once more, after it
+      if(q.tree_current && covers(q.tree_current->path, path))
+      {
+        q.tree_pending.push_back({q.tree_current->path, false});
+        return;
+      }
+      // Its descendants still to be asked are covered by it
+      std::erase_if(q.tree_pending, [&](const http_queues::tree_reading& r) {
+        return !r.name_space && covers(path, r.path);
+      });
+      q.tree_pending.push_back({std::move(path), false});
+    }
+  }
+  pump_tree_queue();
+}
+
+void oscquery_mirror_protocol::pump_tree_queue()
+{
+  auto queues = m_queues;
+  http_queues::tree_reading next;
+  {
+    std::lock_guard lock{queues->mutex};
+    if(!queues->alive || queues->tree_current || queues->tree_pending.empty())
+      return;
+    queues->tree_current = std::move(queues->tree_pending.front());
+    queues->tree_pending.pop_front();
+    next = *queues->tree_current;
+  }
+  auto done = std::make_shared<request_done>();
+  done->f = [this, weak = std::weak_ptr<http_queues>{queues}] {
+    auto q = weak.lock();
+    if(!q)
+      return;
+    {
+      std::lock_guard lock{q->mutex};
+      if(!q->alive)
+        return;
+      q->tree_current.reset();
+    }
+    pump_tree_queue();
+  };
+  if(next.name_space)
+  {
+    using answer = queued_callback<http_answer>;
+    using error = queued_callback<http_error>;
+    using request = ossia::net::http_get_request<answer, error>;
+    auto hrq = std::make_shared<request>(
+        answer{{*this}, done}, error{{}, done}, m_http->context, m_httpHost, next.path);
+    hrq->resolve(m_httpHost, m_queryPort);
+  }
+  else
+  {
+    using answer = queued_callback<http_path_answer>;
+    using error = queued_callback<http_path_error>;
+    using request = ossia::net::http_client_request<answer, error>;
+    auto hrq = std::make_shared<request>(
+        answer{{*this, next.path}, done}, error{{}, done}, m_http->context, "GET",
+        m_httpHost, next.path);
+    hrq->resolve(m_httpHost, m_queryPort);
+  }
 }
 
 void oscquery_mirror_protocol::on_path_read(
@@ -382,6 +602,8 @@ void oscquery_mirror_protocol::request(net::parameter_base& address)
 
 void oscquery_mirror_protocol::read_value(std::shared_ptr<value_read> read)
 {
+  if(m_requestQueues)
+    return queue_value_request({}, std::move(read));
   using request = ossia::net::http_client_request<http_value_answer, http_value_error>;
   auto path = read->address;
   path += detail::query_value();
@@ -615,9 +837,16 @@ bool oscquery_mirror_protocol::update(net::node_base& b)
 
 std::future<void> oscquery_mirror_protocol::update_async(net::node_base& b)
 {
-  m_namespacePromise = std::promise<void>{};
-  auto fut = m_namespacePromise.get_future();
-  http_send_message(b.osc_address());
+  std::future<void> fut;
+  {
+    std::lock_guard lock{m_namespaceMutex};
+    m_namespacePromise = std::promise<void>{};
+    fut = m_namespacePromise.get_future();
+  }
+  if(m_requestQueues)
+    queue_tree_reading(b.osc_address(), true);
+  else
+    http_send_message(b.osc_address());
   return fut;
 }
 
@@ -732,6 +961,10 @@ void oscquery_mirror_protocol::connect()
 
 void oscquery_mirror_protocol::init()
 {
+  // After stop(): new queues for the new connections. The HTTP thread is
+  // joined, nothing else touches them.
+  if(!m_queues->alive)
+    m_queues = std::make_shared<http_queues>();
   m_oscServer = std::make_unique<osc::receiver>(
       m_osc_port,
       [this](const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) {
@@ -922,7 +1155,15 @@ bool oscquery_mirror_protocol::on_WSMessage(
         }
         case message_type::Namespace: {
           json_parser::parse_namespace(m_device->get_root_node(), *data);
-          m_namespacePromise.set_value();
+          std::lock_guard lock{m_namespaceMutex};
+          try
+          {
+            m_namespacePromise.set_value();
+          }
+          catch(const std::future_error&)
+          {
+            // A namespace nobody waits for any more
+          }
           break;
         }
         case message_type::Value: {

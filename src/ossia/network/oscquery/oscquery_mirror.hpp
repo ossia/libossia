@@ -8,6 +8,8 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <memory>
+#include <mutex>
 
 namespace osc
 {
@@ -122,6 +124,26 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
+  /**
+   * @brief Whether the HTTP requests of the mirror go through two queues.
+   *
+   * Off, each request opens its own connection at once. On, the requests go
+   * through two queues, one request at a time in each, so at most two
+   * connections at a time: the readings of the tree (the namespace, the
+   * structure of an address a PATH_CHANGED names), and the rest (values,
+   * HOST_INFO, commands), in the order they were asked. A PATH_CHANGED is not
+   * read when a reading of its path or of an ancestor is still to be asked;
+   * when one is under way, asked before the change, that reading is asked
+   * once more after it.
+   *
+   * For a mirror of a large tree, or of a server that takes long to answer:
+   * a burst of PATH_CHANGED (an editor that changes many nodes) otherwise
+   * opens a connection for each, and the readings pile up. Off by default.
+   * Set it before update().
+   */
+  void set_request_queues(bool b) noexcept { m_requestQueues = b; }
+  bool get_request_queues() const noexcept { return m_requestQueues; }
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -151,6 +173,18 @@ private:
   void http_send_message(const std::string& str);
   void http_send_message(const rapidjson::StringBuffer& str);
 
+  // set_request_queues
+  struct http_queues;
+  std::shared_ptr<http_queues> m_queues;
+  std::atomic_bool m_requestQueues{false};
+  void queue_value_request(std::string target, std::shared_ptr<value_read> read);
+  void pump_value_queue();
+  // A reading of the structure of path (of the namespace when name_space):
+  // not asked if a reading of path or of an ancestor is still to be asked;
+  // if one is under way, asked before this, that one is asked once more.
+  void queue_tree_reading(std::string path, bool name_space);
+  void pump_tree_queue();
+
   void ws_send_message(const std::string& str);
   void ws_send_binary_message(const std::string& str);
   void ws_send_message(const rapidjson::StringBuffer& str);
@@ -173,6 +207,7 @@ private:
 
   ossia::net::device_base* m_device{};
 
+  std::mutex m_namespaceMutex;
   std::promise<void> m_namespacePromise;
 
   struct get_osc_promise
