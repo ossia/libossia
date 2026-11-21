@@ -13,7 +13,6 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <boost/asio/ip/tcp.hpp>
-
 #include <boost/lexical_cast.hpp>
 
 #include <servus/servus.h>
