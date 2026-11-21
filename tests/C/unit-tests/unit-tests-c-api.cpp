@@ -90,3 +90,24 @@ TEST_CASE("C API: create pattern", "[pattern]")
   ossia_device_free(dev);
   ossia_protocol_free(proto);
 }
+
+// The C API gives its strings to be freed with ossia_string_free, which calls
+// free(), and those of the preset API with ossia_free_string. Under
+// AddressSanitizer with alloc_dealloc_mismatch=1, a string allocated with
+// new[] fails here.
+TEST_CASE("C API: free the strings it returns", "[strings]")
+{
+  ossia_value_t v = ossia_value_create_string("foo");
+  const char* str = ossia_value_to_string(v);
+  REQUIRE(std::string(str) == "foo");
+  ossia_string_free((char*)str);
+  ossia_value_free(v);
+
+  ossia_preset_t p;
+  REQUIRE(ossia_presets_read_json(R"_({"a": {"b": 1}})_", &p) == OSSIA_PRESETS_OK);
+  const char* buffer = nullptr;
+  REQUIRE(ossia_presets_to_string(p, &buffer) == OSSIA_PRESETS_OK);
+  REQUIRE(buffer);
+  ossia_free_string(buffer);
+  ossia_presets_free(p);
+}
