@@ -22,8 +22,6 @@ namespace Ossia
     { ossia_value = Network.ossia_value_create_3f(v, v2, v3); }
     public Value(float v, float v2, float v3, float v4)
     { ossia_value = Network.ossia_value_create_4f(v, v2, v3, v4); }
-    public Value(char v)
-    { ossia_value = Network.ossia_value_create_char(v); }
     public Value(string v)
     { ossia_value = Network.ossia_value_create_string(v); }
     public Value(IList<float> v)
@@ -54,8 +52,6 @@ namespace Ossia
         ossia_value = Network.ossia_value_create_float ((float)obj);
       } else if (obj is double) {
         ossia_value = Network.ossia_value_create_float ((float)((double)obj));
-      } else if (obj is char) {
-        ossia_value = Network.ossia_value_create_char ((char)obj);
       } else if (obj is string) {
         ossia_value = Network.ossia_value_create_string ((string)obj);
       } else if (obj is IList<float>) {
@@ -124,10 +120,6 @@ namespace Ossia
       else if (obj == typeof(System.Double))
       {
         return ossia_type.FLOAT;
-      }
-      else if (obj == typeof(System.Char))
-      {
-        return ossia_type.CHAR;
       }
       else if (obj == typeof(System.String))
       {
@@ -243,8 +235,6 @@ namespace Ossia
         return GetString ();
       case ossia_type.LIST:
         return GetList ();
-      case ossia_type.CHAR:
-        return GetChar ();
       }
       return null;
     }
@@ -260,7 +250,7 @@ namespace Ossia
     }
     public bool GetBool()
     {
-      return Network.ossia_value_to_bool(ossia_value);
+      return Network.ossia_value_to_bool(ossia_value) != 0;
     }
     public float GetFloat()
     {
@@ -281,11 +271,6 @@ namespace Ossia
       vec4f val = Network.ossia_value_to_4f(ossia_value);
       return new Vector4 (val.f1, val.f2, val.f3, val.f4);
     }
-    public char GetChar()
-    {
-      return Network.ossia_value_to_char(ossia_value);
-    }
-
     public int[] GetIntArray()
     {
       IntPtr data = IntPtr.Zero;
@@ -317,17 +302,15 @@ namespace Ossia
     {
       IntPtr data = IntPtr.Zero;
       UIntPtr sz = UIntPtr.Zero;
-      Network.ossia_value_to_fn(ossia_value, out data, out sz);
+      Network.ossia_value_to_list(ossia_value, out data, out sz);
 
-      Value[] v = new Value[(int) sz];
       IntPtr* ptr = (IntPtr*)data.ToPointer ();
-      for (int i = 0; i < (int)sz; i++) {
-        IntPtr p = *ptr;
-        v [i] = new Value (p);
-        ptr = ptr + Marshal.SizeOf (sz);
+      Value[] v = new Value[(int)sz];
+      for (int i = 0; i < v.Length; i++) {
+        v[i] = new Value (ptr[i]);
       }
 
-      Network.ossia_value_free_fn (data);
+      Network.ossia_value_free_list (data);
       return v;
     }
 
@@ -363,8 +346,6 @@ namespace Ossia
         return GetString ();
       case ossia_type.LIST:
         return GetList ();
-      case ossia_type.CHAR:
-        return GetChar ();
       }
       return null;
     }
@@ -376,15 +357,11 @@ namespace Ossia
     }
     public bool ConvertBool()
     {
-      return Network.ossia_value_convert_bool(ossia_value);
+      return Network.ossia_value_convert_bool(ossia_value) != 0;
     }
     public float ConvertFloat()
     {
       return Network.ossia_value_convert_float(ossia_value);
-    }
-    public char ConvertChar()
-    {
-      return Network.ossia_value_convert_char(ossia_value);
     }
     public string ConvertString()
     {
