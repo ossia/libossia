@@ -136,6 +136,8 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       for(auto& client_p : m_clients)
       {
         auto& client = *client_p;
+        if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+          continue;
         if(client.sender)
         {
           if(m_logger.outbound_logger)
@@ -163,6 +165,8 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       for(auto& client_p : m_clients)
       {
         auto& client = *client_p;
+        if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+          continue;
         if(m_logger.outbound_logger)
         {
           m_logger.outbound_logger->info(
@@ -261,6 +265,8 @@ bool oscquery_server_protocol::echo_incoming_message(
     for(auto& client_p : m_clients)
     {
       auto& client = *client_p;
+      if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+        continue;
       if(not_this_protocol || !is_same(client, id))
       {
         if(client.sender)
@@ -291,6 +297,8 @@ bool oscquery_server_protocol::echo_incoming_message(
     for(auto& client_p : m_clients)
     {
       auto& client = *client_p;
+      if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+        continue;
       if(not_this_protocol || !is_same(client, id))
       {
 

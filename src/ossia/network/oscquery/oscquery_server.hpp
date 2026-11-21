@@ -82,6 +82,20 @@ public:
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 
+  /**
+   * @brief Whether a client gets only the values of the addresses it sent
+   * LISTEN for, as the OSCQuery proposal says.
+   *
+   * With this on, the server sends a client the values (its own changes and
+   * the echoes of other clients' writes) of the addresses that client
+   * sent LISTEN for, and stops at IGNORE; a client that never sent LISTEN
+   * gets no value. For a host with a large tree whose clients each follow a
+   * few of its parameters. Off by default: every client gets every value, as
+   * before.
+   */
+  void set_listen_filter(bool b) noexcept { m_listenFilter = b; }
+  bool get_listen_filter() const noexcept { return m_listenFilter; }
+
   void disable_zeroconf();
   void set_zeroconf_servers(
       net::zeroconf_server oscquery_server, net::zeroconf_server osc_server);
@@ -145,6 +159,7 @@ private:
 
   bool m_echo{};
   bool m_disableZeroconf{};
+  std::atomic_bool m_listenFilter{};
 
   // TODO could we make an intermediate base class for oscquery_{server,mirror}
   // that hold that function queue and other shared members/methods ?
