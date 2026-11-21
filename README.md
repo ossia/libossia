@@ -37,10 +37,6 @@ Documentation
 * [Building](https://github.com/ossia/libossia/wiki/Building)
 * [Code style](https://github.com/ossia/libossia/wiki/Code-style-guide)
 
-Scalar character APIs are no longer available in the C, C++98, Java, and Unity
-bindings. Use strings for text or integers for character code points. Byte-array
-APIs are still available.
-
 License
 =======
 Available under both LGPLv3 and CeCILL-C
