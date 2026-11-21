@@ -301,7 +301,7 @@ public:
       else
         tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e}, *logger);
 
-      finish_nodes(m_nodes);
+      finish_nodes(m_nodes, e);
     }
     catch(const boost::not_a_dag&)
     {

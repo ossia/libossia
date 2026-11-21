@@ -157,7 +157,13 @@ public:
   void set_logging(bool b) noexcept { m_logging = b; }
   [[nodiscard]] bool logged() const noexcept { return m_logging; }
 
-  void set_mute(bool b) noexcept { m_muted = b; }
+  //! A muted node no longer runs: the notes it holds are released.
+  void set_mute(bool b) noexcept
+  {
+    m_muted = b;
+    if(b)
+      request_note_release();
+  }
   [[nodiscard]] bool muted() const noexcept { return m_muted; }
 
   /**
@@ -209,6 +215,24 @@ public:
   }
 
   virtual void all_notes_off() noexcept;
+
+  /**
+   * The process this node plays for has stopped: the notes its MIDI outlets
+   * hold from the ticks requested so far are to be stopped by the graph.
+   *
+   * The node may still run those ticks, and may be started again and given new
+   * ones within the same graph execution. Hence a position in the requests
+   * rather than a flag: what is played after it is not to be stopped.
+   */
+  void request_note_release() noexcept
+  {
+    m_release_notes_at = int(requested_tokens.size());
+  }
+
+  //! Index in requested_tokens before which held notes are released, or -1
+  [[nodiscard]] int note_release_position() const noexcept { return m_release_notes_at; }
+  void clear_note_release() noexcept { m_release_notes_at = -1; }
+
   token_request_vec requested_tokens;
 
 protected:
@@ -216,6 +240,7 @@ protected:
   outlets m_outlets;
   int64_t m_processed_frames{};
   int64_t m_transport_frames{};
+  int m_release_notes_at{-1};
 
   bool m_executed{};
   bool m_not_threadable{};

@@ -2,6 +2,7 @@
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/geometry_port.hpp>
+#include <ossia/dataflow/midi_note_tracker.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/dataflow/texture_port.hpp>
 #include <ossia/dataflow/value_port.hpp>
@@ -345,7 +346,21 @@ struct OSSIA_EXPORT midi_outlet : public ossia::outlet
     return midi_port::which;
   }
 
+  void post_process() override;
+
+  //! What the node holds at \p timestamp of the tick being written is to be
+  //! stopped there, the node going on playing afterwards. Done once the node
+  //! has run, in the outlet's own data: nodes are free to rewrite it on each
+  //! run, so nothing can be put in it before.
+  void release_held_notes_at(int64_t timestamp) noexcept { m_release_at = timestamp; }
+
   ossia::midi_port data;
+
+  //! What the node has started through this outlet and not stopped yet
+  ossia::midi_note_tracker held;
+
+private:
+  int64_t m_release_at{-1};
 };
 
 struct OSSIA_EXPORT value_outlet : public ossia::outlet
