@@ -1,14 +1,14 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-
-#include "include_catch.hpp"
 
 #include <atomic>
 #include <cstdio>
@@ -26,7 +26,8 @@ TEST_CASE("test_oscquery_namespace_in_run_commands", "[oscquery]")
   constexpr int tracks = 64;
   constexpr int params = 32;
   ossia::net::generic_device server{
-      std::make_unique<ossia::oscquery::oscquery_server_protocol>(1240, 10240), "server"};
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(1240, 10240),
+      "server"};
   for(int i = 0; i < tracks; i++)
     for(int j = 0; j < params; j++)
       ossia::net::create_node(
@@ -69,7 +70,8 @@ TEST_CASE("test_oscquery_namespace_in_run_commands", "[oscquery]")
   stop = true;
   owner.join();
 
-  std::printf("namespace read again %d times of 5 (%zu characters walked)\n", applied, names);
+  std::printf(
+      "namespace read again %d times of 5 (%zu characters walked)\n", applied, names);
   CHECK(applied == 5);
   CHECK(
       ossia::net::list_all_children(&root, 0, false).size()
