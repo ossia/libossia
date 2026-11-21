@@ -29,9 +29,9 @@
 #include <ossia-max/src/node_base.hpp>
 #include <ossia-max/src/v8connector_branch.hpp>
 
-#include <ossia-max_export.h>
-
 #include <vector>
+
+#include <ossia-max_export.h>
 
 extern "C" {
 OSSIA_MAX_EXPORT void ossia_v8connector_setup();

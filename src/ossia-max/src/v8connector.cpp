@@ -137,7 +137,8 @@ void* v8connector::create(t_symbol*, long argc, t_atom* argv)
   x->m_branch.set_node_factory([x]() -> ossia::net::node_base* {
     return x->m_dead ? nullptr : x->create_branch_node();
   });
-  x->m_branch.set_binding_changed_callback([x](const std::string& address, std::size_t n) {
+  x->m_branch.set_binding_changed_callback(
+      [x](const std::string& address, std::size_t n) {
     if(x->m_dead)
       return;
     t_atom a[2];
@@ -458,7 +459,8 @@ void v8connector::unbind(v8connector* x, t_symbol* s)
   }
   if(!x->m_branch.unbind(s->s_name))
   {
-    x->report_error(std::string("unbind: unknown address '") + (s ? s->s_name : "") + "'");
+    x->report_error(
+        std::string("unbind: unknown address '") + (s ? s->s_name : "") + "'");
     return;
   }
   x->status("unbind", s->s_name);

@@ -58,9 +58,9 @@ struct attribute
 // Validated declaration of a leaf.
 struct leaf_spec
 {
-  std::string address; // relative to the branch, "a" or "a/b", no leading slash
-  std::string type;    // float int bool impulse string list vec2f vec3f vec4f
-  std::vector<float> min, max;  // one value per component, numeric types only
+  std::string address;         // relative to the branch, "a" or "a/b", no leading slash
+  std::string type;            // float int bool impulse string list vec2f vec3f vec4f
+  std::vector<float> min, max; // one value per component, numeric types only
   std::vector<std::string> enumeration; // range of a string parameter
   std::string unit;
   std::string description;
@@ -100,8 +100,8 @@ std::string make_leaf_spec(
 
 // Convert host scalars to a value of the parameter's type. Returns an empty
 // string on success, otherwise the reason.
-std::string
-scalars_to_value(const ossia::net::parameter_base& param, const scalars& in, ossia::value& out);
+std::string scalars_to_value(
+    const ossia::net::parameter_base& param, const scalars& in, ossia::value& out);
 
 class branch
 {
@@ -245,8 +245,10 @@ private:
   void resolve_bindings();
   void release(binding& b);
   void on_value(
-      const std::string& address, ossia::net::parameter_base* param, const ossia::value& v);
-  void queue_current_value(const std::string& address, ossia::net::parameter_base* param);
+      const std::string& address, ossia::net::parameter_base* param,
+      const ossia::value& v);
+  void
+  queue_current_value(const std::string& address, ossia::net::parameter_base* param);
   void on_node_removing(const ossia::net::node_base& n);
   void watch_device(ossia::net::device_base& dev);
   void unwatch_device(ossia::net::device_base& dev, bool root_alive);
@@ -268,7 +270,8 @@ private:
       return std::hash<std::string_view>{}(s);
     }
   };
-  using address_index = std::unordered_map<std::string, std::size_t, address_hash, std::equal_to<>>;
+  using address_index
+      = std::unordered_map<std::string, std::size_t, address_hash, std::equal_to<>>;
   address_index m_leaf_index;
   address_index m_binding_index;
   // Bindings by the last component of their address, and the bindings with

@@ -12,6 +12,9 @@
 // name are created, as two ossia.v8connector instances do; the tree is then
 // read back through an OSCQuery mirror client.
 
+#include "OSCQueryBundleTestUtils.hpp"
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/node_attributes.hpp>
@@ -29,12 +32,9 @@
 #include <ossia/network/value/vec.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
-#include "OSCQueryBundleTestUtils.hpp"
-#include "include_catch.hpp"
+#include <spdlog/sinks/callback_sink.h>
 
 #include <v8connector_branch.hpp>
-
-#include <spdlog/sinks/callback_sink.h>
 
 #include <chrono>
 #include <set>
@@ -51,7 +51,9 @@ void expect_refused(branch& b, const char* address)
   auto in = b.drain();
   REQUIRE(in.size() == 1);
   REQUIRE(in[0].address == "refused");
-  REQUIRE(in[0].value.get<std::vector<ossia::value>>()[0] == ossia::value(std::string(address)));
+  REQUIRE(
+      in[0].value.get<std::vector<ossia::value>>()[0]
+      == ossia::value(std::string(address)));
 }
 
 // The OSCQuery mirror of a client's device, set up as ossia.client sets up a
@@ -60,14 +62,14 @@ void expect_refused(branch& b, const char* address)
 // queue until run_commands is called, which the client does when it polls.
 ossia::oscquery::oscquery_mirror_protocol* polled_mirror(ossia::net::device_base& dev)
 {
-  auto* mirror = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(&dev.get_protocol());
+  auto* mirror
+      = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(&dev.get_protocol());
   if(mirror)
     mirror->set_zombie_on_remove(false);
   return mirror;
 }
 
-std::vector<attribute>
-attrs(std::initializer_list<std::pair<const char*, scalars>> l)
+std::vector<attribute> attrs(std::initializer_list<std::pair<const char*, scalars>> l)
 {
   std::vector<attribute> out;
   for(auto& [n, v] : l)
@@ -100,40 +102,91 @@ TEST_CASE("v8connector_declarations", "v8connector_declarations")
     REQUIRE(!err.empty());
     REQUIRE(err.find("@min and @max") != std::string::npos);
 
-    REQUIRE(make_leaf_spec("cutoff", attrs({{"type", {S("float")}}, {"min", {20}}, {"max", {20000}}}), spec).empty());
-    REQUIRE(make_leaf_spec("cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}}), spec).empty());
+    REQUIRE(make_leaf_spec(
+                "cutoff",
+                attrs({{"type", {S("float")}}, {"min", {20}}, {"max", {20000}}}), spec)
+                .empty());
+    REQUIRE(make_leaf_spec(
+                "cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}}), spec)
+                .empty());
     REQUIRE(spec.min == std::vector<float>{20.f});
     REQUIRE(spec.max == std::vector<float>{20000.f});
 
-    REQUIRE(make_leaf_spec("pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1}}}), spec).empty());
+    REQUIRE(
+        make_leaf_spec("pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1}}}), spec)
+            .empty());
     REQUIRE(spec.min == std::vector<float>{-1.f, -1.f});
     REQUIRE(spec.max == std::vector<float>{1.f, 1.f});
 
-    REQUIRE(!make_leaf_spec("pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1, 0}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("float")}}, {"min", {1}}, {"max", {0}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("float")}}, {"range", {0, 1}}, {"min", {0}}}), spec).empty());
+    REQUIRE(!make_leaf_spec(
+                 "pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1, 0}}}), spec)
+                 .empty());
+    REQUIRE(!make_leaf_spec(
+                 "x", attrs({{"type", {S("float")}}, {"min", {1}}, {"max", {0}}}), spec)
+                 .empty());
+    REQUIRE(
+        !make_leaf_spec(
+             "x", attrs({{"type", {S("float")}}, {"range", {0, 1}}, {"min", {0}}}), spec)
+             .empty());
   }
 
   SECTION("non numeric types take no range, strings take an enumeration")
   {
     REQUIRE(make_leaf_spec("s", attrs({{"type", {S("string")}}}), spec).empty());
-    REQUIRE(make_leaf_spec("s", attrs({{"type", {S("symbol")}}, {"range", {S("a"), S("b")}}}), spec).empty());
+    REQUIRE(make_leaf_spec(
+                "s", attrs({{"type", {S("symbol")}}, {"range", {S("a"), S("b")}}}), spec)
+                .empty());
     REQUIRE(spec.type == "string");
     REQUIRE(spec.enumeration == std::vector<std::string>{"a", "b"});
-    REQUIRE(!make_leaf_spec("b", attrs({{"type", {S("bool")}}, {"min", {0}}, {"max", {1}}}), spec).empty());
-    REQUIRE(make_leaf_spec("i", attrs({{"type", {S("impulse")}}, {"critical", {1}}}), spec).empty());
+    REQUIRE(!make_leaf_spec(
+                 "b", attrs({{"type", {S("bool")}}, {"min", {0}}, {"max", {1}}}), spec)
+                 .empty());
+    REQUIRE(
+        make_leaf_spec("i", attrs({{"type", {S("impulse")}}, {"critical", {1}}}), spec)
+            .empty());
     REQUIRE(spec.critical);
   }
 
   SECTION("unknown things are refused")
   {
     REQUIRE(!make_leaf_spec("x", attrs({{"min", {0}}, {"max", {1}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("flt")}}, {"min", {0}}, {"max", {1}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"colour", {S("red")}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"unit", {S("gain.decibelz")}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("x", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"clip", {S("sometimes")}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}), spec).empty());
-    REQUIRE(!make_leaf_spec("a//b", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}), spec).empty());
+    REQUIRE(!make_leaf_spec(
+                 "x", attrs({{"type", {S("flt")}}, {"min", {0}}, {"max", {1}}}), spec)
+                 .empty());
+    REQUIRE(!make_leaf_spec(
+                 "x",
+                 attrs(
+                     {{"type", {S("float")}},
+                      {"min", {0}},
+                      {"max", {1}},
+                      {"colour", {S("red")}}}),
+                 spec)
+                 .empty());
+    REQUIRE(!make_leaf_spec(
+                 "x",
+                 attrs(
+                     {{"type", {S("float")}},
+                      {"min", {0}},
+                      {"max", {1}},
+                      {"unit", {S("gain.decibelz")}}}),
+                 spec)
+                 .empty());
+    REQUIRE(!make_leaf_spec(
+                 "x",
+                 attrs(
+                     {{"type", {S("float")}},
+                      {"min", {0}},
+                      {"max", {1}},
+                      {"clip", {S("sometimes")}}}),
+                 spec)
+                 .empty());
+    REQUIRE(!make_leaf_spec(
+                 "", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}), spec)
+                 .empty());
+    REQUIRE(
+        !make_leaf_spec(
+             "a//b", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}), spec)
+             .empty());
   }
 
   SECTION("addresses are normalized")
@@ -173,16 +226,43 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
   b2.attach(bn2);
 
   const auto gain = spec_of(
-      "gain", attrs({{"type", {S("float")}}, {"min", {-60}}, {"max", {6}}, {"unit", {S("gain.db")}},
-                     {"default", {-12}}, {"description", {S("main gain")}}, {"clip", {S("both")}}}));
+      "gain", attrs(
+                  {{"type", {S("float")}},
+                   {"min", {-60}},
+                   {"max", {6}},
+                   {"unit", {S("gain.db")}},
+                   {"default", {-12}},
+                   {"description", {S("main gain")}},
+                   {"clip", {S("both")}}}));
   REQUIRE(b1.add(gain).empty());
   REQUIRE(b2.add(gain).empty());
-  REQUIRE(b1.add(spec_of("cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}, {"unit", {S("time.hz")}}}))).empty());
-  REQUIRE(b1.add(spec_of("voices", attrs({{"type", {S("int")}}, {"min", {1}}, {"max", {16}}, {"default", {4}}}))).empty());
-  REQUIRE(b1.add(spec_of("pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1}}}))).empty());
-  REQUIRE(b1.add(spec_of("mode", attrs({{"type", {S("string")}}, {"range", {S("sine"), S("saw")}}, {"default", {S("sine")}}}))).empty());
-  REQUIRE(b1.add(spec_of("engine/reset", attrs({{"type", {S("impulse")}}, {"critical", {1}}}))).empty());
-  REQUIRE(b1.add(gain).empty()); // the same declaration again is accepted and does nothing
+  REQUIRE(b1.add(spec_of(
+                     "cutoff", attrs(
+                                   {{"type", {S("float")}},
+                                    {"range", {20, 20000}},
+                                    {"unit", {S("time.hz")}}})))
+              .empty());
+  REQUIRE(b1.add(spec_of(
+                     "voices", attrs(
+                                   {{"type", {S("int")}},
+                                    {"min", {1}},
+                                    {"max", {16}},
+                                    {"default", {4}}})))
+              .empty());
+  REQUIRE(b1.add(spec_of("pos", attrs({{"type", {S("vec2f")}}, {"range", {-1, 1}}})))
+              .empty());
+  REQUIRE(b1.add(spec_of(
+                     "mode", attrs(
+                                 {{"type", {S("string")}},
+                                  {"range", {S("sine"), S("saw")}},
+                                  {"default", {S("sine")}}})))
+              .empty());
+  REQUIRE(
+      b1.add(spec_of(
+                 "engine/reset", attrs({{"type", {S("impulse")}}, {"critical", {1}}})))
+          .empty());
+  REQUIRE(
+      b1.add(gain).empty()); // the same declaration again is accepted and does nothing
   REQUIRE(b1.size() == 6);
   {
     auto other = gain;
@@ -237,7 +317,8 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
     REQUIRE(corrected[0].value == ossia::value(-60.f));
     REQUIRE(b1.set("gain", {-6}).empty()); // in range: nothing comes back
     REQUIRE(b1.drain().empty());
-    REQUIRE(b1.set("voices", {3.7f}).empty()); // converted to int: the effective value comes back
+    REQUIRE(b1.set("voices", {3.7f})
+                .empty()); // converted to int: the effective value comes back
     corrected = b1.drain();
     REQUIRE(corrected.size() == 1);
     REQUIRE(corrected[0].address == "voices");
@@ -276,12 +357,15 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
     REQUIRE(in[0].value == ossia::value(16));
   }
 
-  SECTION("the declared leaves are served by the oscquery server next to the hand made parameter")
+  SECTION(
+      "the declared leaves are served by the oscquery server next to the hand made "
+      "parameter")
   {
     const uint16_t osc = free_port(false);
     const uint16_t ws = free_port(true);
     multiplex->expose_to(
-        std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, osc, ws, false));
+        std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+            ctx, osc, ws, false));
     std::thread net([&] { ctx->run(); });
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -306,7 +390,8 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
       REQUIRE(p->get_domain().get_max() == ossia::value(6.f));
       REQUIRE(p->get_bounding() == ossia::bounding_mode::CLIP);
       REQUIRE(ossia::get_pretty_unit_text(p->get_unit()) == "gain.db");
-      REQUIRE(ossia::net::get_description(*sg) == std::optional<std::string>{"main gain"});
+      REQUIRE(
+          ossia::net::get_description(*sg) == std::optional<std::string>{"main gain"});
 
       auto* pos = ossia::net::find_node(croot, "/synth/pos")->get_parameter();
       REQUIRE(pos->get_value_type() == ossia::val_type::VEC2F);
@@ -325,16 +410,38 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
     net.join();
   }
 
-  SECTION("the output is filtered by the parameter, as at the outlet of every ossia object")
+  SECTION(
+      "the output is filtered by the parameter, as at the outlet of every ossia object")
   {
     // @repetitions 0: the repetition filter is on, two identical values give one output
-    REQUIRE(b1.add(spec_of("rep", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"repetitions", {0}}}))).empty());
+    REQUIRE(b1.add(spec_of(
+                       "rep", attrs(
+                                  {{"type", {S("float")}},
+                                   {"min", {0}},
+                                   {"max", {1}},
+                                   {"repetitions", {0}}})))
+                .empty());
     // @repetitions 1 (the default): two identical values give two outputs
-    REQUIRE(b1.add(spec_of("norep", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))).empty());
+    REQUIRE(
+        b1.add(spec_of(
+                   "norep", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})))
+            .empty());
     // @mute 1: nothing leaves
-    REQUIRE(b1.add(spec_of("muted", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"mute", {1}}}))).empty());
+    REQUIRE(b1.add(spec_of(
+                       "muted", attrs(
+                                    {{"type", {S("float")}},
+                                     {"min", {0}},
+                                     {"max", {1}},
+                                     {"mute", {1}}})))
+                .empty());
     // @enable 0: nothing leaves either
-    REQUIRE(b1.add(spec_of("off", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}, {"enable", {0}}}))).empty());
+    REQUIRE(b1.add(spec_of(
+                       "off", attrs(
+                                  {{"type", {S("float")}},
+                                   {"min", {0}},
+                                   {"max", {1}},
+                                   {"enable", {0}}})))
+                .empty());
     b1.drain();
 
     auto* rep = ossia::net::find_node(root, "/synth/rep")->get_parameter();
@@ -385,7 +492,9 @@ TEST_CASE("v8connector_tree", "v8connector_tree")
   SECTION("remove and clear")
   {
     REQUIRE(b1.remove("engine/reset"));
-    REQUIRE(ossia::net::find_node(root, "/synth/engine") == nullptr); // empty container pruned
+    REQUIRE(
+        ossia::net::find_node(root, "/synth/engine")
+        == nullptr); // empty container pruned
     REQUIRE(!b1.remove("engine/reset"));
     REQUIRE(b1.size() == 5);
 
@@ -445,9 +554,17 @@ TEST_CASE("v8connector_bind", "v8connector_bind")
   b.set_resolution_context({&root}, {&dev});
 
   const auto gain = spec_of(
-      "gain", attrs({{"type", {S("float")}}, {"min", {-60}}, {"max", {6}}, {"default", {-12}}, {"clip", {S("both")}}}));
+      "gain", attrs(
+                  {{"type", {S("float")}},
+                   {"min", {-60}},
+                   {"max", {6}},
+                   {"default", {-12}},
+                   {"clip", {S("both")}}}));
   REQUIRE(a.add(gain).empty());
-  REQUIRE(a.add(spec_of("voices", attrs({{"type", {S("int")}}, {"min", {1}}, {"max", {16}}}))).empty());
+  REQUIRE(
+      a.add(
+           spec_of("voices", attrs({{"type", {S("int")}}, {"min", {1}}, {"max", {16}}})))
+          .empty());
 
   SECTION("bind follows an existing parameter, set goes both ways, no echo")
   {
@@ -557,7 +674,9 @@ TEST_CASE("v8connector_bind", "v8connector_bind")
     REQUIRE(in.size() == 1);
     REQUIRE(in[0].value == ossia::value(-12.f));
     REQUIRE(b.set("synth/gain", {-40}).empty());
-    REQUIRE(ossia::net::find_node(root, "/synth/gain")->get_parameter()->value() == ossia::value(-40.f));
+    REQUIRE(
+        ossia::net::find_node(root, "/synth/gain")->get_parameter()->value()
+        == ossia::value(-40.f));
   }
 
   SECTION("a bind made before the declaration outputs the default once it exists")
@@ -565,7 +684,12 @@ TEST_CASE("v8connector_bind", "v8connector_bind")
     REQUIRE(b.bind("synth/cutoff").empty());
     REQUIRE(b.bound_count("synth/cutoff") == 0);
     REQUIRE(b.drain().empty());
-    REQUIRE(a.add(spec_of("cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}, {"default", {1000}}}))).empty());
+    REQUIRE(a.add(spec_of(
+                      "cutoff", attrs(
+                                    {{"type", {S("float")}},
+                                     {"range", {20, 20000}},
+                                     {"default", {1000}}})))
+                .empty());
     REQUIRE(b.bound_count("synth/cutoff") == 1);
     auto in = b.drain();
     REQUIRE(in.size() == 1);
@@ -597,7 +721,9 @@ TEST_CASE("v8connector_bind", "v8connector_bind")
     REQUIRE(in[0].address == "synth/voices");
     REQUIRE(in[0].value == ossia::value(8));
     // a new match of the pattern is followed when it appears
-    REQUIRE(a.add(spec_of("cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}}))).empty());
+    REQUIRE(
+        a.add(spec_of("cutoff", attrs({{"type", {S("float")}}, {"range", {20, 20000}}})))
+            .empty());
     REQUIRE(b.bound_count("synth/*") == 3);
   }
 
@@ -605,8 +731,11 @@ TEST_CASE("v8connector_bind", "v8connector_bind")
   {
     REQUIRE(!b.bind("").empty());
     REQUIRE(a.bind("manual/gain").empty());
-    REQUIRE(!a.bind("gain").empty());  // declared by add in a
-    REQUIRE(!a.add(spec_of("manual/gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))).empty());
+    REQUIRE(!a.bind("gain").empty()); // declared by add in a
+    REQUIRE(!a.add(spec_of(
+                       "manual/gain",
+                       attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})))
+                 .empty());
   }
 }
 
@@ -647,7 +776,9 @@ TEST_CASE("v8connector_node_on_first_add", "v8connector_node_on_first_add")
   {
     b.reattach();
     REQUIRE(created == 0);
-    REQUIRE(b.add(spec_of("x", attrs({{"type", {S("int")}}, {"min", {0}}, {"max", {10}}}))).empty());
+    REQUIRE(
+        b.add(spec_of("x", attrs({{"type", {S("int")}}, {"min", {0}}, {"max", {10}}})))
+            .empty());
     REQUIRE(created == 1);
     REQUIRE(b.attached());
     REQUIRE(ossia::net::find_node(root, "/mirror/x") != nullptr);
@@ -723,13 +854,26 @@ TEST_CASE("v8connector_units_clip_refusals", "v8connector_units_clip_refusals")
   });
   b.set_resolution_context({&root}, {&dev});
 
-  SECTION("color units are kept by the parameter, after creation and after re-registration")
+  SECTION(
+      "color units are kept by the parameter, after creation and after re-registration")
   {
     // the atoms the helper sends for these two declarations
-    REQUIRE(b.declare("color", attrs({{"type", {S("vec3f")}}, {"min", {0}}, {"max", {1}},
-                                      {"unit", {S("color.rgb")}}, {"default", {1, 0.5f, 0}}})).empty());
-    REQUIRE(b.declare("rgba", attrs({{"type", {S("vec4f")}}, {"min", {0}}, {"max", {1}},
-                                     {"unit", {S("color.rgba")}}, {"default", {0, 0.5f, 1, 1}}})).empty());
+    REQUIRE(b.declare(
+                 "color", attrs(
+                              {{"type", {S("vec3f")}},
+                               {"min", {0}},
+                               {"max", {1}},
+                               {"unit", {S("color.rgb")}},
+                               {"default", {1, 0.5f, 0}}}))
+                .empty());
+    REQUIRE(b.declare(
+                 "rgba", attrs(
+                             {{"type", {S("vec4f")}},
+                              {"min", {0}},
+                              {"max", {1}},
+                              {"unit", {S("color.rgba")}},
+                              {"default", {0, 0.5f, 1, 1}}}))
+                .empty());
     auto check = [&] {
       auto* c = ossia::net::find_node(root, "/types/color")->get_parameter();
       auto* r = ossia::net::find_node(root, "/types/rgba")->get_parameter();
@@ -747,17 +891,27 @@ TEST_CASE("v8connector_units_clip_refusals", "v8connector_units_clip_refusals")
     check();
   }
 
-
   SECTION("a type the unit would change is refused, with the reason")
   {
-    REQUIRE(!b.declare("rgb", attrs({{"type", {S("vec4f")}}, {"min", {0}}, {"max", {1}},
-                                     {"unit", {S("color.rgb")}}})).empty());
-    REQUIRE(!b.declare("g", attrs({{"type", {S("int")}}, {"min", {-60}}, {"max", {6}},
-                                   {"unit", {S("gain.db")}}})).empty());
+    REQUIRE(!b.declare(
+                  "rgb", attrs(
+                             {{"type", {S("vec4f")}},
+                              {"min", {0}},
+                              {"max", {1}},
+                              {"unit", {S("color.rgb")}}}))
+                 .empty());
+    REQUIRE(!b.declare(
+                  "g", attrs(
+                           {{"type", {S("int")}},
+                            {"min", {-60}},
+                            {"max", {6}},
+                            {"unit", {S("gain.db")}}}))
+                 .empty());
     auto in = b.drain();
     REQUIRE(in.size() == 2);
     REQUIRE(is_refusal(in[0], "rgb"));
-    const auto reason = in[0].value.get<std::vector<ossia::value>>()[1].get<std::string>();
+    const auto reason
+        = in[0].value.get<std::vector<ossia::value>>()[1].get<std::string>();
     REQUIRE(reason.find("requires type 'vec3f'") != std::string::npos);
     REQUIRE(is_refusal(in[1], "g"));
     REQUIRE(ossia::net::find_node(root, "/types") == nullptr); // nothing created
@@ -766,18 +920,34 @@ TEST_CASE("v8connector_units_clip_refusals", "v8connector_units_clip_refusals")
 
   SECTION("clip none is accepted as the free mode and served CLIPMODE none")
   {
-    REQUIRE(b.declare("x", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}},
-                                  {"clip", {S("none")}}})).empty());
+    REQUIRE(b.declare(
+                 "x", attrs(
+                          {{"type", {S("float")}},
+                           {"min", {0}},
+                           {"max", {1}},
+                           {"clip", {S("none")}}}))
+                .empty());
     auto* p = ossia::net::find_node(root, "/types/x")->get_parameter();
     REQUIRE(p->get_bounding() == ossia::bounding_mode::FREE);
-    REQUIRE(served(*ossia::net::find_node(root, "/types/x")).find("\"CLIPMODE\":\"none\"")
-            != std::string::npos);
+    REQUIRE(
+        served(*ossia::net::find_node(root, "/types/x")).find("\"CLIPMODE\":\"none\"")
+        != std::string::npos);
     // replaying the same declaration with "none" or "free" is the same leaf
-    REQUIRE(b.declare("x", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}},
-                                  {"clip", {S("free")}}})).empty());
+    REQUIRE(b.declare(
+                 "x", attrs(
+                          {{"type", {S("float")}},
+                           {"min", {0}},
+                           {"max", {1}},
+                           {"clip", {S("free")}}}))
+                .empty());
     REQUIRE(b.size() == 1);
-    REQUIRE(!b.declare("y", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}},
-                                   {"clip", {S("sometimes")}}})).empty());
+    REQUIRE(!b.declare(
+                  "y", attrs(
+                           {{"type", {S("float")}},
+                            {"min", {0}},
+                            {"max", {1}},
+                            {"clip", {S("sometimes")}}}))
+                 .empty());
   }
 
   SECTION("every refusal is queued as refused <address> <reason>, nothing is created")
@@ -790,9 +960,13 @@ TEST_CASE("v8connector_units_clip_refusals", "v8connector_units_clip_refusals")
     REQUIRE(ossia::net::find_node(root, "/types/cutoff") == nullptr);
     REQUIRE(b.size() == 0);
 
-    REQUIRE(b.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
+    REQUIRE(
+        b.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+            .empty());
     b.drain();
-    REQUIRE(!b.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {2}}})).empty());
+    REQUIRE(
+        !b.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {2}}}))
+             .empty());
     REQUIRE(!b.set("nothere", {1}).empty());
     REQUIRE(!b.set("gain", {S("loud")}).empty());
     REQUIRE(!b.remove("nothere"));
@@ -830,7 +1004,8 @@ TEST_CASE("v8connector_device_return", "v8connector_device_return")
   std::vector<ossia::net::parameter_base*> leaves;
   for(int i = 0; i < 4; i++)
   {
-    auto& n = ossia::net::create_node(server.get_root_node(), "/bench/p" + std::to_string(i));
+    auto& n = ossia::net::create_node(
+        server.get_root_node(), "/bench/p" + std::to_string(i));
     auto* p = ossia::try_setup_parameter("float", n);
     p->set_domain(ossia::make_domain(0.f, 1.f));
     p->push_value(0.f);
@@ -838,13 +1013,14 @@ TEST_CASE("v8connector_device_return", "v8connector_device_return")
   }
   const uint16_t osc = free_port(false);
   const uint16_t ws = free_port(true);
-  multiplex->expose_to(
-      std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, osc, ws, false));
+  multiplex->expose_to(std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+      ctx, osc, ws, false));
   std::thread net([&] { ctx->run(); });
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
   // The global device of Max, where the instance registers.
-  ossia::net::generic_device max_dev{std::make_unique<ossia::net::multiplex_protocol>(), "max"};
+  ossia::net::generic_device max_dev{
+      std::make_unique<ossia::net::multiplex_protocol>(), "max"};
   auto& max_root = max_dev.get_root_node();
 
   auto connect = [&] {
@@ -922,8 +1098,8 @@ TEST_CASE("v8connector_client_by_name", "v8connector_client_by_name")
   }
   const uint16_t osc = free_port(false);
   const uint16_t ws = free_port(true);
-  multiplex->expose_to(
-      std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, osc, ws, false));
+  multiplex->expose_to(std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+      ctx, osc, ws, false));
   std::thread net([&] { ctx->run(); });
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -936,7 +1112,8 @@ TEST_CASE("v8connector_client_by_name", "v8connector_client_by_name")
   auto& croot = client->get_root_node();
   REQUIRE(ossia::net::find_node(croot, "/bench/first") != nullptr);
 
-  ossia::net::generic_device max_dev{std::make_unique<ossia::net::multiplex_protocol>(), "max"};
+  ossia::net::generic_device max_dev{
+      std::make_unique<ossia::net::multiplex_protocol>(), "max"};
   branch b;
   b.set_resolution_context({&max_dev.get_root_node()}, {&max_dev, client.get()});
   REQUIRE(b.bind("remote:/bench/late").empty());
@@ -962,7 +1139,9 @@ TEST_CASE("v8connector_client_by_name", "v8connector_client_by_name")
   };
 
   bool ok = mirror != nullptr;
-  ok = ok && poll_until([&] { return ossia::net::find_node(croot, "/bench/late") != nullptr; });
+  ok = ok && poll_until([&] {
+    return ossia::net::find_node(croot, "/bench/late") != nullptr;
+  });
   // The bind made before the parameter existed resolves when it appears.
   ok = ok && b.bound_count("remote:/bench/late") == 1;
 
@@ -970,7 +1149,8 @@ TEST_CASE("v8connector_client_by_name", "v8connector_client_by_name")
   if(ok)
   {
     server.get_root_node().find_child("bench")->remove_child("late");
-    ok = poll_until([&] { return ossia::net::find_node(croot, "/bench/late") == nullptr; });
+    ok = poll_until(
+        [&] { return ossia::net::find_node(croot, "/bench/late") == nullptr; });
     ok = ok && b.bound_count("remote:/bench/late") == 0;
   }
 
@@ -1007,7 +1187,8 @@ TEST_CASE("v8connector_without_name", "v8connector_without_name")
   // node made by another object.
   auto* model = &ossia::net::create_node(root, "/synth");
   {
-    auto* p = ossia::try_setup_parameter("float", ossia::net::create_node(*model, "manual"));
+    auto* p
+        = ossia::try_setup_parameter("float", ossia::net::create_node(*model, "manual"));
     p->push_value(0.25f);
     ossia::net::create_node(*model, "fx");
   }
@@ -1020,7 +1201,8 @@ TEST_CASE("v8connector_without_name", "v8connector_without_name")
   branch a, b;
   shared(a);
   shared(b);
-  const auto gain = attrs({{"type", {S("float")}}, {"min", {-60}}, {"max", {6}}, {"default", {-12}}});
+  const auto gain = attrs(
+      {{"type", {S("float")}}, {"min", {-60}}, {"max", {6}}, {"default", {-12}}});
 
   REQUIRE(a.declare("gain", gain).empty());
   auto* a_gain = ossia::net::find_node(root, "/synth/gain");
@@ -1041,10 +1223,13 @@ TEST_CASE("v8connector_without_name", "v8connector_without_name")
 
   SECTION("an address taken by an ossia.parameter is refused")
   {
-    REQUIRE(!a.declare("manual", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
+    REQUIRE(
+        !a.declare("manual", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+             .empty());
     REQUIRE(drained_refusal(a, "manual", "already exists"));
-    REQUIRE(ossia::net::find_node(root, "/synth/manual")->get_parameter()->value()
-            == ossia::value(0.25f));
+    REQUIRE(
+        ossia::net::find_node(root, "/synth/manual")->get_parameter()->value()
+        == ossia::value(0.25f));
   }
 
   SECTION("for comparison, ossia.parameter renames: a second one becomes gain.1")
@@ -1058,8 +1243,13 @@ TEST_CASE("v8connector_without_name", "v8connector_without_name")
 
   SECTION("remove takes only the leaves of its instance, and only the nodes it created")
   {
-    REQUIRE(b.declare("env/attack", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
-    REQUIRE(b.declare("fx/mix", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
+    REQUIRE(
+        b.declare(
+             "env/attack", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+            .empty());
+    REQUIRE(
+        b.declare("fx/mix", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+            .empty());
     REQUIRE(ossia::net::find_node(root, "/synth/env/attack") != nullptr);
     b.drain();
 
@@ -1086,9 +1276,14 @@ TEST_CASE("v8connector_without_name", "v8connector_without_name")
     REQUIRE(ossia::net::find_node(root, "/synth/gain.1") == nullptr);
   }
 
-  SECTION("detached, the instance leaves the node as it found it; an address taken meanwhile is refused on return")
+  SECTION(
+      "detached, the instance leaves the node as it found it; an address taken "
+      "meanwhile is refused on return")
   {
-    REQUIRE(a.declare("env/attack", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
+    REQUIRE(
+        a.declare(
+             "env/attack", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+            .empty());
     a.detach();
     REQUIRE(ossia::net::find_node(root, "/synth/gain") == nullptr);
     REQUIRE(ossia::net::find_node(root, "/synth/env") == nullptr);
@@ -1123,16 +1318,19 @@ TEST_CASE("v8connector_without_name_device_root", "v8connector_without_name_devi
       std::make_unique<ossia::net::multiplex_protocol>(), "v8_root");
   branch a;
   a.set_owns_node(false);
-  a.set_node_factory([&]() -> ossia::net::node_base* { return d ? &d->get_root_node() : nullptr; });
+  a.set_node_factory(
+      [&]() -> ossia::net::node_base* { return d ? &d->get_root_node() : nullptr; });
   a.set_resolution_context({&d->get_root_node()}, {d.get()});
-  REQUIRE(a.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}})).empty());
+  REQUIRE(a.declare("gain", attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1}}}))
+              .empty());
   REQUIRE(ossia::net::find_node(d->get_root_node(), "/gain") != nullptr);
   REQUIRE(a.bind("gain.1").empty());
 
   d.reset();
   REQUIRE(!a.attached());
   // the branch no longer knows the device: a new context does not touch it
-  ossia::net::generic_device other{std::make_unique<ossia::net::multiplex_protocol>(), "other"};
+  ossia::net::generic_device other{
+      std::make_unique<ossia::net::multiplex_protocol>(), "other"};
   a.set_resolution_context({&other.get_root_node()}, {&other});
   REQUIRE(a.size() == 1);
 }
@@ -1157,8 +1355,8 @@ TEST_CASE("v8connector_parameter_recreated", "v8connector_parameter_recreated")
   auto* leaf = make_leaf();
   const uint16_t osc = free_port(false);
   const uint16_t ws = free_port(true);
-  multiplex->expose_to(
-      std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, osc, ws, false));
+  multiplex->expose_to(std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+      ctx, osc, ws, false));
   std::thread net([&] { ctx->run(); });
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -1171,7 +1369,8 @@ TEST_CASE("v8connector_parameter_recreated", "v8connector_parameter_recreated")
   auto* mirror = polled_mirror(*client);
   auto& croot = client->get_root_node();
 
-  ossia::net::generic_device max_dev{std::make_unique<ossia::net::multiplex_protocol>(), "max"};
+  ossia::net::generic_device max_dev{
+      std::make_unique<ossia::net::multiplex_protocol>(), "max"};
   branch b;
   b.set_resolution_context({&max_dev.get_root_node()}, {&max_dev, client.get()});
   REQUIRE(b.bind("remote:/bench/p0").empty());
@@ -1217,9 +1416,11 @@ TEST_CASE("v8connector_parameter_recreated", "v8connector_parameter_recreated")
   if(ok)
   {
     server.get_root_node().find_child("bench")->remove_child("p0");
-    removed = poll_until([&] { return ossia::net::find_node(croot, "/bench/p0") == nullptr; });
+    removed = poll_until(
+        [&] { return ossia::net::find_node(croot, "/bench/p0") == nullptr; });
     leaf = make_leaf();
-    back = poll_until([&] { return ossia::net::find_node(croot, "/bench/p0") != nullptr; });
+    back = poll_until(
+        [&] { return ossia::net::find_node(croot, "/bench/p0") != nullptr; });
     bound_again = poll_until([&] { return b.bound_count("remote:/bench/p0") == 1; });
     after = received(*leaf, ossia::value(0.75f));
   }
@@ -1245,10 +1446,12 @@ TEST_CASE("v8connector_bundles", "v8connector_bundles")
   const int n = 3000;
   sink_server server{n};
   auto client = std::make_shared<ossia::net::generic_device>(
-      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(server.url(), free_port(false)),
+      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(
+          server.url(), free_port(false)),
       "remote");
   REQUIRE(client->get_protocol().update(client->get_root_node()));
-  ossia::net::generic_device max_dev{std::make_unique<ossia::net::multiplex_protocol>(), "max"};
+  ossia::net::generic_device max_dev{
+      std::make_unique<ossia::net::multiplex_protocol>(), "max"};
   branch b;
   b.set_resolution_context({&max_dev.get_root_node()}, {&max_dev, client.get()});
   std::vector<std::string> addresses;
@@ -1336,10 +1539,14 @@ TEST_CASE("v8connector_bundles_served_leaves", "v8connector_bundles_served_leave
 
   branch b;
   auto& root = server.dev->get_root_node();
-  b.set_node_factory([&]() -> ossia::net::node_base* { return &ossia::net::create_node(root, "/synth"); });
+  b.set_node_factory([&]() -> ossia::net::node_base* {
+    return &ossia::net::create_node(root, "/synth");
+  });
   b.set_resolution_context({&root}, {server.dev.get()});
   for(int i = 0; i < n; i++)
-    REQUIRE(b.declare("p" + std::to_string(i), attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1000}}}))
+    REQUIRE(b.declare(
+                 "p" + std::to_string(i),
+                 attrs({{"type", {S("float")}}, {"min", {0}}, {"max", {1000}}}))
                 .empty());
   b.drain();
   b.set_bundle(true);
@@ -1356,8 +1563,9 @@ TEST_CASE("v8connector_bundles_served_leaves", "v8connector_bundles_served_leave
   std::size_t largest = 0;
   for(auto size : client_sink.datagrams)
     largest = std::max(largest, size);
-  INFO("datagrams " << client_sink.datagrams.size() << ", messages " << client_sink.messages.size()
-                    << ", largest " << largest);
+  INFO(
+      "datagrams " << client_sink.datagrams.size() << ", messages "
+                   << client_sink.messages.size() << ", largest " << largest);
   REQUIRE(all);
   REQUIRE(client_sink.messages.size() == std::size_t(n));
   REQUIRE(largest <= 1400);
@@ -1380,9 +1588,11 @@ struct main_thread_server
     dev = std::make_unique<ossia::net::generic_device>(std::move(mp), "load_demo");
     for(int i = 0; i < leaves; i++)
       ossia::try_setup_parameter(
-          "float", ossia::net::create_node(dev->get_root_node(), "/load/p" + std::to_string(i)));
-    multiplex->expose_to(std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
-        ctx, free_port(false), ws, false));
+          "float",
+          ossia::net::create_node(dev->get_root_node(), "/load/p" + std::to_string(i)));
+    multiplex->expose_to(
+        std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+            ctx, free_port(false), ws, false));
   }
   void poll()
   {
@@ -1400,11 +1610,15 @@ struct main_thread_server
 // not stall: before, every creation resolved every waiting binding again,
 // 15 s in one run_commands, while the server of the same Max, polled by
 // that thread, let the HTTP requests time out.
-TEST_CASE("v8connector_binds_follow_a_burst_of_leaves", "v8connector_binds_follow_a_burst_of_leaves")
+TEST_CASE(
+    "v8connector_binds_follow_a_burst_of_leaves",
+    "v8connector_binds_follow_a_burst_of_leaves")
 {
   std::atomic_int http_errors{0};
-  auto sink = std::make_shared<spdlog::sinks::callback_sink_mt>([&](const spdlog::details::log_msg& m) {
-    if(std::string_view(m.payload.data(), m.payload.size()).find("HTTP Error") != std::string_view::npos)
+  auto sink = std::make_shared<spdlog::sinks::callback_sink_mt>(
+      [&](const spdlog::details::log_msg& m) {
+    if(std::string_view(m.payload.data(), m.payload.size()).find("HTTP Error")
+       != std::string_view::npos)
       http_errors++;
   });
   ossia::logger().sinks().push_back(sink);
@@ -1424,7 +1638,8 @@ TEST_CASE("v8connector_binds_follow_a_burst_of_leaves", "v8connector_binds_follo
     try
     {
       auto dev = std::make_unique<ossia::net::generic_device>(
-          std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(server.url(), free_port(false)),
+          std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(
+              server.url(), free_port(false)),
           "load_demo");
       if(dev->get_protocol().update(dev->get_root_node()))
         client = std::move(dev);
@@ -1451,23 +1666,28 @@ TEST_CASE("v8connector_binds_follow_a_burst_of_leaves", "v8connector_binds_follo
   // the emitter declares its leaves after the connection
   for(int i = 0; i < n; i++)
     ossia::try_setup_parameter(
-        "float", ossia::net::create_node(server.dev->get_root_node(), "/load/p" + std::to_string(i)));
+        "float", ossia::net::create_node(
+                     server.dev->get_root_node(), "/load/p" + std::to_string(i)));
 
   // the main thread polls the server, the client's clock its mirror
   long long longest = 0;
   const auto t0 = std::chrono::steady_clock::now();
   const auto deadline = t0 + std::chrono::seconds(30);
-  while(b.bound_count("load/p" + std::to_string(n - 1)) == 0 && std::chrono::steady_clock::now() < deadline)
+  while(b.bound_count("load/p" + std::to_string(n - 1)) == 0
+        && std::chrono::steady_clock::now() < deadline)
   {
     server.poll();
     const auto a = std::chrono::steady_clock::now();
     mirror->run_commands();
     longest = std::max<long long>(
-        longest, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - a).count());
+        longest, std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::steady_clock::now() - a)
+                     .count());
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  const auto total
-      = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+  const auto total = std::chrono::duration_cast<std::chrono::milliseconds>(
+                         std::chrono::steady_clock::now() - t0)
+                         .count();
   std::size_t bound = 0;
   for(int i = 0; i < n; i++)
     bound += b.bound_count("load/p" + std::to_string(i));
@@ -1475,7 +1695,9 @@ TEST_CASE("v8connector_binds_follow_a_burst_of_leaves", "v8connector_binds_follo
   auto& sinks = ossia::logger().sinks();
   sinks.erase(std::remove(sinks.begin(), sinks.end(), sink), sinks.end());
 
-  INFO("bound " << bound << " in " << total << " ms, longest run_commands " << longest << " ms, HTTP errors " << http_errors);
+  INFO(
+      "bound " << bound << " in " << total << " ms, longest run_commands " << longest
+               << " ms, HTTP errors " << http_errors);
   REQUIRE(bound == std::size_t(n));
   REQUIRE(total < 10000);
   REQUIRE(longest < 1000);
@@ -1490,13 +1712,19 @@ TEST_CASE("v8connector_binds_follow_a_burst_of_leaves", "v8connector_binds_follo
 // tells the connector to forget it (the client clears its device before it
 // announces the removal). Expected: one target, the second device's, and a
 // value set leaves through it only.
-TEST_CASE("v8connector_context_change_leaves_a_shared_device", "v8connector_context_change_leaves_a_shared_device")
+TEST_CASE(
+    "v8connector_context_change_leaves_a_shared_device",
+    "v8connector_context_change_leaves_a_shared_device")
 {
-  ossia::net::generic_device shared{std::make_unique<ossia::net::multiplex_protocol>(), "demo"};
-  ossia::net::generic_device own{std::make_unique<ossia::net::multiplex_protocol>(), "demo"};
-  ossia::net::generic_device max_dev{std::make_unique<ossia::net::multiplex_protocol>(), "max"};
+  ossia::net::generic_device shared{
+      std::make_unique<ossia::net::multiplex_protocol>(), "demo"};
+  ossia::net::generic_device own{
+      std::make_unique<ossia::net::multiplex_protocol>(), "demo"};
+  ossia::net::generic_device max_dev{
+      std::make_unique<ossia::net::multiplex_protocol>(), "max"};
   auto leaf = [](ossia::net::generic_device& d) {
-    auto* p = ossia::try_setup_parameter("float", ossia::net::create_node(d.get_root_node(), "/image/scale"));
+    auto* p = ossia::try_setup_parameter(
+        "float", ossia::net::create_node(d.get_root_node(), "/image/scale"));
     p->set_domain(ossia::make_domain(0.f, 1.f));
     p->push_value(0.f);
     return p;

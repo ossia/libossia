@@ -8,8 +8,8 @@
 #include <ossia/network/base/address_scope.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/common/path.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/common/path.hpp>
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -18,11 +18,12 @@
 #include <ossia/network/value/impulse.hpp>
 #include <ossia/network/value/vec.hpp>
 
-#include <algorithm>
-#include <utility>
-#include <cctype>
 #include <cmath>
+
+#include <algorithm>
+#include <cctype>
 #include <sstream>
+#include <utility>
 
 namespace ossia
 {
@@ -220,8 +221,7 @@ int numeric_components(std::string_view type)
 bool known_type(std::string_view type)
 {
   static constexpr std::string_view types[]
-      = {"float", "int",   "bool",  "impulse", "string",
-         "list",  "vec2f", "vec3f", "vec4f"};
+      = {"float", "int", "bool", "impulse", "string", "list", "vec2f", "vec3f", "vec4f"};
   return std::find(std::begin(types), std::end(types), type) != std::end(types);
 }
 
@@ -730,8 +730,9 @@ std::string branch::add(const leaf_spec& spec)
 
 // The node of a leaf in a shared node: the existing node at the address, or a
 // new one; created is set to the topmost node created on the way.
-static ossia::net::node_base*
-shared_leaf_node(ossia::net::node_base& root, std::string_view address, ossia::net::node_base*& created)
+static ossia::net::node_base* shared_leaf_node(
+    ossia::net::node_base& root, std::string_view address,
+    ossia::net::node_base*& created)
 {
   created = nullptr;
   auto* parent = &root;
@@ -747,7 +748,8 @@ shared_leaf_node(ossia::net::node_base& root, std::string_view address, ossia::n
       return &node;
     }
     parent = child;
-    address = slash == std::string_view::npos ? std::string_view{} : address.substr(slash + 1);
+    address = slash == std::string_view::npos ? std::string_view{}
+                                              : address.substr(slash + 1);
   }
   return parent;
 }
@@ -901,7 +903,8 @@ void branch::destroy(leaf& l)
   }
 }
 
-std::string branch::declare(std::string_view address, const std::vector<attribute>& attrs)
+std::string
+branch::declare(std::string_view address, const std::vector<attribute>& attrs)
 {
   leaf_spec spec;
   if(auto err = make_leaf_spec(address, attrs, spec); !err.empty())
@@ -918,7 +921,8 @@ void branch::refuse(std::string_view address, std::string_view reason)
     std::lock_guard<std::mutex> lock(m_queue_mutex);
     m_queue.push_back(
         {"refused",
-         ossia::value(std::vector<ossia::value>{std::string(address), std::string(reason)}),
+         ossia::value(
+             std::vector<ossia::value>{std::string(address), std::string(reason)}),
          nullptr});
   }
   if(m_wake)
@@ -1045,7 +1049,8 @@ std::size_t branch::flush()
         live.insert(t.param);
 
   // One group per protocol, in the order of the first set.
-  std::vector<std::pair<ossia::net::protocol_base*, std::vector<const ossia::net::parameter_base*>>>
+  std::vector<std::pair<
+      ossia::net::protocol_base*, std::vector<const ossia::net::parameter_base*>>>
       groups;
   std::size_t sent = 0;
   for(auto* p : queued)
@@ -1142,7 +1147,8 @@ std::vector<inbound> branch::drain()
   return out;
 }
 
-void branch::queue_current_value(const std::string& address, ossia::net::parameter_base* param)
+void branch::queue_current_value(
+    const std::string& address, ossia::net::parameter_base* param)
 {
   {
     std::lock_guard<std::mutex> lock(m_queue_mutex);
@@ -1167,7 +1173,8 @@ void branch::on_value(
     return;
   // The branch's own push comes back only if the value that leaves differs
   // from the value sent (clip, type conversion): the host then learns it.
-  if(t_pushing == this && t_pushing_request && scalars_match(*t_pushing_request, bounded))
+  if(t_pushing == this && t_pushing_request
+     && scalars_match(*t_pushing_request, bounded))
     return;
   {
     std::lock_guard<std::mutex> lock(m_queue_mutex);
@@ -1189,7 +1196,8 @@ std::string trim_address(std::string_view address)
 }
 
 // Address of a node relative to a root node, without leading slash.
-std::string relative_to(const ossia::net::node_base& root, const ossia::net::node_base& node)
+std::string
+relative_to(const ossia::net::node_base& root, const ossia::net::node_base& node)
 {
   const auto full = node.osc_address();
   auto base = root.osc_address();
@@ -1289,7 +1297,8 @@ void branch::set_resolution_context(
   // zeroconf listener keeps its mirrors), must not leave a binding on it,
   // which would receive and send every value a second time.
   const auto in_context = [&](const ossia::net::device_base* dev) {
-    return std::find(m_parent_devices.begin(), m_parent_devices.end(), dev) != m_parent_devices.end()
+    return std::find(m_parent_devices.begin(), m_parent_devices.end(), dev)
+               != m_parent_devices.end()
            || std::find(m_devices.begin(), m_devices.end(), dev) != m_devices.end();
   };
   for(auto& b : m_bindings)
@@ -1435,8 +1444,10 @@ void branch::resolve(binding& b)
     auto* param = node->get_parameter();
     if(!param)
       continue;
-    const bool already = std::any_of(
-        b.targets.begin(), b.targets.end(), [node](const target& t) { return t.node == node; });
+    const bool already
+        = std::any_of(b.targets.begin(), b.targets.end(), [node](const target& t) {
+      return t.node == node;
+    });
     if(already)
       continue;
 
@@ -1446,7 +1457,8 @@ void branch::resolve(binding& b)
     if(!pattern)
       t.out_address = b.address;
     else if(scope == ossia::net::address_scope::global)
-      t.out_address = std::string(b.address.substr(0, b.address.find(":/"))) + ":" + node->osc_address();
+      t.out_address = std::string(b.address.substr(0, b.address.find(":/"))) + ":"
+                      + node->osc_address();
     else if(scope == ossia::net::address_scope::absolute)
       t.out_address = node->osc_address();
     else
@@ -1477,7 +1489,8 @@ void branch::on_parameter_created(const ossia::net::parameter_base& p)
     if(b.targets.size() != before && m_binding_changed)
       m_binding_changed(b.address, b.targets.size());
   };
-  if(auto it = m_binding_by_name.find(p.get_node().get_name()); it != m_binding_by_name.end())
+  if(auto it = m_binding_by_name.find(p.get_node().get_name());
+     it != m_binding_by_name.end())
   {
     const auto candidates = it->second;
     for(auto i : candidates)
