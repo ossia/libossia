@@ -6,6 +6,9 @@
 
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#endif
 
 #include <map>
 
@@ -112,6 +115,26 @@ int ossia_device_update_namespace(ossia_device_t device)
     {
       return false;
     }
+  });
+}
+
+void ossia_device_set_read_unfollowed(ossia_device_t device, int enable)
+{
+  return safe_function(__func__, [=] {
+    if(!device || !device->device)
+    {
+      ossia_log_error("ossia_device_set_read_unfollowed: device is null");
+      return;
+    }
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+    if(auto mirror = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(
+           &device->device->get_protocol()))
+    {
+      mirror->set_read_unfollowed(enable != 0);
+      return;
+    }
+#endif
+    ossia_log_error("ossia_device_set_read_unfollowed: not an OSCQuery mirror");
   });
 }
 

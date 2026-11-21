@@ -376,6 +376,11 @@ bool oscquery_mirror_protocol::push(
     // Push to server
     auto critical = addr.get_critical();
     const auto& osc_addr = addr.get_node().osc_address();
+    if(m_readUnfollowed)
+    {
+      std::lock_guard lock{m_unfollowedMutex};
+      m_written[osc_addr] = std::chrono::steady_clock::now();
+    }
     if((!critical || !m_hasWS) && m_oscSender)
     {
       if(m_logger.outbound_logger)
@@ -988,6 +993,48 @@ bool oscquery_mirror_protocol::on_BinaryWSMessage(
   h.ProcessPacket(message.data(), message.size(), {});
 
   return {};
+}
+
+bool oscquery_mirror_protocol::written_recently(const std::string& address)
+{
+  std::lock_guard lock{m_unfollowedMutex};
+  auto it = m_written.find(address);
+  return it != m_written.end()
+         && std::chrono::steady_clock::now() - it->second
+                <= std::chrono::milliseconds{500};
+}
+
+void oscquery_mirror_protocol::refresh_unfollowed(const std::string& address)
+{
+  using namespace std::chrono;
+  const auto now = steady_clock::now();
+  auto read = std::make_shared<value_read>();
+  read->address = address;
+  {
+    std::lock_guard lock{m_unfollowedMutex};
+    auto& r = m_unfollowed[address];
+    // An answer that never comes does not hold the address for good
+    const bool in_flight = r.answer.valid()
+                           && r.answer.wait_for(seconds(0)) != std::future_status::ready
+                           && now - r.asked < seconds(1);
+    if(in_flight || now - r.asked < refresh_interval)
+      return;
+    r.answer = read->promise.get_future();
+    r.asked = now;
+  }
+  read_value(std::move(read));
+}
+
+ossia::value read_followed_value(ossia::net::parameter_base& param)
+{
+  auto* mirror = dynamic_cast<oscquery_mirror_protocol*>(
+      &param.get_node().get_device().get_protocol());
+  // What this client has just written may not have reached the server yet
+  if(mirror && mirror->get_read_unfollowed() && param.callback_count() == 0
+     && param.get_access() != ossia::access_mode::SET
+     && !mirror->written_recently(param.get_node().osc_address()))
+    mirror->refresh_unfollowed(param.get_node().osc_address());
+  return param.value();
 }
 
 void load_oscquery_device(net::device_base& dev, std::string json)

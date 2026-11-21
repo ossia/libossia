@@ -7,6 +7,9 @@
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#endif
 
 #include <readerwriterqueue.h>
 
@@ -135,7 +138,11 @@ ossia_value_t ossia_parameter_get_value(ossia_parameter_t address)
       return nullptr;
     }
 
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+    return convert(ossia::oscquery::read_followed_value(*convert_parameter(address)));
+#else
     return convert(convert_parameter(address)->value());
+#endif
   });
 }
 
