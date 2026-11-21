@@ -33,6 +33,7 @@ namespace oscquery
 {
 struct osc_outbound_visitor;
 struct http_client_context;
+struct value_read;
 struct http_responder;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
@@ -128,11 +129,15 @@ public:
 
 private:
   friend struct http_answer;
+  friend struct http_value_answer;
 
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
+  // A value read, and its answer for the address it was asked for
+  void read_value(std::shared_ptr<value_read> read);
+  void on_value_read(const std::string& address, const std::string& message);
   void
   on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
@@ -170,24 +175,6 @@ private:
     std::promise<void> promise;
     ossia::net::parameter_base* address{};
   };
-  struct get_ws_promise
-  {
-    get_ws_promise() = default;
-    get_ws_promise(const get_ws_promise&) = delete;
-    get_ws_promise(get_ws_promise&&) noexcept = default;
-    get_ws_promise& operator=(const get_ws_promise&) = delete;
-    get_ws_promise& operator=(get_ws_promise&&) noexcept = default;
-
-    get_ws_promise(std::promise<void>&& p, const std::string& addr)
-        : promise{std::move(p)}
-        , address{addr}
-    {
-    }
-    std::promise<void> promise;
-    std::string address{};
-  };
-
-  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
