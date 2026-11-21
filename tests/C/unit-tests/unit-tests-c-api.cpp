@@ -11,6 +11,7 @@
 
 #include "include_catch.hpp"
 
+#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -146,6 +147,41 @@ TEST_CASE("C API: a mirror reads a parameter nothing follows", "[network]")
   }
   REQUIRE(updated);
 
+  ossia_device_free(mirror);
+  ossia_device_free(server);
+}
+
+TEST_CASE("C API: a parameter read then followed gets no value twice", "[network]")
+{
+  // A binding reads the value of a parameter, then follows it: the read asks
+  // the server, the parameter being followed by nothing yet, and the answer,
+  // the same value, must not reach the callback added meanwhile
+  auto server = ossia_device_create(
+      ossia_protocol_oscquery_server_create(1751, 5751), "c_once_server");
+  REQUIRE(server);
+  auto level = ossia_node_create_parameter(
+      ossia_node_create(ossia_device_get_root_node(server), "/level"), FLOAT_T);
+  ossia_parameter_push_f(level, 0.7f);
+
+  auto mirror = ossia_device_create(
+      ossia_protocol_oscquery_mirror_create("ws://127.0.0.1:5751"), "c_once_mirror");
+  REQUIRE(mirror);
+  ossia_device_set_read_unfollowed(mirror, 1);
+  ossia_device_update_namespace(mirror);
+  auto remote = ossia_node_get_parameter(
+      ossia_node_find(ossia_device_get_root_node(mirror), "/level"));
+  REQUIRE(remote);
+
+  std::atomic_int received{0};
+  REQUIRE(value_of(remote) == 0.7f);
+  auto idx = ossia_parameter_add_callback(remote, [](void* ctx, ossia_value_t v) {
+    ++*static_cast<std::atomic_int*>(ctx);
+    ossia_value_free(v);
+  }, &received);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  REQUIRE(received == 0);
+
+  ossia_parameter_remove_callback(remote, idx);
   ossia_device_free(mirror);
   ossia_device_free(server);
 }
