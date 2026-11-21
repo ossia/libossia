@@ -14,6 +14,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <vector>
 
 namespace osc
 {
@@ -175,8 +176,26 @@ public:
 
   //! Asks the server for the value of a parameter nothing follows, without
   //! waiting for it: at most one request in flight for an address, and one
-  //! per refresh_interval
-  void refresh_unfollowed(const std::string& address);
+  //! per refresh_interval.
+  //! unless_fresh_tree: not asked either if a reading of the tree brought the
+  //! value less than tree_fresh_window ago; for a bulk refresh only
+  //! (refresh_followed_values), never for an explicit read, which may come
+  //! after a change the server did not send (one it made before it applied
+  //! the LISTEN of the reader).
+  void refresh_unfollowed(const std::string& address, bool unless_fresh_tree = false);
+
+  //! Asks the server for the structure of path, values included, without
+  //! waiting: one reading instead of a value read for each parameter under
+  //! it. Not asked for the root, nor if a reading of path was answered less
+  //! than tree_fresh_window ago; with set_request_queues, nor if a reading
+  //! of path or of an ancestor is under way or to come.
+  void refresh_tree(const std::string& path);
+  //! A value that came with a reading of the tree this recently is not read
+  //! again by a bulk refresh (refresh_followed_values, refresh_tree)
+  static constexpr std::chrono::milliseconds tree_fresh_window{1000};
+  //! More parameters than this to read at once: their tree is read instead
+  //! (refresh_followed_values)
+  static constexpr std::size_t bulk_refresh_threshold = 32;
 
   //! Whether this client wrote that address within the last 500 ms: the
   //! server may not have it yet
@@ -234,6 +253,10 @@ private:
   // still to send are dropped, and a 404 for one sent is not an error for 10 s
   void cancel_value_reads(const std::string& path);
   bool removed_recently(const std::string& address);
+  // A reading of the tree at path was answered: the values under it are fresh
+  // for tree_fresh_window
+  void note_tree_read(const std::string& path);
+  bool fresh_from_tree(const std::string& address);
 
   void ws_send_message(const std::string& str);
   void ws_send_binary_message(const std::string& str);
@@ -301,6 +324,15 @@ private:
 //! set_read_unfollowed(true), a parameter nothing follows is asked for (see
 //! there); otherwise, and on any other device, its value as it is.
 OSSIA_EXPORT ossia::value read_followed_value(ossia::net::parameter_base& param);
+
+//! read_followed_value for many parameters, without the values, for a host
+//! that shows or polls many of them at once (a namespace, a search): for each
+//! mirror, more than bulk_refresh_threshold to ask for, the tree under the
+//! deepest node that holds them all is read once instead (refresh_tree);
+//! otherwise each is asked for (refresh_unfollowed), unless a reading of the
+//! tree brought it a moment ago.
+OSSIA_EXPORT void
+refresh_followed_values(const std::vector<ossia::net::parameter_base*>& params);
 
 //! Use this function to load a device preset in the OSCQuery format.
 OSSIA_EXPORT void load_oscquery_device(ossia::net::device_base& dev, std::string json);
