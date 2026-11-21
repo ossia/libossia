@@ -137,6 +137,13 @@ public:
         ossia::net::server_reply str
             = h(hdl, websocketpp::frame::opcode::TEXT, con->get_uri()->get_resource());
 
+        if(str.type == server_reply::data_type::no_content)
+        {
+          con->replace_header("Connection", "close");
+          con->set_status(websocketpp::http::status_code::no_content);
+          return;
+        }
+
         switch(str.type)
         {
           case server_reply::data_type::json: {

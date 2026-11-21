@@ -6,7 +6,12 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -33,6 +38,19 @@ struct served_device
   int ws;
   generic_device device;
 };
+
+// One member of the JSON at that target, as text; "absent" if it is not there
+std::string member_of(int port, const std::string& target, const char* key)
+{
+  rapidjson::Document doc;
+  doc.Parse(http_get(port, target).body.c_str());
+  if(doc.HasParseError() || !doc.IsObject() || !doc.HasMember(key))
+    return "absent";
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
+  doc[key].Accept(wr);
+  return buf.GetString();
+}
 }
 
 TEST_CASE("test_oscquery_listen_data_not_string", "test_oscquery_listen_data_not_string")
@@ -74,4 +92,63 @@ TEST_CASE("test_oscquery_http_error_status", "test_oscquery_http_error_status")
   REQUIRE(http_get(s.ws, "/nothing").status == 404);
   REQUIRE(http_get(s.ws, "/nothing?TYPE").status == 404);
   REQUIRE(http_get(s.ws, "/level?LISTEN=true").status == 400);
+}
+
+TEST_CASE("test_oscquery_attribute_queries", "test_oscquery_attribute_queries")
+{
+  // What a query says agrees with the tree; what a node does not have is an
+  // empty object, as for the TYPE of a container in the proposal
+  served_device s{5703};
+  s.float_parameter("/ctn/sub", 0.f);
+  s.float_parameter("/f", 0.f);
+  find_or_create_node(s.device, "/i").create_parameter(val_type::INT);
+  auto v3 = find_or_create_node(s.device, "/v3").create_parameter(val_type::VEC3F);
+  v3->set_unit(ossia::cartesian_3d_u{});
+
+  for(const char* query :
+      {"/ctn?TYPE", "/ctn?VALUE", "/ctn?RANGE", "/?VALUE", "/f?UNIT", "/f?EXTENDED_TYPE",
+       "/i?RANGE", "/v3?UNIT"})
+  {
+    INFO(query);
+    auto r = http_get(s.ws, query);
+    REQUIRE(r.status == 200);
+    REQUIRE(r.body == "{}");
+  }
+
+  for(const char* key :
+      {"FULL_PATH", "TYPE", "VALUE", "ACCESS", "CLIPMODE", "EXTENDED_TYPE"})
+  {
+    INFO(key);
+    REQUIRE(
+        member_of(s.ws, std::string{"/v3?"} + key, key) == member_of(s.ws, "/v3", key));
+  }
+  REQUIRE(
+      member_of(s.ws, "/v3?EXTENDED_TYPE", "EXTENDED_TYPE").find("position.cartesian.x")
+      != std::string::npos);
+  REQUIRE(
+      member_of(s.ws, "/ctn?CONTENTS", "CONTENTS")
+      == member_of(s.ws, "/ctn", "CONTENTS"));
+  REQUIRE(http_get(s.ws, "/f?TYPE&ACCESS").body == "{\"TYPE\":\"f\",\"ACCESS\":3}");
+}
+
+TEST_CASE("test_oscquery_attribute_unknown", "test_oscquery_attribute_unknown")
+{
+  // An attribute the server does not know is 204, without a body
+  served_device s{5704};
+  s.float_parameter("/ctn/sub", 0.f);
+
+  for(const char* query :
+      {"/ctn/sub?BOGUS", "/ctn?BOGUS", "/?BOGUS", "/ctn/sub?BOGUS=1"})
+  {
+    INFO(query);
+    auto r = http_get(s.ws, query);
+    REQUIRE(r.status == 204);
+    REQUIRE(r.body.empty());
+  }
+  REQUIRE(http_get(s.ws, "/nothing?BOGUS").status == 404);
+  // A known attribute with a value is still that attribute
+  REQUIRE(http_get(s.ws, "/ctn/sub?VALUE=1").status == 200);
+  REQUIRE(
+      member_of(s.ws, "/ctn/sub?VALUE=1", "VALUE")
+      == member_of(s.ws, "/ctn/sub", "VALUE"));
 }

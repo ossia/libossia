@@ -137,7 +137,7 @@ public:
           ossia::small_vector<std::string, 5> attributes;
           for(const auto& elt : parameters)
           {
-            if(elt.second.empty())
+            if(oscquery::json_writer::known_attribute(elt.first))
             {
               attributes.push_back(elt.first);
             }
@@ -147,6 +147,12 @@ public:
           {
             return oscquery::json_writer::query_attributes(*node, attributes);
           }
+
+          // Nothing this server knows: as the proposal says of an attribute
+          // it does not support
+          ossia::net::server_reply none;
+          none.type = ossia::net::server_reply::data_type::no_content;
+          return none;
         }
         else
         {
