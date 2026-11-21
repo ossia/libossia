@@ -5,6 +5,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/common/node_visitor.hpp>
@@ -187,6 +188,8 @@ bool oscquery_server_protocol_base::push_impl(const T& addr, const ossia::value&
   auto val = bound_value(addr, v);
   if(val.valid())
   {
+    if(crossing_window().count() > 0)
+      record_sent(ossia::net::osc_address(addr), val);
     // Push to all clients
     auto critical = m_forceWS || addr.get_critical();
     if(!critical)
@@ -256,6 +259,9 @@ bool oscquery_server_protocol_base::push_bundle(
   using namespace ossia::net;
   using OscVersion = osc_extended_policy;
 
+  if(crossing_window().count() > 0)
+    for(auto* p : addresses)
+      record_sent(ossia::net::osc_address(*p), p->value());
   if(auto bundle = ossia::net::make_bundle(
          ossia::net::bundle_client_policy<OscVersion>{}, addresses))
   {
@@ -271,6 +277,9 @@ bool oscquery_server_protocol_base::push_raw_bundle(
   using namespace ossia::net;
   using OscVersion = osc_extended_policy;
 
+  if(crossing_window().count() > 0)
+    for(auto& p : addresses)
+      record_sent(ossia::net::osc_address(p), p.value());
   if(auto bundle = ossia::net::make_bundle(
          ossia::net::bundle_client_policy<OscVersion>{}, addresses))
   {
@@ -290,6 +299,9 @@ bool oscquery_server_protocol_base::echo_incoming_message(
       net::parameter_base, osc_extended_policy, socket_writer<udp_send_socket>>;
 
   bool not_this_protocol = &id.protocol != this;
+  if(crossing_window().count() > 0)
+    record_sent(
+        ossia::net::osc_address(addr), val, not_this_protocol ? 0 : id.identifier);
   // we know that the value is valid
   // Push to all clients except ours
   auto critical = addr.get_critical();
@@ -554,7 +566,69 @@ void oscquery_server_protocol_base::process_raw_osc_data(
 
 bool oscquery_server_protocol_base::wants_origin() const noexcept
 {
-  return get_identify_senders();
+  return get_identify_senders() || crossing_window().count() > 0;
+}
+
+void oscquery_server_protocol_base::record_sent(
+    std::string address, const ossia::value& v, uintptr_t skipped)
+{
+  if(crossing_window().count() <= 0)
+    return;
+  lock_t lock(m_sentMutex);
+  m_sent.insert_or_assign(
+      std::move(address), sent_value{std::chrono::steady_clock::now(), v, skipped});
+}
+
+std::optional<ossia::value> oscquery_server_protocol_base::sent_within_window(
+    std::string_view address, uintptr_t origin)
+{
+  const auto window = crossing_window();
+  if(window.count() <= 0 || !origin)
+    return std::nullopt;
+  lock_t lock(m_sentMutex);
+  auto it = m_sent.find(std::string(address));
+  if(it == m_sent.end() || it->second.skipped == origin
+     || std::chrono::steady_clock::now() - it->second.time > window)
+    return std::nullopt;
+  return it->second.value;
+}
+
+void oscquery_server_protocol_base::answer_crossing(
+    std::string_view address, uintptr_t origin, const ossia::value& sent)
+{
+  auto* node = ossia::net::find_node(m_device->get_root_node(), address);
+  auto* param = node ? node->get_parameter() : nullptr;
+  if(!param)
+    return;
+  // The client's value differs from what it was sent: it applied the
+  // server's value after its own, and keeps it unless it gets the final one
+  const auto value = param->value();
+  if(value == sent)
+    return;
+
+  using namespace ossia::net;
+  using send_visitor = osc_value_send_visitor<
+      net::parameter_base, osc_extended_policy, socket_writer<udp_send_socket>>;
+  lock_t lock(m_clientsMutex);
+  for(auto& client_p : m_clients)
+  {
+    auto& client = *client_p;
+    if((uintptr_t)client.connection.lock().get() != origin)
+      continue;
+    if(m_logger.outbound_logger)
+      m_logger.outbound_logger->info("Out: {} {}", address, value);
+    if(client.osc_socket && !param->get_critical())
+    {
+      send_visitor vis{*param, ossia::net::osc_address(*param), {*client.osc_socket}};
+      value.apply(vis);
+    }
+    else
+    {
+      m_websocketServer->send_binary_message(
+          client.connection, ossia::oscquery::osc_writer::to_message(*param, value));
+    }
+    break;
+  }
 }
 
 uintptr_t oscquery_server_protocol_base::client_of_sender_port(int port)
@@ -570,9 +644,14 @@ try
   // The sender is known with set_identify_senders only, as before
   auto id = ossia::net::message_origin_identifier{
       *this, get_identify_senders() ? origin : client_identifier(m_clients, {})};
+  // set_crossing_window. Read before the value is applied: forwarding it to
+  // the other clients replaces what was sent
+  auto sent = sent_within_window(m.AddressPattern(), origin);
   ossia::net::on_input_message<true>(
       m.AddressPattern(), ossia::net::osc_message_applier{id, m}, m_listening, *m_device,
       m_logger);
+  if(sent)
+    answer_crossing(m.AddressPattern(), origin, *sent);
 }
 catch(const std::exception& e)
 {
