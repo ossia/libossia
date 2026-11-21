@@ -14,6 +14,7 @@
 #include "include_catch.hpp"
 
 #include <iostream>
+#include <limits>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -608,6 +609,57 @@ TEST_CASE("test_json_unit_vec3", "test_json_unit_vec3")
     REQUIRE(doc["EXTENDED_TYPE"].GetArray()[2] == "position.cartesian.z"s);
   }
 }
+// JSON has no NaN, no Infinity and no map: such values are written as null, so
+// that a strict JSON parser still reads the node, and the whole tree.
+TEST_CASE("test_json_not_finite_and_map", "test_json_not_finite_and_map")
+{
+  generic_device serv{"foo"};
+  TestDeviceRef dev{serv};
+
+  const float inf = std::numeric_limits<float>::infinity();
+  dev.float_addr->push_value(std::numeric_limits<float>::quiet_NaN());
+  dev.float_addr->get_node().set(domain_attribute{}, make_domain(-inf, 0.f));
+  dev.vec3f_addr->push_value(ossia::vec3f{0.f, inf, 1.f});
+  auto map_addr = serv.create_child("map")->create_parameter(val_type::MAP);
+
+  auto value_of = [](const rapidjson::Value& v) -> const rapidjson::Value& {
+    return v.IsArray() && v.Size() == 1 ? v[0] : v;
+  };
+
+  {
+    auto json = oscquery::json_writer{}.query_namespace(dev.float_addr->get_node());
+    INFO(json.GetString());
+    rapidjson::Document doc;
+    doc.Parse<rapidjson::kParseNoFlags>(json.GetString());
+    REQUIRE(!doc.HasParseError());
+    REQUIRE(doc.HasMember("VALUE"));
+    CHECK(value_of(doc["VALUE"]).IsNull());
+  }
+  {
+    auto json = oscquery::json_writer{}.query_namespace(dev.vec3f_addr->get_node());
+    INFO(json.GetString());
+    rapidjson::Document doc;
+    doc.Parse<rapidjson::kParseNoFlags>(json.GetString());
+    REQUIRE(!doc.HasParseError());
+    REQUIRE(doc["VALUE"].IsArray());
+    REQUIRE(doc["VALUE"].Size() == 3);
+    CHECK(doc["VALUE"][1].IsNull());
+  }
+  {
+    auto json = oscquery::json_writer{}.query_namespace(map_addr->get_node());
+    INFO(json.GetString());
+    rapidjson::Document doc;
+    doc.Parse<rapidjson::kParseNoFlags>(json.GetString());
+    REQUIRE(!doc.HasParseError());
+  }
+  {
+    auto json = oscquery::json_writer{}.query_namespace(serv.get_root_node());
+    rapidjson::Document doc;
+    doc.Parse<rapidjson::kParseNoFlags>(json.GetString());
+    CHECK(!doc.HasParseError());
+  }
+}
+
 TEST_CASE("test_oscquery_http", "test_oscquery_http")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};

@@ -10,11 +10,11 @@ inline void write_json(ossia::json_writer& writer, int v)
 }
 inline void write_json(ossia::json_writer& writer, double v)
 {
-  writer.Double(v);
+  write_number(writer, v);
 }
 inline void write_json(ossia::json_writer& writer, float v)
 {
-  writer.Double(v);
+  write_number(writer, v);
 }
 inline void write_json(ossia::json_writer& writer, bool v)
 {
@@ -177,7 +177,7 @@ struct domain_to_json
         writer.StartArray();
 
         for(const auto val : dom.values[i])
-          writer.Double(val);
+          write_number(writer, val);
 
         writer.EndArray();
         writer.EndObject();

@@ -16,7 +16,7 @@ struct value_to_json
   const ossia::unit_t& unit;
   void operator()(impulse) const { writer.Null(); }
   void operator()(int v) const { writer.Int(v); }
-  void operator()(float v) const { writer.Double(v); }
+  void operator()(float v) const { write_number(writer, v); }
   void operator()(bool v) const
   {
     writer.Null(); // the value is already encoded in the typetag
@@ -51,7 +51,7 @@ struct value_to_json
     writer.StartArray();
     for(std::size_t i = 0; i < N; i++)
     {
-      writer.Double(t[i]);
+      write_number(writer, t[i]);
     }
     writer.EndArray();
   }
@@ -66,7 +66,8 @@ struct value_to_json
     writer.EndArray();
   }
 
-  void operator()(const value_map_type& vec) const { }
+  // OSCQuery has no map: without a value, the key before it breaks the JSON
+  void operator()(const value_map_type& vec) const { writer.Null(); }
   void operator()() const { throw std::runtime_error("value_to_json: no type"); }
 };
 
