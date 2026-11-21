@@ -596,6 +596,25 @@ json_writer::string_t json_writer::query_host_info(
   wr.Key("DESCRIPTION");
   wr.Bool(true);
 
+  // Every other attribute a node may be served with (REFRESH_RATE, PRIORITY,
+  // STEP_SIZE...), from the lists the writer serves, so that the two stay the
+  // same: a client takes an attribute missing from EXTENSIONS for not supported.
+  {
+    constexpr std::string_view written[]{
+        "TYPE",     "ACCESS", "VALUE",         "RANGE",    "TAGS",
+        "CLIPMODE", "UNIT",   "EXTENDED_TYPE", "CRITICAL", "DESCRIPTION"};
+    auto declare = [&](auto attr) {
+      using Attr = typename decltype(attr)::type;
+      const std::string_view key = detail::metadata<Attr>::key();
+      if(ossia::contains(written, key))
+        return;
+      write_json_key(wr, key);
+      wr.Bool(true);
+    };
+    ossia::for_each_tagged(detail::base_attributes{}, declare);
+    ossia::for_each_tagged(detail::extended_attributes{}, declare);
+  }
+
   wr.Key("HTML");
   wr.Bool(true);
 

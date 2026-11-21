@@ -817,6 +817,39 @@ TEST_CASE("test_oscquery_host_info_echo", "test_oscquery_host_info_echo")
   REQUIRE(!echo());
 }
 
+TEST_CASE("test_oscquery_host_info_attributes", "test_oscquery_host_info_attributes")
+{
+  // Every attribute a node is served with is declared in EXTENSIONS
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1242, 5692};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  auto& n = find_or_create_node(serv, "/main");
+  n.create_parameter(ossia::val_type::FLOAT);
+  n.set(refresh_rate_attribute{}, 100);
+  n.set(value_step_size_attribute{}, 0.5);
+  n.set(priority_attribute{}, 50);
+  n.set(repetition_filter_attribute{}, repetition_filter::ON);
+  n.set(default_value_attribute{}, ossia::value(0.));
+  n.set(app_name_attribute{}, "AppName");
+
+  std::string json = oscquery::json_writer{}.query_namespace(n).GetString();
+  rapidjson::Document node;
+  node.Parse(json.c_str());
+  REQUIRE(!node.HasParseError());
+
+  auto ext = host_info_extensions(5692);
+  REQUIRE(!ext.empty());
+  for(auto it = node.MemberBegin(); it != node.MemberEnd(); ++it)
+  {
+    const std::string key = it->name.GetString();
+    if(key == "FULL_PATH" || key == "CONTENTS")
+      continue;
+    INFO(key);
+    auto e = ext.find(key);
+    REQUIRE(e != ext.end());
+    REQUIRE(e->second);
+  }
+}
+
 TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")
 {
   // Here we check that a nested list is not flatten when sent by OSC
