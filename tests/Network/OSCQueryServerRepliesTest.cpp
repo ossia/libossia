@@ -63,3 +63,15 @@ TEST_CASE("test_oscquery_url_fragment", "test_oscquery_url_fragment")
   REQUIRE(http_get(s.ws, "/level?VALUE#frag").body == "{\"VALUE\":0.5}");
   REQUIRE(http_get(s.ws, "/nothing#frag").status == 404);
 }
+
+TEST_CASE("test_oscquery_http_error_status", "test_oscquery_http_error_status")
+{
+  // A node that is not there is 404, a bad request 400: not 500
+  served_device s{5702};
+  s.float_parameter("/level", 0.5f);
+
+  REQUIRE(http_get(s.ws, "/level?VALUE").status == 200);
+  REQUIRE(http_get(s.ws, "/nothing").status == 404);
+  REQUIRE(http_get(s.ws, "/nothing?TYPE").status == 404);
+  REQUIRE(http_get(s.ws, "/level?LISTEN=true").status == 400);
+}
