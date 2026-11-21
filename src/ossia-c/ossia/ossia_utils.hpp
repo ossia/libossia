@@ -153,6 +153,8 @@ inline char* copy_string(const std::string& str)
 {
   const auto n = str.size();
   auto mbuffer = (char*)std::malloc(n + 1);
+  if(!mbuffer)
+    return nullptr;
   std::memcpy(mbuffer, str.data(), n);
   mbuffer[n] = 0;
   return mbuffer;
