@@ -25,9 +25,10 @@ static auto get_time()
 
 minuit_protocol::minuit_protocol(
     const std::string& local_name, const std::string& remote_ip, uint16_t remote_port,
-    uint16_t local_port)
+    uint16_t local_port, bool announce)
     : protocol_base{flags{SupportsMultiplex}}
     , m_localName{local_name}
+    , m_announce{announce}
     , m_ip{remote_ip}
     , m_remotePort{remote_port}
     , m_localPort{local_port}
@@ -398,6 +399,8 @@ void minuit_protocol::on_received_message(
 void minuit_protocol::update_zeroconf()
 try
 {
+  if(!m_announce)
+    return;
   m_zcServer = make_zeroconf_server(
       m_localName + " Minuit server", "_minuit._tcp", m_localName, m_localPort,
       m_remotePort);

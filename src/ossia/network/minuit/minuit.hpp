@@ -33,9 +33,12 @@ private:
   using lock_type = lock_t;
 
 public:
+  //! announce: publish the device as "<local_name> Minuit server" under
+  //! _minuit._tcp. A device built for a Minuit device found under _minuit._tcp
+  //! passes false: its own announcement would be one more device to build.
   minuit_protocol(
       const std::string& local_name, const std::string& remote_ip, uint16_t remote_port,
-      uint16_t local_port);
+      uint16_t local_port, bool announce = true);
 
   minuit_protocol(const minuit_protocol&) = delete;
   minuit_protocol(minuit_protocol&&) = delete;
@@ -85,6 +88,7 @@ private:
   void update_zeroconf();
 
   std::string m_localName;
+  bool m_announce{true};
   std::string m_ip;
   uint16_t m_remotePort{}; /// the port that a remote device opens
   uint16_t m_localPort{};  /// the port where a remote device sends OSC
