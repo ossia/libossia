@@ -42,18 +42,34 @@ bool wait_for(F f, std::chrono::milliseconds timeout = 2000ms)
   return f();
 }
 
-// A server of the test, with a float /level, that answers its value reads
-// 300 ms late and sends values when it is told to
+// A server of the test, with a float /level at 0.3, that answers its HTTP
+// value reads with http_value, http_delay late, its reads after LISTEN as
+// listen_answer says, and sends values when it is told to
 struct slow_server
 {
+  enum class listen_answer
+  {
+    answer,  // with 0.8
+    silent,  // nothing
+    overtake // 0.9 as a value first, then 0.8 as the answer
+  };
   std::mutex mutex;
   ossia::net::websocket_server::connection_handler client;
   std::atomic_bool connected{false};
   std::atomic_int value_reads{0};
+  std::atomic_int listen_reads{0};
+  std::chrono::milliseconds http_delay{300};
+  float http_value{100.f};
+  listen_answer on_listen_read{listen_answer::answer};
   ossia::net::websocket_server server;
   std::thread thread;
 
-  explicit slow_server(int port)
+  explicit slow_server(
+      int port, std::chrono::milliseconds delay = 300ms, float value = 100.f,
+      listen_answer listen = listen_answer::answer)
+      : http_delay{delay}
+      , http_value{value}
+      , on_listen_read{listen}
   {
     server.set_open_handler([this](auto hdl) {
       std::lock_guard l{mutex};
@@ -67,12 +83,21 @@ struct slow_server
         return reply(R"({"NAME":"slow","EXTENSIONS":{"TYPE":true,"VALUE":true}})");
       if(resource == "/")
         return reply(
-            R"({"FULL_PATH":"/","CONTENTS":{"level":{"FULL_PATH":"/level","TYPE":"f","VALUE":[0.0],"ACCESS":3}}})");
+            R"({"FULL_PATH":"/","CONTENTS":{"level":{"FULL_PATH":"/level","TYPE":"f","VALUE":[0.3],"ACCESS":3}}})");
       if(resource == "/level?VALUE")
       {
         value_reads++;
-        std::this_thread::sleep_for(300ms);
-        return reply(R"({"VALUE":100.0})");
+        std::this_thread::sleep_for(http_delay);
+        return reply("{\"VALUE\":" + std::to_string(http_value) + "}");
+      }
+      if(resource == "/level?VALUE&FULL_PATH")
+      {
+        listen_reads++;
+        if(on_listen_read == listen_answer::silent)
+          return reply("");
+        if(on_listen_read == listen_answer::overtake)
+          send_level(0.9f);
+        return reply(R"({"FULL_PATH":"/level","VALUE":0.8})");
       }
       // A WebSocket command of the mirror (LISTEN...)
       return reply("");
@@ -258,4 +283,98 @@ TEST_CASE("test_oscquery_mirror_read_older_than_a_write", "[oscquery]")
   CHECK(ossia::convert<float>(remote->value()) == 300.f);
   std::lock_guard lock{mutex};
   CHECK(received == std::vector<float>{100.f});
+}
+
+namespace
+{
+// A mirror of a slow_server, that reads after LISTEN or not, and follows
+// /level
+struct listen_mirror
+{
+  ossia::oscquery::oscquery_mirror_protocol* proto;
+  generic_device dev;
+  parameter_base* level{};
+  std::mutex mutex;
+  std::vector<float> received;
+
+  listen_mirror(slow_server& server, int port, bool read_after_listen)
+      : proto{new ossia::oscquery::oscquery_mirror_protocol(
+            "ws://127.0.0.1:" + std::to_string(port), uint16_t(port + 5000))}
+      , dev{std::unique_ptr<protocol_base>(proto), "listen_mirror"}
+  {
+    proto->set_read_after_listen(read_after_listen);
+    proto->update(dev.get_root_node());
+    auto node = find_node(dev.get_root_node(), "/level");
+    REQUIRE(node);
+    level = node->get_parameter();
+    REQUIRE(level);
+    REQUIRE(wait_for([&] { return server.connected.load() && proto->connected(); }));
+    // The LISTEN, and the read after it
+    level->add_callback([this](const ossia::value& v) {
+      std::lock_guard lock{mutex};
+      received.push_back(ossia::convert<float>(v));
+    });
+  }
+  std::vector<float> values()
+  {
+    std::lock_guard lock{mutex};
+    return received;
+  }
+  float value() const { return ossia::convert<float>(level->value()); }
+};
+}
+
+TEST_CASE("test_oscquery_mirror_read_after_listen_off", "[oscquery]")
+{
+  // As before: nothing is read after LISTEN, and the value the server
+  // changed before it applied the LISTEN is not known
+  slow_server server{5798};
+  listen_mirror m{server, 5798, false};
+  REQUIRE(!m.proto->get_read_after_listen());
+  std::this_thread::sleep_for(500ms);
+  CHECK(server.listen_reads == 0);
+  CHECK(m.value() == 0.3f);
+  CHECK(m.values().empty());
+}
+
+TEST_CASE("test_oscquery_mirror_read_after_listen", "[oscquery]")
+{
+  slow_server server{5797};
+  listen_mirror m{server, 5797, true};
+  REQUIRE(wait_for([&] { return m.value() == 0.8f; }));
+  CHECK(server.listen_reads == 1);
+  CHECK(
+      m.proto->get_listen_read_mode()
+      == ossia::oscquery::oscquery_mirror_protocol::listen_read_mode::websocket);
+  std::this_thread::sleep_for(300ms);
+  CHECK(m.values() == std::vector<float>{0.8f});
+}
+
+TEST_CASE("test_oscquery_mirror_read_after_listen_overtaken", "[oscquery]")
+{
+  // A value of the parameter comes before the answer: it is newer, and the
+  // answer is dropped
+  slow_server server{5796, 300ms, 100.f, slow_server::listen_answer::overtake};
+  listen_mirror m{server, 5796, true};
+  REQUIRE(wait_for([&] { return server.listen_reads == 1; }));
+  std::this_thread::sleep_for(500ms);
+  CHECK(m.value() == 0.9f);
+  CHECK(m.values() == std::vector<float>{0.9f});
+}
+
+TEST_CASE("test_oscquery_mirror_read_after_listen_over_http", "[oscquery]")
+{
+  // A server that answers nothing on the WebSocket: the read is sent again
+  // over HTTP after listen_read_probe
+  slow_server server{5795, 0ms, 0.7f, slow_server::listen_answer::silent};
+  listen_mirror m{server, 5795, true};
+  REQUIRE(wait_for([&] {
+    return m.value() == 0.7f;
+  }, ossia::oscquery::oscquery_mirror_protocol::listen_read_probe + 1000ms));
+  CHECK(server.value_reads == 1);
+  CHECK(
+      m.proto->get_listen_read_mode()
+      == ossia::oscquery::oscquery_mirror_protocol::listen_read_mode::http);
+  std::this_thread::sleep_for(300ms);
+  CHECK(m.values() == std::vector<float>{0.7f});
 }
