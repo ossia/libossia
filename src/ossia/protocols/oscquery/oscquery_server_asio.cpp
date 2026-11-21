@@ -546,18 +546,30 @@ void oscquery_server_protocol_base::rename_node(
 }
 
 void oscquery_server_protocol_base::process_raw_osc_data(
-    const char* data, std::size_t sz)
+    const char* data, std::size_t sz, uintptr_t origin)
 {
-  auto on_message = [this](auto&& msg) { this->on_osc_message(msg); };
+  auto on_message = [this, origin](auto&& msg) { this->on_osc_message(msg, origin); };
   ossia::net::osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
 }
 
-void oscquery_server_protocol_base::on_osc_message(const oscpack::ReceivedMessage& m)
+bool oscquery_server_protocol_base::wants_origin() const noexcept
+{
+  return get_identify_senders();
+}
+
+uintptr_t oscquery_server_protocol_base::client_of_sender_port(int port)
+{
+  lock_t lock(m_clientsMutex);
+  return client_identifier(m_clients, oscpack::IpEndpointName{port});
+}
+
+void oscquery_server_protocol_base::on_osc_message(
+    const oscpack::ReceivedMessage& m, uintptr_t origin)
 try
 {
-  // TODO
-  auto id
-      = ossia::net::message_origin_identifier{*this, client_identifier(m_clients, {})};
+  // The sender is known with set_identify_senders only, as before
+  auto id = ossia::net::message_origin_identifier{
+      *this, get_identify_senders() ? origin : client_identifier(m_clients, {})};
   ossia::net::on_input_message<true>(
       m.AddressPattern(), ossia::net::osc_message_applier{id, m}, m_listening, *m_device,
       m_logger);
@@ -780,8 +792,10 @@ ossia::net::server_reply oscquery_server_protocol_base::on_binary_ws_message(
     const oscquery_server_protocol_base::connection_handler& hdl,
     const std::string& message)
 {
-  // TODO here we know where the message comes from, can be used for id
-  process_raw_osc_data(message.data(), message.size());
+  // The connection identifies the client, as for its other messages
+  process_raw_osc_data(
+      message.data(), message.size(),
+      wants_origin() ? (uintptr_t)hdl.lock().get() : uintptr_t{});
   return {};
 }
 
@@ -802,8 +816,14 @@ void oscquery_server_protocol::set_device(ossia::net::device_base& dev)
   oscquery_server_protocol_base::set_device(dev);
 
   m_oscServer->open();
-  m_oscServer->receive(
-      [this](const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
+  // The client a datagram comes from, by its UDP source port, as
+  // ossia::oscquery::oscquery_server_protocol does
+  m_oscServer->receive_from(
+      [this](
+          const char* data, std::size_t sz, const boost::asio::ip::udp::endpoint& from) {
+    process_raw_osc_data(
+        data, sz, wants_origin() ? client_of_sender_port(from.port()) : uintptr_t{});
+  });
 }
 
 void oscquery_server_protocol::update_zeroconf()
