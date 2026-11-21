@@ -67,11 +67,6 @@ ossia_value_t ossia_value_create_bool(int value)
   return convert(static_cast<bool>(value));
 }
 
-ossia_value_t ossia_value_create_char(char value)
-{
-  return convert(char{value});
-}
-
 ossia_value_t ossia_value_create_string(const char* value)
 {
   return convert(std::string{value});
@@ -286,10 +281,6 @@ int ossia_value_convert_int(ossia_value_t val)
 float ossia_value_convert_float(ossia_value_t val)
 {
   return convert_value<float>(val);
-}
-char ossia_value_convert_char(ossia_value_t val)
-{
-  return convert_value<int32_t>(val);
 }
 int ossia_value_convert_bool(ossia_value_t val)
 {

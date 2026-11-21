@@ -36,6 +36,13 @@ To expose objects to the API, either :
 ## Low-level C# API:
 * An example is given in `ossia/examples/CustomDevice.cs`
 
+The native plugin uses the C calling convention. Byte-array conversions return
+their data and length through output parameters; release the data with
+`ossia_string_free`. Preset strings use `ossia_free_string` instead.
+
+Preset result codes match the native enum. If you referenced
+`OSSIA_PRESETS_INVALID_PARAMETER`, use `OSSIA_PRESETS_INVALID_ADDRESS`.
+
 # TODO
 
 * Materials

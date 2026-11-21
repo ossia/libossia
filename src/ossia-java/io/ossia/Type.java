@@ -10,5 +10,4 @@ public interface Type
   public static final int BOOL_T = 6;
   public static final int STRING_T = 7;
   public static final int LIST_T = 8;
-  public static final int CHAR_T = 9;
 }
