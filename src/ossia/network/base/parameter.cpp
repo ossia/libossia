@@ -123,14 +123,13 @@ parameter_base& parameter_base::set_muted(bool v)
 
 bool parameter_base::get_critical() const noexcept
 {
-  return m_critical;
+  return m_critical.load(std::memory_order_relaxed);
 }
 
 parameter_base& parameter_base::set_critical(bool v)
 {
-  if(m_critical != v)
+  if(m_critical.exchange(v, std::memory_order_relaxed) != v)
   {
-    m_critical = v;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_critical()));
   }
   return *this;
