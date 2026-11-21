@@ -23,19 +23,22 @@ public:
   template <typename Mapper>
   static auto parse_http_request(const std::string& request, Mapper&& mapper)
   {
+    // The fragment is not for the server
+    const std::string_view url = std::string_view(request).substr(0, request.find('#'));
+
     // Split on "?"
     std::string_view path;
     std::string_view queries;
 
-    auto idx = request.find_first_of('?');
-    if(idx != std::string::npos)
+    auto idx = url.find_first_of('?');
+    if(idx != std::string_view::npos)
     {
-      path = std::string_view(request.data(), idx);
-      queries = std::string_view(request.data() + idx + 1, request.size() - idx);
+      path = url.substr(0, idx);
+      queries = url.substr(idx + 1);
     }
     else
     {
-      path = request;
+      path = url;
     }
 
     std::string clean_path;

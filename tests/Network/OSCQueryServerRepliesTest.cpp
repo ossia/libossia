@@ -51,3 +51,15 @@ TEST_CASE("test_oscquery_listen_data_not_string", "test_oscquery_listen_data_not
 
   REQUIRE(http_get(s.ws, "/level?VALUE").body == "{\"VALUE\":0.5}");
 }
+
+TEST_CASE("test_oscquery_url_fragment", "test_oscquery_url_fragment")
+{
+  // The fragment of the URL is stripped and disregarded
+  served_device s{5701};
+  s.float_parameter("/level", 0.5f);
+
+  REQUIRE(http_get(s.ws, "/level#frag").status == 200);
+  REQUIRE(http_get(s.ws, "/level#frag").body == http_get(s.ws, "/level").body);
+  REQUIRE(http_get(s.ws, "/level?VALUE#frag").body == "{\"VALUE\":0.5}");
+  REQUIRE(http_get(s.ws, "/nothing#frag").status == 404);
+}
