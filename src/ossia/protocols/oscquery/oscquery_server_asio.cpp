@@ -422,6 +422,11 @@ void oscquery_server_protocol_base::set_device(net::device_base& dev)
 
 void oscquery_server_protocol_base::stop()
 {
+  // Withdraw the announcement first: clients that look the server up by name
+  // stop finding it before its connections close, and a server stopped but
+  // not destroyed is no longer announced.
+  m_zeroconfServerWS = {};
+
   if(m_websocketServer)
   {
     try
@@ -826,6 +831,7 @@ void oscquery_server_protocol::update_zeroconf()
 
 void oscquery_server_protocol::stop()
 {
+  m_zeroconfServerOSC = {};
   try
   {
     m_oscServer->close();
