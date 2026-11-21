@@ -146,3 +146,18 @@ TEST_CASE("test_oscquery_mirror_no_crossing_no_read", "[oscquery]")
   std::this_thread::sleep_for(600ms);
   CHECK(s.values() == std::vector<float>{1.f});
 }
+
+TEST_CASE("test_oscquery_mirror_read_again_unchanged", "[oscquery]")
+{
+  // The server's value comes after the client's write, and differs from it:
+  // it is read again, and the server answers the value it already sent.
+  // What follows the parameter gets it once.
+  setup s{true};
+  s.remote->push_value_quiet(200.f);
+  REQUIRE(wait_for([&] { return ossia::convert<float>(s.level.value()) == 200.f; }));
+  s.level.push_value(100.f);
+  REQUIRE(wait_for([&] { return !s.values().empty(); }));
+  std::this_thread::sleep_for(
+      ossia::oscquery::oscquery_mirror_protocol::settle_delay + 300ms);
+  CHECK(s.values() == std::vector<float>{100.f});
+}
