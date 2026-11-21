@@ -229,6 +229,7 @@ bool node_base::remove_child(const std::string& name)
     if(it != m_children.end())
     {
       cld = std::move(*it);
+      cld->m_removed = true;
       m_children.erase(it);
     }
   }
@@ -261,6 +262,7 @@ bool node_base::remove_child(const node_base& n)
     if(it != m_children.end())
     {
       cld = std::move(*it);
+      cld->m_removed = true;
       m_children.erase(it);
     }
   }
@@ -294,6 +296,7 @@ void node_base::clear_children()
 
   for(auto& child : to_remove)
   {
+    child->m_removed = true;
     child->clear_children();
     child->remove_parameter();
     dev.on_node_removing(*child);

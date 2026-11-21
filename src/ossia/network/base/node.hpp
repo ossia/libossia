@@ -161,6 +161,9 @@ public:
   //! Remove all the children.
   void clear_children();
 
+  //! Taken out of the tree: observers may still hear of its parameter being removed
+  bool is_removed() const noexcept { return m_removed; }
+
   operator const extended_attributes&() const
   {
     return m_extended;
@@ -214,6 +217,7 @@ protected:
   children_t m_children TS_GUARDED_BY(m_mutex);
   extended_attributes m_extended{0};
   std::string m_oscAddressCache;
+  bool m_removed{};
 };
 }
 }

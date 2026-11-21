@@ -86,6 +86,16 @@ struct raw_ws_client
     return received;
   }
 
+  //! How many messages received hold that text
+  int count(const std::string& what)
+  {
+    std::lock_guard l{mutex};
+    int n = 0;
+    for(auto& m : received)
+      n += m.find(what) != std::string::npos;
+    return n;
+  }
+
   std::mutex mutex;
   std::vector<std::string> received;
   ossia::net::websocket_client client;

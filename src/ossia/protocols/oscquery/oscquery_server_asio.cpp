@@ -659,6 +659,11 @@ catch(...)
 void oscquery_server_protocol_base::on_parameterChanged(
     const ossia::net::parameter_base& p)
 {
+  // Created, or removed from a node that stays: for a node taken out of the
+  // tree, its PATH_REMOVED says it all
+  if(p.get_node().is_removed())
+    return;
+
   on_attributeChanged(p.get_node(), ossia::net::text_value_type());
 }
 

@@ -6,8 +6,10 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
@@ -159,4 +161,71 @@ TEST_CASE("test_oscquery_attribute_unknown", "test_oscquery_attribute_unknown")
   REQUIRE(
       member_of(s.ws, "/ctn/sub?VALUE=1", "VALUE")
       == member_of(s.ws, "/ctn/sub", "VALUE"));
+}
+
+namespace
+{
+void settle()
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+}
+
+// One ATTRIBUTES_CHANGED for a new parameter, none after PATH_REMOVED
+void tree_changes_of_a_parameter(generic_device& dev, int ws_port)
+{
+  settle();
+  ossia_test::raw_ws_client c{ws_port};
+  REQUIRE(c.connected());
+  settle();
+  auto& root = dev.get_root_node();
+
+  // Added: its type once
+  auto& node = find_or_create_node(dev, "/added");
+  node.create_parameter(val_type::FLOAT);
+  settle();
+  REQUIRE(c.count("\"PATH_ADDED\"") == 1);
+  REQUIRE(c.count("\"ATTRIBUTES_CHANGED\"") == 1);
+
+  // The parameter alone removed, the node stays: clients are told
+  node.remove_parameter();
+  settle();
+  REQUIRE(c.count("\"ATTRIBUTES_CHANGED\"") == 2);
+  REQUIRE(c.count("\"PATH_REMOVED\"") == 0);
+
+  // The node removed: PATH_REMOVED and nothing after it
+  node.create_parameter(val_type::FLOAT);
+  settle();
+  REQUIRE(c.count("\"ATTRIBUTES_CHANGED\"") == 3);
+  root.remove_child(node);
+  settle();
+  REQUIRE(c.count("\"PATH_REMOVED\"") == 1);
+  REQUIRE(c.count("\"ATTRIBUTES_CHANGED\"") == 3);
+
+  // Nor for the parameters below a node removed
+  auto& parent = find_or_create_node(dev, "/parent");
+  find_or_create_node(dev, "/parent/child").create_parameter(val_type::FLOAT);
+  settle();
+  const auto before = c.count("\"ATTRIBUTES_CHANGED\"");
+  root.remove_child(parent);
+  settle();
+  REQUIRE(c.count("\"ATTRIBUTES_CHANGED\"") == before);
+}
+}
+
+TEST_CASE("test_oscquery_tree_changes_once", "test_oscquery_tree_changes_once")
+{
+  served_device s{5705};
+  tree_changes_of_a_parameter(s.device, s.ws);
+}
+
+TEST_CASE("test_oscquery_asio_tree_changes_once", "test_oscquery_asio_tree_changes_once")
+{
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  generic_device dev{
+      std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, 1706, 5706),
+      "A"};
+  std::thread t{[ctx] { ctx->run(); }};
+  tree_changes_of_a_parameter(dev, 5706);
+  ctx->context.stop();
+  t.join();
 }

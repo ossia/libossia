@@ -35,6 +35,13 @@ generic_parameter::generic_parameter(ossia::net::node_base& node)
 {
 }
 
+generic_parameter::generic_parameter(ossia::net::node_base& node, ossia::val_type type)
+    : generic_parameter{node}
+{
+  m_valueType = type;
+  m_value = init_value(type);
+}
+
 generic_parameter::generic_parameter(
     const parameter_data& data, ossia::net::node_base& node)
     : ossia::net::parameter_base{node}
