@@ -12,6 +12,9 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
+#include <spdlog/sinks/ostream_sink.h>
+
+#include <sstream>
 #include <thread>
 
 using namespace ossia;
@@ -137,4 +140,90 @@ TEST_CASE(
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   ctx->context.stop();
   t.join();
+}
+
+namespace
+{
+// A WebSocket client that opens its connection and resets it at once: with
+// read_answer, once the server has answered the handshake
+void open_and_reset(int port, bool read_answer)
+{
+  boost::asio::io_context ctx;
+  boost::asio::ip::tcp::socket sock{ctx};
+  sock.connect({boost::asio::ip::make_address("127.0.0.1"), (unsigned short)port});
+  const std::string handshake
+      = "GET / HTTP/1.1\r\nHost: 127.0.0.1:" + std::to_string(port)
+        + "\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+          "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nSec-WebSocket-Version: 13\r\n\r\n";
+  boost::asio::write(sock, boost::asio::buffer(handshake));
+  if(read_answer)
+  {
+    std::string answer;
+    char buf[512];
+    boost::system::error_code ec;
+    while(answer.find("\r\n\r\n") == std::string::npos)
+    {
+      auto n = sock.read_some(boost::asio::buffer(buf), ec);
+      if(ec || n == 0)
+        break;
+      answer.append(buf, n);
+    }
+    REQUIRE(answer.find(" 101 ") != std::string::npos);
+  }
+  sock.set_option(boost::asio::socket_base::linger{true, 0});
+  sock.close();
+}
+
+// Clients that leave as soon as they are connected (a mirror stopped as it
+// connects, a port scan) are no error; a client that stays still connects
+template <typename F>
+std::string log_of(F&& f)
+{
+  std::ostringstream log;
+  auto sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(log);
+  ossia::logger().sinks().push_back(sink);
+  f();
+  ossia::logger().sinks().pop_back();
+  return log.str();
+}
+
+void clients_that_leave(int ws_port)
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  for(int i = 0; i < 200; i++)
+    open_and_reset(ws_port, i % 2 == 0);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  ossia_test::raw_ws_client c{ws_port};
+  REQUIRE(c.connected());
+}
+}
+
+TEST_CASE("test_oscquery_client_leaves_at_once", "test_oscquery_client_leaves_at_once")
+{
+  auto log = log_of([] {
+    generic_device dev{
+        std::make_unique<ossia::oscquery::oscquery_server_protocol>(1724, 5724), "A"};
+    clients_that_leave(5724);
+  });
+  INFO(log);
+  REQUIRE(log.find("on_connectionOpen") == std::string::npos);
+}
+
+TEST_CASE(
+    "test_oscquery_asio_client_leaves_at_once",
+    "test_oscquery_asio_client_leaves_at_once")
+{
+  auto log = log_of([] {
+    auto ctx = std::make_shared<ossia::net::network_context>();
+    generic_device dev{
+        std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+            ctx, 1725, 5725),
+        "A"};
+    std::thread t{[ctx] { ctx->run(); }};
+    clients_that_leave(5725);
+    ctx->context.stop();
+    t.join();
+  });
+  INFO(log);
+  REQUIRE(log.find("on_connectionOpen") == std::string::npos);
 }
