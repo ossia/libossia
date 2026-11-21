@@ -6,10 +6,12 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include "include_catch.hpp"
 
@@ -769,6 +771,42 @@ TEST_CASE("test_oscquery_critical_ws", "test_oscquery_critical_ws")
 
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<float>() == 4.5f);
+}
+
+TEST_CASE("test_oscquery_list_devices_timeout", "test_oscquery_list_devices_timeout")
+{
+  if(!ossia::net::zeroconf_supported())
+    return;
+
+  // A server announced over mDNS is listed by a browse of the given time,
+  // and the browse lasts as long as asked: a browse asked five times longer
+  // takes more than twice as long, no absolute time being assumed
+  const auto name
+      = "ossia_test_list_"
+        + std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count() % 1000000);
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1243, 5693};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), name};
+
+  auto browse = [](std::chrono::milliseconds t) {
+    const auto t0 = std::chrono::steady_clock::now();
+    auto devices = ossia::net::list_oscquery_devices(t);
+    return std::make_pair(std::move(devices), std::chrono::steady_clock::now() - t0);
+  };
+  const auto [devices, long_browse] = browse(std::chrono::milliseconds{1500});
+  const auto [unused, short_browse] = browse(std::chrono::milliseconds{300});
+  INFO(
+      "1500 ms asked: "
+      << std::chrono::duration_cast<std::chrono::milliseconds>(long_browse).count()
+      << " ms; 300 ms asked: "
+      << std::chrono::duration_cast<std::chrono::milliseconds>(short_browse).count()
+      << " ms");
+  REQUIRE(2 * short_browse < long_browse);
+
+  auto it = ossia::find_if(devices, [&](const auto& d) { return d.name == name; });
+  if(it == devices.end())
+    SKIP("this machine does not see its own mDNS announcements");
+  REQUIRE(it->port == 5693);
 }
 
 TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")

@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <chrono>
 #include <cinttypes>
 #include <memory>
 #include <string>
@@ -70,6 +71,17 @@ OSSIA_EXPORT std::vector<minuit_connection_data> list_minuit_devices();
  * @return A list of the zeroconf-enabled oscquery clients.
  */
 OSSIA_EXPORT std::vector<oscquery_connection_data> list_oscquery_devices();
+
+/**
+ * @brief list_oscquery_devices
+ *
+ * @note This function blocks for the given time, while it browses: the
+ * devices announced after it are not listed.
+ *
+ * @return A list of the zeroconf-enabled oscquery clients.
+ */
+OSSIA_EXPORT std::vector<oscquery_connection_data>
+list_oscquery_devices(std::chrono::milliseconds timeout);
 
 /**
  * @brief make_zeroconf_server
