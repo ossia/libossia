@@ -13,8 +13,27 @@
 #if defined(OSSIA_BENCHMARK)
 #include <chrono>
 #endif
+
+#include <memory>
+#include <mutex>
+
 namespace ossia::net
 {
+namespace detail
+{
+// The handlers given to websocketpp live in its endpoint and in each of its
+// connections, which outlive the websocket_server: stop() leaves the endpoint
+// to its context, and a connection that closes after a stop, or after the
+// destruction of the server's owner, still calls them from a later poll.
+// They hold this and do nothing once it is marked ended, by stop() or the
+// destructor. The mutex keeps the end and a handler running on another
+// thread apart; recursive, since a handler may stop the server.
+struct websocket_server_life
+{
+  std::recursive_mutex mutex;
+  bool alive{true};
+};
+}
 
 //! Low-level websocket & http server for oscquery
 class websocket_server
@@ -67,23 +86,36 @@ public:
     }
   }
 
+  ~websocket_server() { end_handlers(); }
+
   template <typename Handler>
   void set_open_handler(Handler h)
   {
-    m_server->set_open_handler(h);
+    m_server->set_open_handler([life = m_life, h](connection_handler hdl) {
+      std::lock_guard lock{life->mutex};
+      if(life->alive)
+        h(hdl);
+    });
   }
 
   template <typename Handler>
   void set_close_handler(Handler h)
   {
-    m_server->set_close_handler(h);
+    m_server->set_close_handler([life = m_life, h](connection_handler hdl) {
+      std::lock_guard lock{life->mutex};
+      if(life->alive)
+        h(hdl);
+    });
   }
 
   template <typename Handler>
   void set_message_handler(Handler h)
   {
     m_server->set_message_handler(
-        [this, h](connection_handler hdl, server_t::message_ptr msg) {
+        [this, life = m_life, h](connection_handler hdl, server_t::message_ptr msg) {
+      std::lock_guard lock{life->mutex};
+      if(!life->alive)
+        return;
 #if defined OSSIA_BENCHMARK
       auto t1 = std::chrono::high_resolution_clock::now();
 #endif
@@ -126,7 +158,10 @@ public:
 #endif
     });
 
-    m_server->set_http_handler([this, h](connection_handler hdl) {
+    m_server->set_http_handler([this, life = m_life, h](connection_handler hdl) {
+      std::lock_guard lock{life->mutex};
+      if(!life->alive)
+        return;
       auto con = m_server->get_con_from_hdl(hdl);
 
       // enable cross origin requests from anywhere
@@ -221,6 +256,8 @@ public:
 
   void stop()
   {
+    end_handlers();
+
     // this change was undone because of OSSIA/libossia#416 :
 
     // // (temporarily?) changed to stop_listening()
@@ -296,6 +333,14 @@ public:
   server_t& impl() { return *m_server; }
 
 protected:
+  void end_handlers()
+  {
+    std::lock_guard lock{m_life->mutex};
+    m_life->alive = false;
+  }
+
+  std::shared_ptr<detail::websocket_server_life> m_life{
+      std::make_shared<detail::websocket_server_life>()};
   std::shared_ptr<server_t> m_server;
   ossia::net::network_context_ptr m_context;
   bool m_owns_context{};
