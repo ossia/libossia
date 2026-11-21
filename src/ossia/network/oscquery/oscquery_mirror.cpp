@@ -2,6 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_mirror.hpp"
 
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/common/node_visitor.hpp>
@@ -20,8 +21,10 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
+#include <boost/asio/steady_timer.hpp>
 
 #include <atomic>
+#include <mutex>
 #include <stdexcept>
 namespace ossia::oscquery
 {
@@ -109,6 +112,21 @@ struct http_client_context
   boost::asio::io_context context;
   std::shared_ptr<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> worker;
 };
+
+struct oscquery_mirror_protocol::crossing_state
+{
+  std::mutex mutex;
+  bool alive{true};
+  struct sent_value
+  {
+    std::chrono::steady_clock::time_point time;
+    ossia::value value;
+  };
+  // By address, the last value this client wrote
+  ossia::hash_map<std::string, sent_value> sent;
+  // By address, the reading to come
+  ossia::hash_map<std::string, std::unique_ptr<boost::asio::steady_timer>> rereads;
+};
 /*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 {
@@ -140,6 +158,7 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
     , m_http{std::make_unique<http_client_context>()}
     , m_id{*this, {}}
 {
+  m_crossing = std::make_shared<crossing_state>();
   auto port_idx = m_queryHost.find_last_of(':');
   if(port_idx != std::string::npos)
     m_queryPort = m_queryHost.substr(port_idx + 1);
@@ -170,6 +189,14 @@ void oscquery_mirror_protocol::cleanup_connections()
   catch(...)
   {
     logger().error("Error when stopping osc server");
+  }
+
+  {
+    // No reading after the connections are gone
+    std::lock_guard lock{m_crossing->mutex};
+    m_crossing->alive = false;
+    for(auto& [address, timer] : m_crossing->rereads)
+      timer->cancel();
   }
 
   if(query_connected())
@@ -211,6 +238,12 @@ void oscquery_mirror_protocol::cleanup_connections()
   catch(...)
   {
     logger().error("Error when stopping HTTP thread");
+  }
+
+  {
+    // The timers go with the context they wait on
+    std::lock_guard lock{m_crossing->mutex};
+    m_crossing->rereads.clear();
   }
 }
 
@@ -376,6 +409,8 @@ bool oscquery_mirror_protocol::push(
     // Push to server
     auto critical = addr.get_critical();
     const auto& osc_addr = addr.get_node().osc_address();
+    // Before it leaves: the server's value may come back before this returns
+    record_sent(osc_addr, val);
     if((!critical || !m_hasWS) && m_oscSender)
     {
       if(m_logger.outbound_logger)
@@ -445,6 +480,7 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
+    record_sent(addr.address, val);
     if((!critical || !m_hasWS) && m_oscSender)
     {
       if(m_logger.outbound_logger)
@@ -664,6 +700,8 @@ void oscquery_mirror_protocol::connect()
 
 void oscquery_mirror_protocol::init()
 {
+  if(!m_crossing->alive)
+    m_crossing = std::make_shared<crossing_state>();
   m_oscServer = std::make_unique<osc::receiver>(
       m_osc_port,
       [this](const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) {
@@ -773,6 +811,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
   ossia::net::on_input_message<true>(
       m.AddressPattern(), ossia::net::osc_message_applier{m_id, m}, m_listening,
       *m_device, m_logger);
+  check_crossing(m.AddressPattern());
 
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();
@@ -988,6 +1027,64 @@ bool oscquery_mirror_protocol::on_BinaryWSMessage(
   h.ProcessPacket(message.data(), message.size(), {});
 
   return {};
+}
+
+void oscquery_mirror_protocol::set_reread_crossings(bool b) noexcept
+{
+  m_rereadCrossings = b;
+}
+
+void oscquery_mirror_protocol::record_sent(
+    const std::string& address, const ossia::value& v)
+{
+  if(!m_rereadCrossings)
+    return;
+  std::lock_guard lock{m_crossing->mutex};
+  m_crossing->sent.insert_or_assign(
+      address, crossing_state::sent_value{std::chrono::steady_clock::now(), v});
+}
+
+void oscquery_mirror_protocol::check_crossing(std::string_view address)
+{
+  if(!m_rereadCrossings)
+    return;
+  const auto now = std::chrono::steady_clock::now();
+  std::lock_guard lock{m_crossing->mutex};
+  if(!m_crossing->alive || !m_device)
+    return;
+  auto it = m_crossing->sent.find(std::string(address));
+  if(it == m_crossing->sent.end() || now - it->second.time > crossing_window)
+    return;
+  auto node = ossia::net::find_node(m_device->get_root_node(), address);
+  auto param = node ? node->get_parameter() : nullptr;
+  if(!param || param->value() == it->second.value)
+    return;
+
+  // The server's value crossed ours: what it holds now is read again once
+  // the values that cross have arrived
+  auto& timer = m_crossing->rereads[std::string(address)];
+  if(!timer)
+    timer = std::make_unique<boost::asio::steady_timer>(m_http->context);
+  timer->expires_after(settle_delay);
+  timer->async_wait([this, weak = std::weak_ptr<crossing_state>{m_crossing},
+                     path = std::string(address),
+                     asked = now](const boost::system::error_code& ec) {
+    if(ec)
+      return;
+    auto st = weak.lock();
+    if(!st)
+      return;
+    std::lock_guard lock{st->mutex};
+    if(!st->alive || !m_device)
+      return;
+    // A write of ours since: the server takes it after
+    auto sent = st->sent.find(path);
+    if(sent != st->sent.end() && sent->second.time > asked)
+      return;
+    auto node = ossia::net::find_node(m_device->get_root_node(), path);
+    if(auto param = node ? node->get_parameter() : nullptr)
+      request(*param);
+  });
 }
 
 void load_oscquery_device(net::device_base& dev, std::string json)

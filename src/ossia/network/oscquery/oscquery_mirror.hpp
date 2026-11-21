@@ -8,6 +8,10 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <chrono>
+#include <memory>
+#include <string>
+#include <string_view>
 
 namespace osc
 {
@@ -122,6 +126,27 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
+  /**
+   * @brief Whether the mirror reads a value again after a crossing.
+   *
+   * When a client and its server write the same address in the same
+   * instant, each value crosses the other: the server applies the client's
+   * value last, the client applies the server's after its own, and each
+   * keeps the other's. On, the mirror notes the values it writes; a value
+   * it receives less than crossing_window after one of them, and different
+   * from it, is read again from the server (?VALUE) settle_delay later,
+   * unless it wrote that address again since.
+   *
+   * Off by default: the mirror behaves as before. For clients of servers
+   * that do not answer crossed writes themselves, where several clients
+   * write the same parameters (PRISM's Max, TouchDesigner, Unity and DAW
+   * hosts).
+   */
+  void set_reread_crossings(bool b) noexcept;
+  bool get_reread_crossings() const noexcept { return m_rereadCrossings; }
+  static constexpr std::chrono::milliseconds crossing_window{500};
+  static constexpr std::chrono::milliseconds settle_delay{100};
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -157,6 +182,14 @@ private:
   void start_http();
 
   void on_ws_disconnected() { m_hasWS = false; }
+
+  // set_reread_crossings: the last value this client wrote on each address,
+  // and the readings to come
+  struct crossing_state;
+  std::shared_ptr<crossing_state> m_crossing;
+  std::atomic_bool m_rereadCrossings{false};
+  void record_sent(const std::string& address, const ossia::value& v);
+  void check_crossing(std::string_view address);
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
