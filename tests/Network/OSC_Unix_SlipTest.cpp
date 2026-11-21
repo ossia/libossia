@@ -1,5 +1,6 @@
 
 #include "AsyncTestUtils.hpp"
+#include "UnixSocketTestUtils.hpp"
 
 #include <ossia/network/context.hpp>
 
@@ -17,7 +18,8 @@ auto make_unix_client(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
       ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
-            ossia::net::unix_stream_configuration{{"/tmp/ossia_echo.server.socket"}}});
+            ossia::net::unix_stream_configuration{
+                {ossia_test::unix_socket_path("echo.server")}}});
 }
 
 auto make_unix_server(ossia::net::network_context_ptr ctx)
@@ -25,7 +27,8 @@ auto make_unix_server(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
       ctx, {conf::HOST, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
-            ossia::net::unix_stream_configuration{{"/tmp/ossia_echo.server.socket"}}});
+            ossia::net::unix_stream_configuration{
+                {ossia_test::unix_socket_path("echo.server")}}});
 }
 
 TEST_CASE("test_comm_osc_unix_server_client", "test_comm_osc_unix_server_client")
