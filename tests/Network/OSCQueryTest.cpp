@@ -799,6 +799,24 @@ TEST_CASE(
   REQUIRE(it->second);
 }
 
+TEST_CASE("test_oscquery_host_info_echo", "test_oscquery_host_info_echo")
+{
+  // ECHO says what the device does: off by default
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1241, 5691};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  auto echo = [] {
+    auto ext = host_info_extensions(5691);
+    auto it = ext.find("ECHO");
+    REQUIRE(it != ext.end());
+    return it->second;
+  };
+  REQUIRE(!echo());
+  serv.set_echo(true);
+  REQUIRE(echo());
+  serv.set_echo(false);
+  REQUIRE(!echo());
+}
+
 TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")
 {
   // Here we check that a nested list is not flatten when sent by OSC
