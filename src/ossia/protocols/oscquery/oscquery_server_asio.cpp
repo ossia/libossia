@@ -299,7 +299,7 @@ static bool push_values_bundle(
         policy, std::span<ossia::bundle_element>(elements.data() + begin, end - begin),
         [&](const ossia::net::bundle& b) {
       ok &= write(std::string_view{b.data.data(), b.data.size()}, b.critical);
-        });
+    });
     begin = end;
     size = header;
   };
@@ -316,12 +316,15 @@ static bool push_values_bundle(
   return ok;
 }
 
-bool oscquery_server_protocol_base::push_bundle(std::span<ossia::bundle_element> elements)
+bool oscquery_server_protocol_base::push_bundle(
+    std::span<ossia::bundle_element> elements)
 {
   using OscVersion = ossia::net::osc_extended_policy;
   return push_values_bundle(
       elements, ossia::net::bundle_server_policy<OscVersion>{},
-      [this](std::string_view data, bool critical) { return write_impl(data, critical); });
+      [this](std::string_view data, bool critical) {
+    return write_impl(data, critical);
+  });
 }
 
 bool oscquery_server_protocol_base::push_bundle_bounded(
@@ -330,7 +333,9 @@ bool oscquery_server_protocol_base::push_bundle_bounded(
   using OscVersion = ossia::net::osc_extended_policy;
   return push_values_bundle(
       elements, ossia::net::bundle_bounded_server_policy<OscVersion>{},
-      [this](std::string_view data, bool critical) { return write_impl(data, critical); });
+      [this](std::string_view data, bool critical) {
+    return write_impl(data, critical);
+  });
 }
 
 bool oscquery_server_protocol_base::echo_incoming_message(

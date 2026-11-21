@@ -4,13 +4,13 @@
 // OSC bundles sent by an OSCQuery client (the mirror) and by an OSCQuery
 // server, as read on the wire.
 
+#include "OSCQueryBundleTestUtils.hpp"
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/bundle.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
-
-#include "OSCQueryBundleTestUtils.hpp"
-#include "include_catch.hpp"
 
 // The client's push_bundle sends the values of many parameters in OSC
 // bundles: over UDP, no datagram above 1400 bytes.
@@ -19,14 +19,16 @@ TEST_CASE("oscquery_mirror_push_bundle", "oscquery_mirror_push_bundle")
   const int n = 3000;
   sink_server server{n};
   auto client = std::make_shared<ossia::net::generic_device>(
-      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(server.url(), free_port(false)),
+      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(
+          server.url(), free_port(false)),
       "server");
   REQUIRE(client->get_protocol().update(client->get_root_node()));
 
   std::vector<const ossia::net::parameter_base*> params;
   for(int i = 0; i < n; i++)
   {
-    auto* node = ossia::net::find_node(client->get_root_node(), "/load/p" + std::to_string(i));
+    auto* node
+        = ossia::net::find_node(client->get_root_node(), "/load/p" + std::to_string(i));
     REQUIRE(node);
     auto* p = node->get_parameter();
     p->set_value(ossia::value(float(i)));
@@ -37,7 +39,9 @@ TEST_CASE("oscquery_mirror_push_bundle", "oscquery_mirror_push_bundle")
   const bool sent = client->get_protocol().push_bundle(params);
   const bool all = server.sink.wait_messages(n, 3000);
   std::lock_guard lock{server.sink.mutex};
-  INFO("datagrams " << server.sink.datagrams.size() << ", messages " << server.sink.messages.size());
+  INFO(
+      "datagrams " << server.sink.datagrams.size() << ", messages "
+                   << server.sink.messages.size());
   REQUIRE(sent);
   REQUIRE(all);
   REQUIRE(server.sink.messages.size() == std::size_t(n));
@@ -65,7 +69,8 @@ TEST_CASE("oscquery_multiplex_push_bundle", "oscquery_multiplex_push_bundle")
   std::vector<const ossia::net::parameter_base*> params;
   for(int i = 0; i < n; i++)
   {
-    auto* p = ossia::net::find_node(server.dev->get_root_node(), "/load/p" + std::to_string(i))
+    auto* p = ossia::net::find_node(
+                  server.dev->get_root_node(), "/load/p" + std::to_string(i))
                   ->get_parameter();
     p->set_value(ossia::value(float(i)));
     params.push_back(p);
@@ -74,7 +79,9 @@ TEST_CASE("oscquery_multiplex_push_bundle", "oscquery_multiplex_push_bundle")
   server.dev->get_protocol().push_bundle(params);
   const bool all = client_sink.wait_messages(n, 3000);
   std::lock_guard lock{client_sink.mutex};
-  INFO("datagrams " << client_sink.datagrams.size() << ", messages " << client_sink.messages.size());
+  INFO(
+      "datagrams " << client_sink.datagrams.size() << ", messages "
+                   << client_sink.messages.size());
   REQUIRE(all);
   REQUIRE(client_sink.datagrams.size() == 1);
   REQUIRE(client_sink.messages.size() == std::size_t(n));
@@ -92,13 +99,16 @@ TEST_CASE("oscquery_value_bundles", "oscquery_value_bundles")
   SECTION("client: the values of the elements, in order, in one datagram")
   {
     auto client = std::make_shared<ossia::net::generic_device>(
-        std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(server.url(), free_port(false)),
+        std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(
+            server.url(), free_port(false)),
         "server");
     REQUIRE(client->get_protocol().update(client->get_root_node()));
-    auto* p0 = ossia::net::find_node(client->get_root_node(), "/load/p0")->get_parameter();
+    auto* p0
+        = ossia::net::find_node(client->get_root_node(), "/load/p0")->get_parameter();
     std::vector<ossia::bundle_element> elements{{p0, 1.f}, {p0, 2.f}, {p0, 3.f}};
     server.sink.clear();
-    REQUIRE(client->get_protocol().push_bundle(std::span<ossia::bundle_element>(elements)));
+    REQUIRE(
+        client->get_protocol().push_bundle(std::span<ossia::bundle_element>(elements)));
     REQUIRE(server.sink.wait_messages(3, 3000));
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::lock_guard lock{server.sink.mutex};
@@ -119,12 +129,14 @@ TEST_CASE("oscquery_value_bundles", "oscquery_value_bundles")
     std::vector<ossia::bundle_element> elements;
     for(int i = 0; i < n; i++)
       elements.push_back(
-          {ossia::net::find_node(server.dev->get_root_node(), "/load/p" + std::to_string(i))
+          {ossia::net::find_node(
+               server.dev->get_root_node(), "/load/p" + std::to_string(i))
                ->get_parameter(),
            float(i)});
     ossia::oscquery_asio::oscquery_server_protocol_base* proto{};
     for(auto& p : server.multiplex->get_protocols())
-      if(auto* s = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol_base*>(p.get()))
+      if(auto* s
+         = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol_base*>(p.get()))
         proto = s;
     REQUIRE(proto);
     ossia::net::protocol_base& base = *proto;
@@ -138,6 +150,8 @@ TEST_CASE("oscquery_value_bundles", "oscquery_value_bundles")
     REQUIRE(all);
     REQUIRE(largest <= 1400);
     REQUIRE(client_sink.datagrams.size() < std::size_t(n) / 20);
-    REQUIRE(client_sink.messages[1234] == std::pair<std::string, float>{"/load/p1234", 1234.f});
+    REQUIRE(
+        client_sink.messages[1234]
+        == std::pair<std::string, float>{"/load/p1234", 1234.f});
   }
 }

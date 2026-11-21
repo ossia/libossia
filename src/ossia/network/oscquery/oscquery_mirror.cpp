@@ -372,7 +372,8 @@ constexpr std::size_t osc_udp_bundle_limit = 1400;
 
 void append_osc_bundle_element(std::string& bundle, const std::string& message)
 {
-  const uint32_t size = boost::endian::native_to_big(static_cast<uint32_t>(message.size()));
+  const uint32_t size
+      = boost::endian::native_to_big(static_cast<uint32_t>(message.size()));
   bundle.append(reinterpret_cast<const char*>(&size), 4);
   bundle.append(message);
 }
@@ -424,7 +425,8 @@ const ossia::net::parameter_base& bundle_parameter(const ossia::net::parameter_b
 {
   return *p;
 }
-const ossia::net::full_parameter_data& bundle_parameter(const ossia::net::full_parameter_data& p)
+const ossia::net::full_parameter_data&
+bundle_parameter(const ossia::net::full_parameter_data& p)
 {
   return p;
 }
@@ -450,7 +452,8 @@ const ossia::value& bundle_value(const ossia::bundle_element& e)
 }
 
 template <typename Parameters>
-bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters, bool bounded)
+bool oscquery_mirror_protocol::push_bundle_impl(
+    const Parameters& parameters, bool bounded)
 {
   if(!m_feedback)
     return false;
@@ -463,7 +466,8 @@ bool oscquery_mirror_protocol::push_bundle_impl(const Parameters& parameters, bo
     const auto& param = bundle_parameter(p);
     if(param.get_access() == ossia::access_mode::GET)
       continue;
-    ossia::value val = bounded ? ossia::value(bundle_value(p)) : bound_value(param, bundle_value(p));
+    ossia::value val
+        = bounded ? ossia::value(bundle_value(p)) : bound_value(param, bundle_value(p));
     if(!val.valid())
       continue;
     const bool critical = param.get_critical();
@@ -511,7 +515,8 @@ bool oscquery_mirror_protocol::push_bundle(std::span<ossia::bundle_element> elem
   return push_bundle_impl(elements);
 }
 
-bool oscquery_mirror_protocol::push_bundle_bounded(std::span<ossia::bundle_element> elements)
+bool oscquery_mirror_protocol::push_bundle_bounded(
+    std::span<ossia::bundle_element> elements)
 {
   return push_bundle_impl(elements, true);
 }

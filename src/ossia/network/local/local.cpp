@@ -73,7 +73,8 @@ bool multiplex_protocol::push_bundle(
   return b;
 }
 
-bool multiplex_protocol::push_raw_bundle(const std::vector<full_parameter_data>& addresses)
+bool multiplex_protocol::push_raw_bundle(
+    const std::vector<full_parameter_data>& addresses)
 {
   bool b = true;
   lock_guard guard(m_protocols_mutex);

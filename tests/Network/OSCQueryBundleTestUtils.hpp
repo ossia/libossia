@@ -148,15 +148,17 @@ struct sink_server
     dev = std::make_unique<ossia::net::generic_device>(std::move(mp), "server");
     for(int i = 0; i < leaves; i++)
     {
-      auto& n = ossia::net::create_node(dev->get_root_node(), "/load/p" + std::to_string(i));
+      auto& n
+          = ossia::net::create_node(dev->get_root_node(), "/load/p" + std::to_string(i));
       auto* p = ossia::try_setup_parameter("float", n);
       p->set_domain(ossia::make_domain(0.f, 1000000.f));
     }
-    multiplex->expose_to(std::make_unique<ossia::oscquery_asio::oscquery_server_protocol_base>(
-        ctx,
-        std::vector<ossia::net::osc_server_configuration>{
-            ossia::net::udp_server_configuration{{{"0.0.0.0"}, osc}}},
-        ws, false));
+    multiplex->expose_to(
+        std::make_unique<ossia::oscquery_asio::oscquery_server_protocol_base>(
+            ctx,
+            std::vector<ossia::net::osc_server_configuration>{
+                ossia::net::udp_server_configuration{{{"0.0.0.0"}, osc}}},
+            ws, false));
     net = std::thread([this] { ctx->run(); });
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
