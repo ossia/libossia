@@ -8,6 +8,8 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <memory>
+#include <mutex>
 
 namespace osc
 {
@@ -87,6 +89,22 @@ public:
   void set_command_callback(std::function<void()>);
 
   /**
+   * @brief Apply the namespace the server sends in run_commands()
+   *
+   * By default, the namespace that answers update() and update_async() is
+   * applied on the network thread that receives it: the tree is cleared and
+   * built again there. A client that walks the device on its own thread and
+   * applies the other changes of the tree there with run_commands() (as
+   * ossia-max and ossia-pd do) can then read nodes being destroyed.
+   *
+   * When set, the namespace is kept until the next run_commands(), which
+   * applies it before the other pending commands; the future of
+   * update_async() is ready once it is applied. update() must then not be
+   * called from the thread that calls run_commands().
+   */
+  void set_namespace_in_run_commands(bool b) noexcept { m_namespaceInRunCommands = b; }
+
+  /**
    * @brief Request a new node from the server
    * @param Parent of the new node
    * @param Data of the new node
@@ -164,6 +182,9 @@ private:
   ossia::net::device_base* m_device{};
 
   std::promise<void> m_namespacePromise;
+  std::mutex m_namespaceMutex;
+  std::shared_ptr<rapidjson::Document> m_pendingNamespace;
+  std::atomic_bool m_namespaceInRunCommands{};
 
   struct get_osc_promise
   {
