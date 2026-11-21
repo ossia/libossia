@@ -201,7 +201,13 @@ if(OSSIA_PROTOCOL_OSCQUERY)
     ossia_add_test(OSCQueryValueCallbackTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryValueCallbackTest.cpp")
   endif()
   ossia_add_test(MultiplexTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/MultiplexTest.cpp")
+  ossia_add_test(OSCQueryBundleTest      "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryBundleTest.cpp")
   ossia_add_test(OSCQueryRename "Network/OSCQuery_rename.cpp")
+
+  # The part of ossia.v8connector (ossia-max) that does not need Max
+  ossia_add_test(V8ConnectorTest
+      "${CMAKE_CURRENT_SOURCE_DIR}/Network/V8ConnectorTest.cpp;${CMAKE_CURRENT_SOURCE_DIR}/../src/ossia-max/src/v8connector_branch.cpp")
+  target_include_directories(ossia_V8ConnectorTest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src/ossia-max/src")
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)

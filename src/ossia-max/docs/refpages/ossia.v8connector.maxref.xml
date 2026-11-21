@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet href="./_c74_ref.xsl" type="text/xsl"?>
+
+<c74object name="ossia.v8connector" module="Ossia" category="Ossia">
+
+	<digest>
+		Declare ossia parameters from a script
+	</digest>
+
+	<description>
+		Create a node of the ossia namespace, like <o>ossia.model</o>, whose parameters are declared by messages instead of <o>ossia.parameter</o> objects. A <o>v8</o> or <o>v8ui</o> script adds, removes and sets the parameters, and receives the values changed by any other source on the left outlet. The node registers under the <o>ossia.model</o>, <o>ossia.device</o> or <o>ossia.client</o> found in the patcher hierarchy, or under the global device.
+	</description>
+
+
+	<discussion>
+		Minimal v8 or v8ui script, with the helper javascript/ossia.v8connector.js and an [ossia.v8connector synth] whose scripting name is "synth" and whose left outlet is patched into the script:
+		<br/>
+		const OssiaConnector = require("ossia.v8connector");
+		<br/>
+		const synth = new OssiaConnector("synth");
+		<br/>
+		function loadbang() {
+		<br/>
+		&#160;&#160;synth.declare({ gain: { type: "float", min: -60, max: 6, unit: "gain.db", default: -12 } });
+		<br/>
+		&#160;&#160;synth.on("gain", (v) =&gt; { post("gain", v, "\n"); });
+		<br/>
+		}
+		<br/>
+		function anything() { synth.dispatch(messagename, arrayfromargs(arguments)); }
+		<br/>
+		function bang() { synth.set("gain", -6); }
+		<br/>
+		The helper keeps the declarations and replays them when the object sends "ready", so the object can be deleted and recreated. bind("other/address") follows a parameter declared elsewhere instead of creating one.
+	</discussion>
+
+	<!--METADATA-->
+	<metadatalist>
+		<metadata name="author">Ossia</metadata>
+		<metadata name="tag">Ossia</metadata>
+		<metadata name="tag">Network</metadata>
+	</metadatalist>
+
+
+	<!--INLETS-->
+	<inletlist>
+		<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.v8connector</digest>
+			<description>add, remove, clear, set, bind, unbind, address, namespace and get messages</description>
+		</inlet>
+	</inletlist>
+
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" name="Values" type="any">
+			<digest>Values changed by another source</digest>
+			<description>A message per changed parameter, the relative address followed by the value, bounded to the parameter's range then filtered by the parameter (disabled, muted, repetition when @repetitions is 0), as at the outlet of every ossia object. A value set through this instance comes back here only when the bounded value differs from the one sent. The default of a leaf comes out here once the leaf exists, a bound address outputs the value it finds when it reaches the parameter, and <m>ready</m> is sent once the object has registered, so that a script can replay its declarations. Every refusal of <m>add</m>, <m>bind</m>, <m>set</m>, <m>remove</m> or <m>unbind</m> also comes out here as <m>refused</m> followed by the address and the reason, through the same deferred queue as the values. <m>ready</m> and <m>refused</m> are reserved addresses.</description>
+		</outlet>
+		<outlet id="1" name="Info outlet" type="any">
+			<digest>Status and errors</digest>
+			<description>address, add, remove, clear, bind, unbind and error messages; namespace_size then one line per parameter after <m>namespace</m>; the attribute name and its value after <m>get</m></description>
+		</outlet>
+	</outletlist>
+
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="Name" optional="1" type="symbol">
+			<digest>
+				Name of the node in the ossia namespace
+			</digest>
+			<description>
+				With a name, the declared parameters are created under a node of that name, which is created by the first <m>add</m> and stays, even without parameters, until the object is deleted, like an <o>ossia.model</o>. An instance that only binds creates no node, like an <o>ossia.remote</o>. When several nodes have the same name, instances (name.1, name.2, etc...) are created, as for <o>ossia.model</o>. Without a name, the parameters are created directly under the node of the enclosing <o>ossia.model</o>, or the root of the enclosing <o>ossia.device</o> or <o>ossia.client</o>, or the root of the global device, next to the <o>ossia.parameter</o> objects: an address already taken, by another instance or by an <o>ossia.parameter</o>, is refused (refused &lt;address&gt; already exists) and never renamed, and the instance removes only its own parameters. <m>bind</m> addresses are relative to the enclosing model or device in both cases.
+			</description>
+		</objarg>
+	</objarglist>
+
+	<!--METHODS-->
+	<methodlist>
+
+		<method name="add">
+			<arglist>
+				<arg name="address" type="symbol" optional="0"/>
+				<arg name="attributes" type="list" optional="1"/>
+			</arglist>
+			<digest>
+				Create a parameter under the node
+			</digest>
+			<description>
+				The message <m>add</m> followed by a relative address and attributes creates a parameter, with the same attribute names as <o>ossia.parameter</o>: @type, @min, @max, @range, @unit, @default, @clip, @mode, @description, @tags, @priority, @rate, @critical, @invisible, @mute, @repetitions, @enable, @recall_safe. @type is required. A numeric type (float, int, vec2f, vec3f, vec4f) requires @min and @max, or @range: the declaration is refused otherwise. A unit imposes the type of its values (color.rgb is vec3f, color.rgba vec4f, gain.db float): a declared @type that the unit would change is refused, with the reason. @clip accepts none, the OSCQuery name of the free mode, as well as free, both, low, high, wrap and fold. A refusal is reported on the right outlet and as refused &lt;address&gt; &lt;reason&gt; on the left outlet. Declaring the same leaf again with the same attributes is accepted and does nothing.
+			</description>
+		</method>
+
+		<method name="remove">
+			<arglist>
+				<arg name="address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Remove a parameter
+			</digest>
+			<description>
+				The message <m>remove</m> followed by a relative address removes the parameter declared by this instance at that address.
+			</description>
+		</method>
+
+		<method name="clear">
+			<arglist/>
+			<digest>
+				Remove every parameter of this instance
+			</digest>
+			<description>
+				The message <m>clear</m> removes every parameter declared by this instance. The node itself stays.
+			</description>
+		</method>
+
+		<method name="set">
+			<arglist>
+				<arg name="address" type="symbol" optional="0"/>
+				<arg name="value" type="list" optional="0"/>
+			</arglist>
+			<digest>
+				Set the value of a parameter
+			</digest>
+			<description>
+				The message <m>set</m> followed by an address (a declared leaf, or a bound address) and a value pushes the value to the parameter, which stores it as sent, like <o>ossia.parameter</o>. The value is sent to the network and to every other ossia object that listens to this address; each object bounds it to the range at its outlet. It does not come back on the left outlet of this instance, unless the bounded value differs from the one sent (clip, type conversion): the bounded value then comes back, as if it came from another source.
+			</description>
+		</method>
+
+		<method name="bind">
+			<arglist>
+				<arg name="address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Follow a parameter that exists elsewhere
+			</digest>
+			<description>
+				The message <m>bind</m> followed by an address subscribes to a parameter declared by another object, an <o>ossia.parameter</o> or another <o>ossia.v8connector</o>, without creating anything. The address follows the rules of <o>ossia.remote</o>: relative to the enclosing model or device, absolute with a leading slash, or device:/address; patterns are accepted. The type and the range stay those of the owner. Values changed by another source leave the left outlet under the bound address, <m>set</m> pushes to the owner's parameter, and the subscription follows the parameter when it disappears and comes back. The right outlet sends <m>bind</m> followed by the address and the number of parameters currently followed.
+			</description>
+		</method>
+
+		<method name="unbind">
+			<arglist>
+				<arg name="address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Stop following a parameter
+			</digest>
+			<description>
+				The message <m>unbind</m> followed by a bound address drops the subscription. The parameter itself is untouched.
+			</description>
+		</method>
+
+		<method name="address">
+			<arglist>
+				<arg name="node address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Set node name
+			</digest>
+			<description>
+				The message <m>address</m> followed by a symbol sets the name of the node and registers it again with its parameters.
+			</description>
+		</method>
+
+		<method name="get">
+			<arglist>
+				<arg name="attribute" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Output the value of a node attribute
+			</digest>
+			<description>
+				The message <m>get</m> followed by global_address, description, tags, invisible, priority, recall_safe or zombie outputs that attribute of the instance's node on the right outlet. An instance without a name, or that only binds, has no node of its own: nothing comes out.
+			</description>
+		</method>
+
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				The <m>namespace</m> message outputs on the right outlet namespace_size followed by the number of entries, then one namespace message per parameter registered under this node, with its address and current value. An instance without a name, or that only binds, outputs namespace_size 0.
+			</description>
+		</method>
+
+	</methodlist>
+
+	<!--ATTRIBUTES-->
+	<attributelist>
+		<attribute name="bundle" get="1" set="1" type="int" size="1">
+			<digest>
+				Send the values of a tick together, in OSC bundles
+			</digest>
+			<description>
+				The <at>bundle</at> attribute (default: 1) groups the values this instance sets during a tick: they leave together at the end of the tick, in OSC bundles, through the protocol of each parameter (a client's OSCQuery mirror splits them under 1400 bytes over UDP, the server of a device gets bundles of at most 1400 bytes). A parameter set several times in a tick leaves once, with its last value; with @repetitions 0, a value equal to the current one does not leave. 0 sends one message per value.
+			</description>
+		</attribute>
+
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Set description to node
+			</digest>
+			<description>
+				The <at>description</at> attribute (default: none) sets the description of the node. Without a name, the instance has no node of its own and the attribute does nothing.
+			</description>
+		</attribute>
+
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
+			<digest>
+				Hide node from remote client
+			</digest>
+			<description>
+				The <at>invisible</at> attribute (default: 0) hides the node from remote clients. Without a name, the attribute does nothing.
+			</description>
+		</attribute>
+
+		<attribute name="priority" get="1" set="1" type="float" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>priority</at> attribute (default: 0) is stored on the node, as <o>ossia.model</o> does. It does not order the outputs of <o>ossia.v8connector</o>: ossia-max orders the outputs of <o>ossia.parameter</o> and <o>ossia.remote</o> only. The default of a leaf comes out of the left outlet once the leaf exists, and a bound address outputs the value it finds as soon as it reaches the parameter, in declaration order.
+			</description>
+		</attribute>
+
+		<attribute name="recall_safe" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Enable or disable value update when recalling preset
+			</digest>
+			<description>
+				The <at>recall_safe</at> attribute (default: off) allows to prevent value update when recalling a preset. Without a name, the attribute does nothing.
+			</description>
+		</attribute>
+
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with this node
+			</digest>
+			<description>
+				The <at>tags</at> attribute (default: none) associates a variable number of tags with this node. Without a name, the attribute does nothing.
+			</description>
+		</attribute>
+
+
+	</attributelist>
+
+	<!--SEEALSO-->
+	<seealsolist>
+		<seealso name="ossia.model" type="refpage"/>
+		<seealso name="ossia.parameter" type="refpage"/>
+		<seealso name="ossia.device" type="refpage"/>
+	</seealsolist>
+
+
+</c74object>

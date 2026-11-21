@@ -87,6 +87,10 @@ set(PROJECT_SRCS
     src/utils.cpp
     src/view.hpp
     src/view.cpp
+    src/v8connector.hpp
+    src/v8connector.cpp
+    src/v8connector_branch.hpp
+    src/v8connector_branch.cpp
     src/ZeroconfMinuitListener.cpp
     src/ZeroconfMinuitListener.hpp
     src/ZeroconfOscqueryListener.cpp
@@ -166,6 +170,7 @@ set(OSSIA_EXT_LIST
     ossia.assert
     ossia.equals
     ossia.cue
+    ossia.v8connector
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})

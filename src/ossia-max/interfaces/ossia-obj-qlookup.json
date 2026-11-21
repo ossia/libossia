@@ -62,5 +62,13 @@
       "Ossia",
       "Network"
     ]
+  },
+  "ossia.v8connector": {
+    "digest": "Parameters declared by a script",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
   }
 }

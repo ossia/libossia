@@ -69,6 +69,8 @@ public:
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+  bool push_bundle(std::span<ossia::bundle_element>) override;
+  bool push_bundle_bounded(std::span<ossia::bundle_element>) override;
   bool echo_incoming_message(
       const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&,
       const ossia::value& v) override;
