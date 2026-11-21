@@ -8,6 +8,9 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <deque>
+#include <functional>
+#include <mutex>
 
 namespace osc
 {
@@ -193,7 +196,30 @@ private:
   };
 
   ossia::spsc_queue<get_ws_promise> m_getWSPromises;
-  ossia::spsc_queue<std::function<void()>> m_functionQueue;
+  // The changes of the tree and what comes of them, put by the WebSocket
+  // thread and the HTTP thread, applied by run_commands in the order they
+  // came: a single-producer queue is not made for several threads, and a
+  // multi-producer one keeps the order of each thread only.
+  struct command_queue
+  {
+    std::mutex mutex;
+    std::deque<std::function<void()>> commands;
+    void enqueue(std::function<void()> f)
+    {
+      std::lock_guard lock{mutex};
+      commands.push_back(std::move(f));
+    }
+    bool try_dequeue(std::function<void()>& f)
+    {
+      std::lock_guard lock{mutex};
+      if(commands.empty())
+        return false;
+      f = std::move(commands.front());
+      commands.pop_front();
+      return true;
+    }
+  };
+  command_queue m_functionQueue;
   std::function<void()> m_commandCallback;
 
   ossia::thread m_wsThread;
