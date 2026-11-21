@@ -167,7 +167,8 @@ private:
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
   // A value read, and its answer for the address it was asked for
   void read_value(std::shared_ptr<value_read> read);
-  void on_value_read(const std::string& address, const std::string& message);
+  void on_value_read(
+      const std::string& address, const std::string& message, bool only_if_differs);
   void
   on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 

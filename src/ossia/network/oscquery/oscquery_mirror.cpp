@@ -55,6 +55,8 @@ struct value_read
   std::string address;
   std::promise<void> promise;
   std::atomic_flag done = ATOMIC_FLAG_INIT;
+  //! The answer is applied only if it changes the value
+  bool only_if_differs{};
 
   void succeed()
   {
@@ -80,7 +82,7 @@ struct http_value_answer
   {
     if(status >= 200 && status < 300)
     {
-      self.on_value_read(read->address, body);
+      self.on_value_read(read->address, body, read->only_if_differs);
       read->succeed();
     }
     else
@@ -324,7 +326,7 @@ void oscquery_mirror_protocol::read_value(std::shared_ptr<value_read> read)
 }
 
 void oscquery_mirror_protocol::on_value_read(
-    const std::string& address, const std::string& message)
+    const std::string& address, const std::string& message, bool only_if_differs)
 {
   std::shared_ptr<rapidjson::Document> data = json_parser::parse(message);
   if(data->IsNull())
@@ -348,8 +350,23 @@ void oscquery_mirror_protocol::on_value_read(
   {
     if(auto addr = node->get_parameter())
     {
-      json_parser::parse_value(*addr, *obj_value);
-      m_device->on_message(*addr);
+      if(only_if_differs)
+      {
+        // A read of a parameter nothing followed: a callback added since
+        // gets the answer only if it is news
+        auto val = addr->value();
+        val.apply(detail::json_to_value_unchecked{*obj_value});
+        if(val != addr->value())
+        {
+          addr->set_value(std::move(val));
+          m_device->on_message(*addr);
+        }
+      }
+      else
+      {
+        json_parser::parse_value(*addr, *obj_value);
+        m_device->on_message(*addr);
+      }
       return;
     }
   }
@@ -1010,6 +1027,9 @@ void oscquery_mirror_protocol::refresh_unfollowed(const std::string& address)
   const auto now = steady_clock::now();
   auto read = std::make_shared<value_read>();
   read->address = address;
+  // A callback added while the request is in flight (a binding that reads
+  // the value, then follows it) gets the answer only if it differs
+  read->only_if_differs = true;
   {
     std::lock_guard lock{m_unfollowedMutex};
     auto& r = m_unfollowed[address];
