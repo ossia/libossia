@@ -6,6 +6,7 @@
 #include <ossia/network/context.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
@@ -205,4 +206,60 @@ TEST_CASE("test_oscquery_asio_peers", "[oscquery]")
   CHECK(client_named(doc, "probe"));
   // This server does not know where its UDP messages come from
   CHECK(doc.FindMember("SENDERS") == doc.MemberEnd());
+}
+
+TEST_CASE("test_oscquery_mirror_client_name", "[oscquery]")
+{
+  using proto_t = ossia::oscquery::oscquery_server_protocol;
+  using mirror_t = ossia::oscquery::oscquery_mirror_protocol;
+  ossia::net::generic_device dev{std::make_unique<proto_t>(1823, 5823), "named"};
+  dev.create_child("a")->create_parameter(ossia::val_type::INT);
+  auto& server = static_cast<proto_t&>(dev.get_protocol());
+
+  auto clients = [](const rapidjson::Document& d) {
+    auto c = d.FindMember("CLIENTS");
+    return c != d.MemberEnd() && c->value.IsArray() ? (int)c->value.Size() : 0;
+  };
+
+  SECTION("no name by default")
+  {
+    server.set_peers_extension(true);
+    auto mirror = std::make_unique<mirror_t>("ws://127.0.0.1:5823", 10823);
+    CHECK(mirror->get_client_name().empty());
+    ossia::net::generic_device client{std::move(mirror), "client"};
+    auto doc = peers_when(
+        5823, [&](const rapidjson::Document& d) { return clients(d) == 1; });
+    REQUIRE(clients(doc) == 1);
+    std::this_thread::sleep_for(200ms);
+    doc = parse(ossia_test::http_get(5823, "/?PEERS").body);
+    CHECK(doc["CLIENTS"][0].FindMember("NAME") == doc["CLIENTS"][0].MemberEnd());
+  }
+
+  SECTION("a name, to a server that declares CLIENT_NAME")
+  {
+    server.set_peers_extension(true);
+    auto mirror = std::make_unique<mirror_t>("ws://127.0.0.1:5823", 10823);
+    auto& m = *mirror;
+    ossia::net::generic_device client{std::move(mirror), "client"};
+    m.set_client_name("probe");
+    auto doc = peers_when(
+        5823, [](const rapidjson::Document& d) { return client_named(d, "probe"); });
+    CHECK(client_named(doc, "probe"));
+  }
+
+  SECTION("no name to a server that does not declare it")
+  {
+    auto mirror = std::make_unique<mirror_t>("ws://127.0.0.1:5823", 10823);
+    auto& m = *mirror;
+    ossia::net::generic_device client{std::move(mirror), "client"};
+    m.set_client_name("probe");
+    std::this_thread::sleep_for(300ms);
+
+    // The extension turned on afterwards: the mirror had not sent its name
+    server.set_peers_extension(true);
+    auto doc = peers_when(
+        5823, [&](const rapidjson::Document& d) { return clients(d) == 1; });
+    REQUIRE(clients(doc) == 1);
+    CHECK(!client_named(doc, "probe"));
+  }
 }

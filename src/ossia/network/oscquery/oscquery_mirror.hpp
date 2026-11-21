@@ -123,6 +123,19 @@ public:
 
   host_info get_host_info() const noexcept;
 
+  /**
+   * @brief The name this client gives itself to the server.
+   *
+   * Empty by default: the mirror sends no name. Not empty, it sends it with
+   * the CLIENT_NAME command to a server that declares the CLIENT_NAME
+   * extension in its HOST_INFO (see detail/peers.hpp), when that HOST_INFO
+   * comes, or at once if it came already; a server that lists its peers
+   * then shows that name. For hosts that name their clients, so that the
+   * map of who reaches a device reads by name rather than by address.
+   */
+  void set_client_name(std::string name);
+  std::string get_client_name() const;
+
   bool connected() const noexcept override { return m_hasWS; }
   void connect() override;
 
@@ -152,6 +165,9 @@ private:
   void start_http();
 
   void on_ws_disconnected() { m_hasWS = false; }
+
+  // CLIENT_NAME, to a server that declares it
+  void send_client_name();
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
@@ -200,6 +216,7 @@ private:
   std::unique_ptr<http_client_context> m_http;
   host_info m_host_info;
   mutable std::mutex m_host_info_mutex;
+  std::string m_clientName; // guarded by m_host_info_mutex
 
   ossia::net::message_origin_identifier m_id;
 

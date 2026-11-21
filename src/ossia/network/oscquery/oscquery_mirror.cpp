@@ -15,6 +15,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
 
@@ -545,6 +546,43 @@ void oscquery_mirror_protocol::request_rename_node(
   http_send_message(std::move(req));
 }
 
+void oscquery_mirror_protocol::set_client_name(std::string name)
+{
+  {
+    std::lock_guard lock{m_host_info_mutex};
+    m_clientName = std::move(name);
+  }
+  send_client_name();
+}
+
+std::string oscquery_mirror_protocol::get_client_name() const
+{
+  std::lock_guard lock{m_host_info_mutex};
+  return m_clientName;
+}
+
+void oscquery_mirror_protocol::send_client_name()
+{
+  std::string name;
+  {
+    std::lock_guard lock{m_host_info_mutex};
+    auto ext = m_host_info.extensions.find(std::string(detail::client_name()));
+    if(m_clientName.empty() || ext == m_host_info.extensions.end() || !ext->second)
+      return;
+    name = m_clientName;
+  }
+
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> wr{buf};
+  wr.StartObject();
+  wr.Key("COMMAND");
+  wr.String(detail::client_name().data(), detail::client_name().size());
+  wr.Key("DATA");
+  wr.String(name.c_str(), name.size());
+  wr.EndObject();
+  ws_send_message(std::string(buf.GetString(), buf.GetSize()));
+}
+
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
 {
   std::lock_guard lock{m_host_info_mutex};
@@ -727,6 +765,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
             if(!m_host_info.osc_port)
               m_host_info.osc_port = std::stoi(m_queryPort);
           }
+          send_client_name();
           if(m_host_info.osc_transport == host_info::UDP)
           {
             m_oscSender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
