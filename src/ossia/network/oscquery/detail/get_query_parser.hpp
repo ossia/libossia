@@ -5,6 +5,7 @@
 #include <ossia/network/oscquery/detail/html_writer.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
@@ -85,6 +86,19 @@ public:
       }
       else
       {
+        // The PEERS extension, at the root only: elsewhere it is an
+        // attribute the server does not know
+        if constexpr(requires { proto.query_peers(); })
+        {
+          if(path == "/" && proto.get_peers_extension()
+             && parameters.find(detail::peers()) != parameters.end())
+          {
+            ossia::net::server_reply r{proto.query_peers()};
+            r.type = ossia::net::server_reply::data_type::json;
+            return r;
+          }
+        }
+
         auto host_it = parameters.find("HOST_INFO");
         if(host_it == parameters.end())
         {
@@ -170,9 +184,13 @@ public:
             }
           };
 
+          bool peers = false;
+          if constexpr(requires { proto.get_peers_extension(); })
+            peers = proto.get_peers_extension();
+
           return oscquery::json_writer::query_host_info(
               proto.get_device().get_name(), transports(), local_client_ip,
-              proto.get_ws_port());
+              proto.get_ws_port(), peers);
         }
       }
       return {};

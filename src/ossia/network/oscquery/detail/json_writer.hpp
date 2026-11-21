@@ -27,6 +27,12 @@ public:
       std::string_view name,
       const std::vector<ossia::net::osc_server_configuration>& osc_port,
       std::string_view local_ip, int ws_port);
+  //! peers: the server serves the PEERS and CLIENT_NAME extensions
+  //! (detail/peers.hpp), declared in EXTENSIONS
+  static string_t query_host_info(
+      std::string_view name,
+      const std::vector<ossia::net::osc_server_configuration>& osc_port,
+      std::string_view local_ip, int ws_port, bool peers);
 
   // Format interface
   // Queries

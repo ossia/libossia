@@ -25,6 +25,7 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/oscquery_protocol_common.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
@@ -586,6 +587,7 @@ try
 
     m_clients.emplace_back(std::make_unique<oscquery_client>(hdl));
     m_clients.back()->client_ip = std::move(ip);
+    m_clients.back()->client_port = sock.remote_endpoint().port();
     m_clientCount++;
   }
 
@@ -726,6 +728,22 @@ catch(const std::exception& e)
 catch(...)
 {
   logger().error("oscquery_server_protocol::on_nodeRenamed: error.");
+}
+
+std::string oscquery_server_protocol_base::query_peers()
+{
+  // This server does not know where its UDP messages come from: no SENDERS
+  lock_t lock(m_clientsMutex);
+  return oscquery::detail::write_peers(m_clients, nullptr);
+}
+
+void oscquery_server_protocol_base::set_client_name(
+    const connection_handler& hdl, std::string name)
+{
+  lock_t lock(m_clientsMutex);
+  auto it = ossia::find_if(m_clients, [&](auto& clt) { return *clt == hdl; });
+  if(it != m_clients.end())
+    (*it)->name = std::move(name);
 }
 
 void oscquery_server_protocol_base::update_zeroconf()

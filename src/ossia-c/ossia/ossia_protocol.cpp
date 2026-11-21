@@ -80,6 +80,25 @@ ossia_protocol_t ossia_protocol_oscquery_server_create(int osc_port, int ws_port
 #endif
 }
 
+void ossia_protocol_oscquery_server_set_peers(ossia_protocol_t proto, int enable)
+{
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+  if(!proto)
+  {
+    ossia_log_error("ossia_protocol_oscquery_server_set_peers: proto is null");
+    return;
+  }
+  return safe_function(__func__, [=] {
+    if(auto server
+       = dynamic_cast<ossia::oscquery::oscquery_server_protocol*>(proto->protocol))
+      server->set_peers_extension(enable != 0);
+    else
+      ossia_log_error(
+          "ossia_protocol_oscquery_server_set_peers: not an OSCQuery server");
+  });
+#endif
+}
+
 ossia_protocol_t ossia_protocol_oscquery_mirror_create(const char* host)
 {
 #if defined(OSSIA_PROTOCOL_OSCQUERY)

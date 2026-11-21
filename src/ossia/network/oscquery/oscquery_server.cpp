@@ -21,6 +21,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
 namespace ossia
@@ -59,6 +60,7 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
 , m_oscPort{(uint16_t)m_oscServer->port()}
 , m_wsPort{ws_port}
 {
+  m_peerSenders = std::make_unique<detail::peer_senders>();
   m_clients.reserve(2);
   m_websocketServer->set_open_handler(
       [&](connection_handler hdl) { on_connectionOpen(hdl); });
@@ -545,6 +547,14 @@ try
     std::lock_guard lck{m_clientsMutex};
     return client_identifier(m_clients, ip);
   }();
+  // PEERS: the UDP sources that are none of the clients (a message that
+  // came over the WebSocket has no port)
+  if(m_peersExtension && !ident && ip.port != oscpack::IpEndpointName::ANY_PORT)
+  {
+    char addr[32]{};
+    ip.AddressAsString(addr);
+    m_peerSenders->record(addr, (uint16_t)ip.port);
+  }
   auto id = ossia::net::message_origin_identifier{*this, ident};
   ossia::net::on_input_message<true>(
       m.AddressPattern(), ossia::net::osc_message_applier{id, m}, m_listening, *m_device,
@@ -573,6 +583,7 @@ try
     lock_t lock(m_clientsMutex);
     m_clients.emplace_back(std::make_unique<oscquery_client>(hdl));
     m_clients.back()->client_ip = std::move(ip);
+    m_clients.back()->client_port = sock.remote_endpoint().port();
   }
 
   onClientConnected(con->get_remote_endpoint());
@@ -709,6 +720,21 @@ catch(const std::exception& e)
 catch(...)
 {
   logger().error("oscquery_server_protocol::on_nodeRenamed: error.");
+}
+
+std::string oscquery_server_protocol::query_peers()
+{
+  lock_t lock(m_clientsMutex);
+  return detail::write_peers(m_clients, m_peerSenders.get());
+}
+
+void oscquery_server_protocol::set_client_name(
+    const connection_handler& hdl, std::string name)
+{
+  lock_t lock(m_clientsMutex);
+  auto it = ossia::find_if(m_clients, [&](auto& clt) { return *clt == hdl; });
+  if(it != m_clients.end())
+    (*it)->name = std::move(name);
 }
 
 void oscquery_server_protocol::disable_zeroconf()
