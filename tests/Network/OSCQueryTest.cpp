@@ -252,11 +252,13 @@ TEST_CASE("test_json_bool", "test_json_bool")
       if(doc["VALUE"].IsArray())
       {
         REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-        REQUIRE(doc["VALUE"][0].IsNull());
+        REQUIRE(doc["VALUE"][0].IsBool());
+        REQUIRE(doc["VALUE"][0].GetBool() == false);
       }
       else
       {
-        REQUIRE(doc["VALUE"].IsNull());
+        REQUIRE(doc["VALUE"].IsBool());
+        REQUIRE(doc["VALUE"].GetBool() == false);
       }
     }
   }
@@ -276,11 +278,13 @@ TEST_CASE("test_json_bool", "test_json_bool")
       if(doc["VALUE"].IsArray())
       {
         REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-        REQUIRE(doc["VALUE"][0].IsNull());
+        REQUIRE(doc["VALUE"][0].IsBool());
+        REQUIRE(doc["VALUE"][0].GetBool() == true);
       }
       else
       {
-        REQUIRE(doc["VALUE"].IsNull());
+        REQUIRE(doc["VALUE"].IsBool());
+        REQUIRE(doc["VALUE"].GetBool() == true);
       }
     }
   }

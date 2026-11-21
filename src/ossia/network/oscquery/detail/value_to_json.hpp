@@ -19,7 +19,9 @@ struct value_to_json
   void operator()(float v) const { writer.Double(v); }
   void operator()(bool v) const
   {
-    writer.Null(); // the value is already encoded in the typetag
+    // A JSON boolean, as the OSCQuery proposal asks: the typetag T or F also
+    // says it, but a client that reads VALUE alone, or ?VALUE, needs it
+    writer.Bool(v);
   }
   void operator()(char v) const { write_json(writer, v); }
   void operator()(const std::string& v) const
