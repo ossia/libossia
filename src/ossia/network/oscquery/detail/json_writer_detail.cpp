@@ -315,6 +315,11 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
 
   ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
     using Attr = typename decltype(attr)::type;
+    // A unit writes its own EXTENDED_TYPE (or none): a second key would hide it
+    // from clients that keep the last duplicate.
+    if constexpr(std::is_same_v<Attr, ossia::net::extended_type_attribute>)
+      if(addr && addr->get_unit())
+        return;
     auto res = Attr::getter(n);
     if(ossia::net::valid(res))
     {
