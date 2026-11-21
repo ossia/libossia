@@ -382,8 +382,7 @@ typedef enum
   IMPULSE_T,
   BOOL_T,
   STRING_T,
-  LIST_T,
-  CHAR_T
+  LIST_T
 } ossia_type;
 
 /**
@@ -689,12 +688,6 @@ void ossia_parameter_push_3f(ossia_parameter_t param, float v1, float v2, float 
 OSSIA_EXPORT
 void ossia_parameter_push_4f(
     ossia_parameter_t param, float v1, float v2, float v3, float v4);
-/**
- * @see ossia::net::parameter_base::push_value
- * @note Multithread guarantees: Data-Safe.
- */
-OSSIA_EXPORT
-void ossia_parameter_push_c(ossia_parameter_t param, char value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
@@ -1363,13 +1356,6 @@ ossia_value_t ossia_value_create_4f(float v1, float v2, float v3, float v4);
 OSSIA_EXPORT
 ossia_value_t ossia_value_create_bool(int value);
 /**
- * @brief Create a value of type char
- * @note Multithread guarantees: Data-Safe.
- * @see ossia::value
- */
-OSSIA_EXPORT
-ossia_value_t ossia_value_create_char(char value);
-/**
  * @brief Create a value of type string
  * @note Multithread guarantees: Data-Safe.
  * @see ossia::value
@@ -1562,15 +1548,6 @@ float ossia_value_convert_float(ossia_value_t val);
  */
 OSSIA_EXPORT
 int ossia_value_convert_bool(ossia_value_t val);
-/**
- * @brief Get the value as a char
- *
- * This function will do a best-effort conversion.
- *
- * @note Multithread guarantees: Data-Safe.
- */
-OSSIA_EXPORT
-char ossia_value_convert_char(ossia_value_t val);
 /**
  * @brief Get the value as a byte array
  *

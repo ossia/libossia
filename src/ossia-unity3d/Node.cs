@@ -127,7 +127,7 @@ namespace Ossia {
     public void RemoveParameter()
     {
       if (ossia_node != IntPtr.Zero) {
-        Network.ossia_node_remove_parameter (ossia_node, ossia_parameter.ossia_parameter);
+        Network.ossia_node_remove_parameter (ossia_node);
       }
       ossia_parameter = null;
     }

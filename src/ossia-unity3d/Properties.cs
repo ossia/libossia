@@ -10,8 +10,7 @@
     IMPULSE,
     BOOL,
     STRING,
-    LIST,
-    CHAR
+    LIST
   }
 
   public enum ossia_access_mode

@@ -318,7 +318,6 @@ public interface Ossia extends Library
       Vec3F.ByValue ossia_parameter_to_3f (Pointer val);
       Vec4F.ByValue ossia_parameter_to_4f (Pointer val);
       boolean ossia_parameter_to_bool (Pointer val);
-      byte ossia_parameter_to_char (Pointer val);
       Pointer ossia_parameter_to_string (Pointer val);
 
      void ossia_parameter_to_byte_array (
@@ -368,9 +367,6 @@ public interface Ossia extends Library
      void ossia_parameter_push_4f(
       Pointer property,
       float v1, float v2, float v3, float v4);
-     void ossia_parameter_push_c(
-      Pointer property,
-      byte value);
      void ossia_parameter_push_s(
       Pointer property,
       String value);
@@ -485,8 +481,6 @@ public interface Ossia extends Library
 
      Pointer ossia_value_create_bool (int value);
 
-     Pointer ossia_value_create_char (byte value);
-
      Pointer ossia_value_create_string (String value);
      Pointer ossia_value_create_byte_array (Pointer value, SizeT sz);
 
@@ -505,7 +499,6 @@ public interface Ossia extends Library
      Vec3F.ByValue ossia_value_to_3f (Pointer val);
      Vec4F.ByValue ossia_value_to_4f (Pointer val);
      boolean ossia_value_to_bool (Pointer val);
-     byte ossia_value_to_char (Pointer val);
      Pointer ossia_value_to_string (Pointer val);
 
     void ossia_value_to_byte_array (
@@ -535,7 +528,6 @@ public interface Ossia extends Library
      int ossia_value_convert_int (Pointer val);
      float ossia_value_convert_float (Pointer val);
      boolean ossia_value_convert_bool (Pointer val);
-     byte ossia_value_convert_char (Pointer val);
 
      void ossia_value_convert_byte_array (
       Pointer val_in,
