@@ -3,6 +3,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <ossia-c/ossia-c.h>
 #include <ossia-c/ossia/ossia_utils.hpp>
@@ -11,6 +12,7 @@
 
 #include "include_catch.hpp"
 
+#include <chrono>
 #include <iostream>
 
 TEST_CASE("C API: Read JSON", "[read]")
@@ -89,4 +91,39 @@ TEST_CASE("C API: create pattern", "[pattern]")
   ossia_node_array_free(n2);
   ossia_device_free(dev);
   ossia_protocol_free(proto);
+}
+
+TEST_CASE("C API: list the OSCQuery devices announced over mDNS", "[zeroconf]")
+{
+  if(!ossia::net::zeroconf_supported())
+    return;
+
+  const std::string name
+      = "ossia_test_c_list_"
+        + std::to_string(
+            std::chrono::steady_clock::now().time_since_epoch().count() % 1000000);
+  auto dev = ossia_device_create(
+      ossia_protocol_oscquery_server_create(1244, 5694), name.c_str());
+  REQUIRE(dev);
+
+  char** names{};
+  char** hosts{};
+  int* ports{};
+  size_t size{};
+  ossia_oscquery_list_devices(1500, &names, &hosts, &ports, &size);
+  bool found = false;
+  for(size_t i = 0; i < size; i++)
+  {
+    REQUIRE(names[i]);
+    REQUIRE(hosts[i]);
+    if(names[i] == name)
+    {
+      found = true;
+      REQUIRE(ports[i] == 5694);
+    }
+  }
+  ossia_oscquery_devices_free(names, hosts, ports, size);
+  ossia_device_free(dev);
+  if(!found)
+    SKIP("this machine does not see its own mDNS announcements");
 }

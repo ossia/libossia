@@ -194,6 +194,32 @@ OSSIA_EXPORT
 ossia_protocol_t ossia_protocol_oscquery_mirror_create(const char* host);
 
 /**
+ * @brief List the OSCQuery devices announced over mDNS (_oscjson._tcp).
+ * @param timeout_ms how long to browse, in milliseconds
+ * @param names receives the instance names the devices are announced under
+ * @param hosts receives the hosts they are announced on, e.g. "machine.local."
+ * @param ports receives their WebSocket ports
+ * @param size receives the number of devices
+ *
+ * The three arrays have *size elements. Free them with
+ * ossia_oscquery_devices_free. Without mDNS support, *size is 0.
+ *
+ * @note This function blocks for timeout_ms, while it browses: the devices
+ * announced after it are not listed.
+ * @see ossia::net::list_oscquery_devices
+ * @note Multithread guarantees: MT-safe
+ */
+OSSIA_EXPORT
+void ossia_oscquery_list_devices(
+    int timeout_ms, char*** names, char*** hosts, int** ports, size_t* size);
+
+/**
+ * @brief Free the arrays of ossia_oscquery_list_devices.
+ */
+OSSIA_EXPORT
+void ossia_oscquery_devices_free(char** names, char** hosts, int* ports, size_t size);
+
+/**
  * @brief Free the memory associated to a protocol.
  * @note Multithread guarantees: MT-safe
  */
