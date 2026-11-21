@@ -14,8 +14,11 @@
 
 #include <atomic>
 #include <chrono>
+#include <future>
 #include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -158,4 +161,128 @@ TEST_CASE("test_oscquery_mirror_request_queues_reads", "[oscquery]")
   CHECK(a.value() == ossia::value{10});
   CHECK(b.value() == ossia::value{20});
   CHECK(ghost.value() == ossia::value{-1});
+
+  auto st = proto->get_value_read_stats();
+  CHECK(st.queued == 0);
+  CHECK(st.sent == 3);
+  CHECK(st.failed == 1);
+  CHECK(st.cancelled == 0);
+}
+
+namespace
+{
+// A server of the test whose value reads under /x take 50 ms each, and that
+// can say /x is removed
+struct slow_values_server
+{
+  std::mutex mutex;
+  ossia::net::websocket_server::connection_handler client;
+  std::atomic_bool connected{false};
+  std::atomic_int value_reads{0};
+  ossia::net::websocket_server server;
+  std::thread thread;
+
+  explicit slow_values_server(int port)
+  {
+    server.set_open_handler([this](auto hdl) {
+      std::lock_guard l{mutex};
+      client = hdl;
+      connected = true;
+    });
+    server.set_close_handler([](auto) { });
+    server.set_message_handler(
+        [this](auto, auto, const std::string& resource) -> ossia::net::server_reply {
+      if(resource.find("HOST_INFO") != std::string::npos)
+        return slow_server::reply(
+            R"({"NAME":"slow","EXTENSIONS":{"TYPE":true,"VALUE":true,"PATH_REMOVED":true}})");
+      if(resource == "/")
+      {
+        std::string x;
+        for(int i = 0; i < 20; i++)
+          x += (i ? "," : "") + std::string{"\"p"} + std::to_string(i)
+               + R"(":{"FULL_PATH":"/x/p)" + std::to_string(i)
+               + R"(","TYPE":"i","VALUE":[0],"ACCESS":3})";
+        return slow_server::reply(
+            R"({"FULL_PATH":"/","CONTENTS":{"x":{"FULL_PATH":"/x","CONTENTS":{)" + x
+            + "}}}}");
+      }
+      if(resource.rfind("/x/", 0) == 0)
+      {
+        value_reads++;
+        std::this_thread::sleep_for(50ms);
+        return slow_server::reply(R"({"VALUE":[1]})");
+      }
+      return slow_server::reply(resource.empty() || resource[0] != '/' ? "" : "{}");
+    });
+    server.listen(port);
+    thread = std::thread{[this] { server.run(); }};
+  }
+  ~slow_values_server()
+  {
+    server.stop();
+    thread.join();
+  }
+  void send(const std::string& text)
+  {
+    std::lock_guard l{mutex};
+    server.send_message(client, text);
+  }
+};
+}
+
+TEST_CASE("test_oscquery_mirror_value_reads_cancelled", "[oscquery]")
+{
+  for(bool queues : {false, true})
+  {
+    const int port = queues ? 5804 : 5803;
+    slow_values_server s{port};
+    auto proto = new ossia::oscquery::oscquery_mirror_protocol(
+        "ws://127.0.0.1:" + std::to_string(port), queues ? 10804 : 10803);
+    proto->set_request_queues(queues);
+    proto->set_zombie_on_remove(false);
+    generic_device mirror{std::unique_ptr<protocol_base>(proto), "mirror"};
+    REQUIRE(proto->update(mirror.get_root_node()));
+    for(int i = 0; i < 200 && !s.connected; i++)
+      std::this_thread::sleep_for(10ms);
+    REQUIRE(s.connected);
+
+    // Twenty reads under /x, then /x is removed while they are under way
+    std::vector<std::future<void>> reads;
+    for(int i = 0; i < 20; i++)
+    {
+      auto node = find_node(mirror.get_root_node(), "/x/p" + std::to_string(i));
+      REQUIRE(node);
+      reads.push_back(proto->pull_async(*node->get_parameter()));
+    }
+    std::this_thread::sleep_for(120ms);
+    s.send(R"({"COMMAND":"PATH_REMOVED","DATA":"/x"})");
+    for(int i = 0; i < 100 && find_node(mirror.get_root_node(), "/x"); i++)
+    {
+      proto->run_commands();
+      std::this_thread::sleep_for(10ms);
+    }
+    REQUIRE(!find_node(mirror.get_root_node(), "/x"));
+
+    // Every read is over, one way or the other
+    for(auto& f : reads)
+      REQUIRE(f.wait_for(3s) == std::future_status::ready);
+
+    auto st = proto->get_value_read_stats();
+    if(queues)
+    {
+      // Those still to send when /x went are not sent
+      CHECK(st.cancelled > 0);
+      CHECK(st.sent + st.cancelled == 20);
+      CHECK(s.value_reads == int(st.sent));
+      CHECK(st.queued == 0);
+    }
+    else
+    {
+      // As before: every read is sent; no stats without the queues
+      std::this_thread::sleep_for(500ms);
+      CHECK(s.value_reads == 20);
+      CHECK(st.sent == 0);
+      CHECK(st.cancelled == 0);
+    }
+  }
 }

@@ -144,6 +144,15 @@ public:
   void set_request_queues(bool b) noexcept { m_requestQueues = b; }
   bool get_request_queues() const noexcept { return m_requestQueues; }
 
+  //! The value reads of a mirror with set_request_queues: those waiting to be
+  //! sent, and since it was made those sent, failed, and cancelled because
+  //! their node was removed. All zero without the queues.
+  struct value_read_stats
+  {
+    std::size_t queued{}, sent{}, failed{}, cancelled{};
+  };
+  value_read_stats get_value_read_stats() const;
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -152,6 +161,7 @@ public:
 private:
   friend struct http_answer;
   friend struct http_value_answer;
+  friend struct http_value_error;
   friend struct http_path_answer;
 
   void init();
@@ -184,6 +194,16 @@ private:
   // if one is under way, asked before this, that one is asked once more.
   void queue_tree_reading(std::string path, bool name_space);
   void pump_tree_queue();
+  // Through the queues, the errors of value reads: one line, then at most one
+  // a second that says how many failed since. status 0: a network error, that
+  // the HTTP client wrote.
+  void on_value_read_failed(const std::string& address, int status);
+  void log_value_read_error(const std::string& what);
+  void flush_value_read_errors();
+  // Through the queues, path and what is under it is removed: its value reads
+  // still to send are dropped, and a 404 for one sent is not an error for 10 s
+  void cancel_value_reads(const std::string& path);
+  bool removed_recently(const std::string& address);
 
   void ws_send_message(const std::string& str);
   void ws_send_binary_message(const std::string& str);

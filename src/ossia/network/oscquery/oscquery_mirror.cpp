@@ -25,6 +25,7 @@
 #include <deque>
 #include <optional>
 #include <stdexcept>
+#include <vector>
 namespace ossia::oscquery
 {
 struct http_answer
@@ -87,7 +88,12 @@ struct http_value_answer
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}: status code {}", read->address, status);
+      // Through the queues, the mirror writes these errors itself, at most
+      // one line a second
+      if(self.m_requestQueues)
+        self.on_value_read_failed(read->address, status);
+      else
+        ossia::logger().error("HTTP Error: {}: status code {}", read->address, status);
       read->fail();
     }
   }
@@ -96,10 +102,14 @@ struct http_value_answer
 struct http_value_error
 {
   std::shared_ptr<value_read> read;
+  // Through the queues: told of the failure, for get_value_read_stats
+  oscquery_mirror_protocol* self{};
 
   template <typename T>
   void operator()(T& req, std::string_view)
   {
+    if(self)
+      self->on_value_read_failed(read->address, 0);
     read->fail();
     req.close();
   }
@@ -199,6 +209,16 @@ struct oscquery_mirror_protocol::http_queues
     std::shared_ptr<value_read> read;
   };
   std::deque<queued> values;
+  std::size_t reads_sent{}, reads_failed{}, reads_cancelled{};
+
+  // The errors of value reads not written yet, and when the last line was
+  std::chrono::steady_clock::time_point last_error_line{};
+  std::size_t errors_since{};
+  std::string first_error;
+  std::unique_ptr<boost::asio::steady_timer> error_timer;
+
+  // Paths removed, and when: a value read sent before is not an error
+  std::deque<std::pair<std::string, std::chrono::steady_clock::time_point>> removed;
 
   // The tree: the reading under way, and those to come
   struct tree_reading
@@ -310,6 +330,10 @@ void oscquery_mirror_protocol::cleanup_connections()
   {
     logger().error("Error when stopping HTTP thread");
   }
+  {
+    std::lock_guard lock{m_queues->mutex};
+    m_queues->error_timer.reset();
+  }
 }
 
 void oscquery_mirror_protocol::http_send_message(const std::string& str)
@@ -353,6 +377,8 @@ void oscquery_mirror_protocol::pump_value_queue()
     queues->value_busy = true;
     next = std::move(queues->values.front());
     queues->values.pop_front();
+    if(next.read)
+      queues->reads_sent++;
   }
   // Once the connections are gone (alive false), this is not touched again
   auto done = std::make_shared<request_done>();
@@ -376,8 +402,8 @@ void oscquery_mirror_protocol::pump_value_queue()
     auto path = next.read->address;
     path += detail::query_value();
     auto hrq = std::make_shared<request>(
-        answer{{*this, next.read}, done}, error{{next.read}, done}, m_http->context,
-        "GET", m_httpHost, path);
+        answer{{*this, next.read}, done}, error{{next.read, this}, done},
+        m_http->context, "GET", m_httpHost, path);
     hrq->resolve(m_httpHost, m_queryPort);
   }
   else
@@ -390,6 +416,136 @@ void oscquery_mirror_protocol::pump_value_queue()
         next.target);
     hrq->resolve(m_httpHost, m_queryPort);
   }
+}
+
+void oscquery_mirror_protocol::on_value_read_failed(
+    const std::string& address, int status)
+{
+  {
+    std::lock_guard lock{m_queues->mutex};
+    m_queues->reads_failed++;
+  }
+  // A network error: the HTTP client wrote it
+  if(status == 0)
+    return;
+  if(status == 404 && removed_recently(address))
+  {
+    logger().debug("HTTP Error: {}: status code 404 (removed meanwhile)", address);
+    return;
+  }
+  log_value_read_error(fmt::format("{}: status code {}", address, status));
+}
+
+void oscquery_mirror_protocol::log_value_read_error(const std::string& what)
+{
+  using namespace std::chrono;
+  auto& q = *m_queues;
+  {
+    std::lock_guard lock{q.mutex};
+    if(!q.alive)
+      return;
+    const auto now = steady_clock::now();
+    if(q.errors_since == 0 && now - q.last_error_line >= seconds(1))
+    {
+      q.last_error_line = now;
+    }
+    else
+    {
+      if(q.errors_since++ == 0)
+        q.first_error = what;
+      if(!q.error_timer)
+      {
+        q.error_timer = std::make_unique<boost::asio::steady_timer>(m_http->context);
+        q.error_timer->expires_at(q.last_error_line + seconds(1));
+        q.error_timer->async_wait([this, weak = std::weak_ptr<http_queues>{m_queues}](
+                                      const boost::system::error_code& ec) {
+          if(ec)
+            return;
+          if(auto q = weak.lock())
+            flush_value_read_errors();
+        });
+      }
+      return;
+    }
+  }
+  logger().error("HTTP Error: {}", what);
+}
+
+void oscquery_mirror_protocol::flush_value_read_errors()
+{
+  // On the HTTP thread, from the timer
+  std::size_t n{};
+  std::string first;
+  {
+    std::lock_guard lock{m_queues->mutex};
+    auto& q = *m_queues;
+    if(!q.alive)
+      return;
+    n = q.errors_since;
+    first = std::move(q.first_error);
+    q.errors_since = 0;
+    q.first_error.clear();
+    q.last_error_line = std::chrono::steady_clock::now();
+    q.error_timer.reset();
+  }
+  if(n == 1)
+    logger().error("HTTP Error: {}", first);
+  else if(n > 1)
+    logger().error(
+        "HTTP Error: {} value reads failed in the last second; the first: {}", n, first);
+}
+
+void oscquery_mirror_protocol::cancel_value_reads(const std::string& path)
+{
+  if(!m_requestQueues)
+    return;
+  std::vector<std::shared_ptr<value_read>> dropped;
+  {
+    std::lock_guard lock{m_queues->mutex};
+    auto& q = *m_queues;
+    std::erase_if(q.values, [&](http_queues::queued& e) {
+      if(e.read && covers(path, e.read->address))
+      {
+        dropped.push_back(std::move(e.read));
+        return true;
+      }
+      return false;
+    });
+    q.reads_cancelled += dropped.size();
+    const auto now = std::chrono::steady_clock::now();
+    while(!q.removed.empty()
+          && now - q.removed.front().second > std::chrono::seconds(10))
+      q.removed.pop_front();
+    q.removed.emplace_back(path, now);
+  }
+  for(auto& r : dropped)
+    r->fail();
+}
+
+bool oscquery_mirror_protocol::removed_recently(const std::string& address)
+{
+  if(!m_requestQueues)
+    return false;
+  std::lock_guard lock{m_queues->mutex};
+  const auto now = std::chrono::steady_clock::now();
+  for(const auto& [path, when] : m_queues->removed)
+    if(now - when <= std::chrono::seconds(10) && covers(path, address))
+      return true;
+  return false;
+}
+
+oscquery_mirror_protocol::value_read_stats
+oscquery_mirror_protocol::get_value_read_stats() const
+{
+  std::lock_guard lock{m_queues->mutex};
+  value_read_stats st;
+  for(const auto& e : m_queues->values)
+    if(e.read)
+      st.queued++;
+  st.sent = m_queues->reads_sent;
+  st.failed = m_queues->reads_failed;
+  st.cancelled = m_queues->reads_cancelled;
+  return st;
 }
 
 void oscquery_mirror_protocol::read_path(const std::string& path)
@@ -506,6 +662,7 @@ void oscquery_mirror_protocol::on_path_gone(const std::string& path)
   m_functionQueue.enqueue([this, path] {
     if(auto node = ossia::net::find_node(m_device->get_root_node(), path))
     {
+      cancel_value_reads(path);
       if(m_zombie_on_remove)
         ossia::net::set_zombie(*node, true);
       else if(auto parent = node->get_parent())
@@ -643,6 +800,9 @@ void oscquery_mirror_protocol::on_value_read(
       return;
     }
   }
+  // Removed while the read was on its way
+  else if(removed_recently(address))
+    return;
   m_device->on_unhandled_message(address, detail::ReadValue(*obj_value));
 }
 
@@ -1238,6 +1398,11 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::PathRemoved: {
           m_functionQueue.enqueue([this, doc = std::move(data)] {
+            // The value reads still to send under it are dropped
+            if(auto dat_it = doc->FindMember(detail::data());
+               dat_it != doc->MemberEnd() && dat_it->value.IsString())
+              cancel_value_reads(std::string(
+                  dat_it->value.GetString(), dat_it->value.GetStringLength()));
             json_parser::parse_path_removed(
                 m_device->get_root_node(), *doc, m_zombie_on_remove);
           });
