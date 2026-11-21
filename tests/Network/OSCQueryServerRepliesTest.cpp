@@ -133,12 +133,20 @@ TEST_CASE("test_oscquery_attribute_queries", "test_oscquery_attribute_queries")
 
 TEST_CASE("test_oscquery_attribute_unknown", "test_oscquery_attribute_unknown")
 {
-  // An attribute the server does not know is 204, without a body
+  // An attribute outside the proposal and outside what the server serves is a
+  // bad request, even beside a served one; one of the proposal the server
+  // does not serve is 204, without a body
   served_device s{5704};
   s.float_parameter("/ctn/sub", 0.f);
 
   for(const char* query :
-      {"/ctn/sub?BOGUS", "/ctn?BOGUS", "/?BOGUS", "/ctn/sub?BOGUS=1"})
+      {"/ctn/sub?BOGUS", "/ctn?BOGUS", "/?BOGUS", "/ctn/sub?BOGUS=1",
+       "/ctn/sub?VALUE&BOGUS"})
+  {
+    INFO(query);
+    REQUIRE(http_get(s.ws, query).status == 400);
+  }
+  for(const char* query : {"/ctn/sub?OVERLOADS", "/ctn?OVERLOADS"})
   {
     INFO(query);
     auto r = http_get(s.ws, query);
