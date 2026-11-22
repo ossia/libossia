@@ -3,6 +3,7 @@
 #include <ossia/detail/json_fwd.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
+#include <ossia/network/base/bundle.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/host_info.hpp>
@@ -48,6 +49,8 @@ public:
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+  bool push_bundle(std::span<ossia::bundle_element>) override;
+  bool push_bundle_bounded(std::span<ossia::bundle_element>) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
@@ -152,6 +155,9 @@ private:
   void start_http();
 
   void on_ws_disconnected() { m_hasWS = false; }
+
+  template <typename Parameters>
+  bool push_bundle_impl(const Parameters& parameters, bool bounded = false);
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;

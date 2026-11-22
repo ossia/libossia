@@ -60,6 +60,30 @@ bool multiplex_protocol::push_raw(const full_parameter_data& dat)
   return b;
 }
 
+// Each protocol sends the bundle its own way: the default of protocol_base
+// pushes the values one by one, an OSCQuery server sends one OSC bundle.
+bool multiplex_protocol::push_bundle(
+    const std::vector<const ossia::net::parameter_base*>& addresses)
+{
+  bool b = true;
+  lock_guard guard(m_protocols_mutex);
+  for(auto& proto : m_protocols)
+    b &= proto->push_bundle(addresses);
+
+  return b;
+}
+
+bool multiplex_protocol::push_raw_bundle(
+    const std::vector<full_parameter_data>& addresses)
+{
+  bool b = true;
+  lock_guard guard(m_protocols_mutex);
+  for(auto& proto : m_protocols)
+    b &= proto->push_raw_bundle(addresses);
+
+  return b;
+}
+
 bool multiplex_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
   bool b = true;
