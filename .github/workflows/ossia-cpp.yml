@@ -40,7 +40,7 @@ jobs:
   cpp-mac:
     name: CPP (macOS)
     runs-on: macos-15
-    environment: "Apple Certificate"
+    environment: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && 'Apple Certificate' || 'unsigned-ci' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/latest-mac-toolchain

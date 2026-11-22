@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build-macos:
     runs-on: macos-15
-    environment: "Apple Certificate"
+    environment: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && 'Apple Certificate' || 'unsigned-ci' }}
     strategy:
       matrix:
         static: [0, 1]
