@@ -15,6 +15,8 @@
 #endif
 
 #endif
+#include <ossia/math/safe_math.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 
@@ -25,6 +27,15 @@ namespace ossia
 using json_writer = rapidjson::Writer<
     rapidjson::StringBuffer, rapidjson::UTF8<>, rapidjson::UTF8<>,
     rapidjson::CrtAllocator, rapidjson::WriteFlag::kWriteNanAndInfFlag>;
+
+//! JSON has no NaN and no Infinity: such a number is written as null
+inline void write_number(json_writer& writer, double v)
+{
+  if(ossia::safe_isfinite(v))
+    writer.Double(v);
+  else
+    writer.Null();
+}
 }
 inline std::string get_string(const rapidjson::Value& val)
 {
