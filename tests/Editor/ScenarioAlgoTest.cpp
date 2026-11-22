@@ -448,28 +448,23 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(
       1, ossia::expressions::comparator::EQUAL, 1));
 
-  // TODO we would like another behaviour :
-  // right now there is an additional tick needed for triggering e2 after e1, while we would like them to happen directly
-  // however this means that c2 would not execute at all...
+  // e1 fires at the start of the tick, c2 (min 0) makes e2 ready at once and
+  // c0 is at its max: e2 fires in the same tick and c3 gets all of it.
   {
     s.interval->tick(2_tv, default_request());
     std::cout << e1->get_status() << " " << e2->get_status() << " " << e3->get_status()
               << std::endl;
 
-    // FIXME there is some indeterminism here. Hypothesis is that this is due because of a pointer set.
-    //REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(c0->get_date() == 25_tv);
+    REQUIRE(c0->get_date() == 0_tv);
     REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 0_tv);
-    //REQUIRE(e2->get_status() & time_event::status::FINISHED);
-    REQUIRE(e2->get_status() == time_event::status::NONE);
+    REQUIRE(e2->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c2->get_date() == 0_tv);
     REQUIRE(e3->get_status() == time_event::status::NONE);
 
-    //REQUIRE(c3->get_date() == 2_tv);
-    REQUIRE(c3->get_date() == 0_tv);
+    REQUIRE(c3->get_date() == 2_tv);
   }
 
   {
@@ -486,8 +481,7 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
     REQUIRE(c2->get_date() == 0_tv);
     REQUIRE(e3->get_status() == time_event::status::NONE);
 
-    //REQUIRE(c3->get_date() == 4_tv);
-    REQUIRE(c3->get_date() == 2_tv);
+    REQUIRE(c3->get_date() == 4_tv);
   }
 }
 
@@ -1734,6 +1728,55 @@ TEST_CASE("test_exec_sync_order", "test_exec_sync_order")
     if(e1_created_first)
       REQUIRE(low.e2_first_tick & time_event::status::FINISHED);
   }
+}
+
+TEST_CASE("test_exec_loop_pending_start", "test_exec_loop_pending_start")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+  std::shared_ptr<time_event> e1 = create_event(scenario);
+  std::shared_ptr<time_event> e2 = create_event(scenario);
+  std::shared_ptr<time_event> e3 = create_event(scenario);
+
+  /*      c0         c1
+   * e0 - - - - e1 - - - - e2
+   *            | \ - g - /
+   *            |    c2
+   *            | - - - - - - - - - e3
+   *
+   * g loops back from e2 to e1: when it ends, e1 is pending again and waits
+   * for its trigger, while c2 which e1 started the first time is still running.
+   */
+  auto c0 = create_interval({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  auto c1 = create_interval({}, *e1, *e2, 10_tv, 10_tv, 10_tv);
+  auto g = create_interval({}, *e2, *e1, 5_tv, 5_tv, ossia::Infinite);
+  g->graphal = true;
+  auto c2 = create_interval({}, *e1, *e3, 30_tv, 30_tv, 30_tv);
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+  s.scenario->add_time_interval(g);
+  s.scenario->add_time_interval(c2);
+
+  start_and_tick(s.interval);
+
+  s.interval->tick(12_tv, default_request());
+  REQUIRE(e1->get_status() & time_event::status::FINISHED);
+  REQUIRE(c2->get_date() == 2_tv);
+
+  e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+  s.interval->tick(15_tv, default_request());
+  REQUIRE(e1->get_status() == time_event::status::PENDING);
+  REQUIRE(c2->get_date() == 17_tv);
+
+  // c2 has started even though the event that started it is pending again
+  s.interval->tick(15_tv, default_request());
+  REQUIRE(e3->get_status() & time_event::status::FINISHED);
+  REQUIRE(c2->get_date() == 0_tv);
 }
 
 /*           Backward playback tests          */
