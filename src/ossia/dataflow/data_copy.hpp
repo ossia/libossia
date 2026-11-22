@@ -57,6 +57,14 @@ struct move_data
 
   void operator()(midi_port& out, midi_port& in)
   {
+    // An inlet can already hold the note offs of a cable that was taken off
+    // it: those stay in front.
+    if(!in.messages.empty())
+    {
+      in.messages.insert(in.messages.end(), out.messages.begin(), out.messages.end());
+      return;
+    }
+
     auto tmp = std::move(in.messages);
     in.messages = std::move(out.messages);
     out.messages = std::move(tmp);

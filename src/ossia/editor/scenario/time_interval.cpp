@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
@@ -465,6 +466,8 @@ void time_interval::stop()
   for(const std::shared_ptr<ossia::time_process>& timeProcess : get_time_processes())
   {
     timeProcess->stop();
+    if(timeProcess->node)
+      timeProcess->node->request_note_release();
   }
 
   m_offset = Zero;

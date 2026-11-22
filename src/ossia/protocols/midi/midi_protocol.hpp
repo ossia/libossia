@@ -14,6 +14,7 @@
 #include <libremidi/configurations.hpp>
 #include <libremidi/detail/conversion.hpp>
 #include <libremidi/message.hpp>
+#include <libremidi/types.hpp>
 #include <libremidi/observer_configuration.hpp>
 #include <libremidi/ump.hpp>
 
@@ -69,6 +70,12 @@ struct midi_protocol_configuration
 {
   std::string device_name;
   bool velocity_zero_is_note_off{};
+
+  //! What the messages of an input give on the device's MIDI port for bank
+  //! select, data entry and parameter selection controllers: themselves
+  //! (raw), or MIDI 2 registered / assignable controllers and program changes
+  //! with their bank (semantic).
+  libremidi::controller_translation controllers{libremidi::controller_translation::raw};
 };
 
 class OSSIA_EXPORT midi_protocol final
@@ -145,7 +152,11 @@ private:
 
   void midi_callback(libremidi::message&&);
   void on_learn(const libremidi::message& m);
+  void on_conversion_error(const stdx::error& e);
 
   libremidi::midi1_to_midi2 to_midi2;
+  //! One bit per kind of conversion error already logged: the input callback
+  //! reports each kind once.
+  uint32_t m_conversion_errors{};
 };
 }
