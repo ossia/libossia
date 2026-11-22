@@ -1779,6 +1779,56 @@ TEST_CASE("test_exec_loop_pending_start", "test_exec_loop_pending_start")
   REQUIRE(c2->get_date() == 0_tv);
 }
 
+TEST_CASE("test_exec_dispose_converging", "test_exec_dispose_converging")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+
+  // A sync with two events, whose conditions are both false
+  auto sync = std::make_shared<ossia::time_sync>();
+  auto ea = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *sync,
+      ossia::expressions::make_expression_false());
+  sync->insert(sync->get_time_events().end(), ea);
+  auto eb = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *sync,
+      ossia::expressions::make_expression_false());
+  sync->insert(sync->get_time_events().end(), eb);
+  scenario.add_time_sync(sync);
+
+  std::shared_ptr<time_event> ez = create_event(scenario);
+
+  /*      c0        c2
+   * e0 - - - - ea - - - - ez
+   * |    c1        c3     |
+   * | - - - -  eb - - - - |
+   *
+   * ea and eb are disposed one after the other: once both are, nothing can
+   * reach ez anymore.
+   */
+  auto c0 = create_interval({}, *e0, *ea, 10_tv, 10_tv, 10_tv);
+  auto c1 = create_interval({}, *e0, *eb, 10_tv, 10_tv, 10_tv);
+  auto c2 = create_interval({}, *ea, *ez, 10_tv, 10_tv, 10_tv);
+  auto c3 = create_interval({}, *eb, *ez, 10_tv, 10_tv, 10_tv);
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+  s.scenario->add_time_interval(c2);
+  s.scenario->add_time_interval(c3);
+
+  start_and_tick(s.interval);
+  s.interval->tick(15_tv, default_request());
+
+  const auto disposed = time_event::status(
+      uint8_t(time_event::status::DISPOSED) | uint8_t(time_event::status::FINISHED));
+  REQUIRE(ea->get_status() == disposed);
+  REQUIRE(eb->get_status() == disposed);
+  REQUIRE(ez->get_status() == disposed);
+}
+
 /*           Backward playback tests          */
 
 TEST_CASE("test_exec_reverse_simple", "test_exec_reverse_simple")
