@@ -1,0 +1,164 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 CNRS
+SPDX-FileContributor: Julien Bayle, PRISM <https://www.prism.cnrs.fr/>
+
+The tree served by an OSCQuery server, kept up to date as it changes. Shown
+by the jweb of ossia.v8connector.grid.maxpat; it works in any browser too.
+
+The tree is read once over HTTP when the page connects, then the server's
+WebSocket announces every change (PATH_ADDED, PATH_REMOVED, PATH_RENAMED),
+which the page applies without reading the tree again. The server answers
+HTTP with Access-Control-Allow-Origin: *, so a local page may read it.
+
+Server: 127.0.0.1, OSCQuery port 7102 (the expose message of the patch), or
+?port=<port> after the file name. Nothing else is loaded.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OSCQuery tree</title>
+<style>
+  body { margin: 0; padding: 10px 12px; background: #1e1e1e; color: #ddd;
+         font: 13px/1.45 Menlo, Monaco, monospace; }
+  #status { color: #999; margin-bottom: 8px; }
+  #status.live { color: #6c6; }
+  ul { list-style: none; margin: 0; padding-left: 16px; }
+  #tree > ul { padding-left: 0; }
+  .leaf { color: #7ab8ef; }
+  .new { background: #2d4a2d; transition: background 1.5s; }
+</style>
+</head>
+<body>
+<div id="status">waiting</div>
+<div id="tree"></div>
+<script>
+"use strict";
+const params = new URLSearchParams(location.search);
+const HOST = "127.0.0.1";
+const PORT = Number(params.get("port")) || 7102;
+const statusEl = document.getElementById("status");
+const treeEl = document.getElementById("tree");
+
+// path -> true when the node holds a parameter (TYPE)
+let nodes = new Map();
+let fresh = new Set();
+
+function setStatus(text, live) {
+  statusEl.textContent = text;
+  statusEl.className = live ? "live" : "";
+}
+
+function collect(obj) {
+  if (!obj || typeof obj !== "object") return;
+  if (obj.FULL_PATH && obj.FULL_PATH !== "/") nodes.set(obj.FULL_PATH, "TYPE" in obj);
+  if (obj.CONTENTS) for (const k of Object.keys(obj.CONTENTS)) collect(obj.CONTENTS[k]);
+}
+
+function addPath(path, leaf) {
+  const parts = path.split("/").filter(Boolean);
+  for (let i = 1; i <= parts.length; i++) {
+    const p = "/" + parts.slice(0, i).join("/");
+    if (!nodes.has(p)) { nodes.set(p, false); fresh.add(p); }
+  }
+  if (leaf) nodes.set(path, true);
+}
+
+function removePath(path) {
+  for (const p of [...nodes.keys()])
+    if (p === path || p.startsWith(path + "/")) nodes.delete(p);
+}
+
+const collator = new Intl.Collator(undefined, { numeric: true });
+
+function render() {
+  const children = new Map();
+  for (const p of nodes.keys()) {
+    const parent = p.slice(0, p.lastIndexOf("/")) || "/";
+    if (!children.has(parent)) children.set(parent, []);
+    children.get(parent).push(p);
+  }
+  const build = (parent) => {
+    const list = children.get(parent);
+    if (!list) return null;
+    const ul = document.createElement("ul");
+    list.sort(collator.compare);
+    for (const p of list) {
+      const li = document.createElement("li");
+      li.textContent = p.slice(p.lastIndexOf("/") + 1);
+      if (nodes.get(p)) li.className = "leaf";
+      if (fresh.has(p)) li.classList.add("new");
+      const sub = build(p);
+      if (sub) li.appendChild(sub);
+      ul.appendChild(li);
+    }
+    return ul;
+  };
+  treeEl.replaceChildren(build("/") || document.createTextNode("(empty tree)"));
+  if (fresh.size) {
+    const done = new Set(fresh);
+    setTimeout(() => {
+      for (const p of done) fresh.delete(p);
+      for (const el of treeEl.querySelectorAll(".new")) el.classList.remove("new");
+    }, 1500);
+  }
+}
+
+// A node announced by PATH_ADDED: whether it holds a parameter comes in its
+// attributes, read over HTTP.
+function readAttributes(path) {
+  fetch("http://" + HOST + ":" + PORT + path)
+    .then((r) => r.json())
+    .then((obj) => {
+      if (nodes.has(path) && obj && "TYPE" in obj) { nodes.set(path, true); render(); }
+    })
+    .catch(() => {});
+}
+
+function onMessage(event) {
+  if (typeof event.data !== "string") return; // values, as binary OSC
+  let msg;
+  try { msg = JSON.parse(event.data); } catch (e) { return; }
+  switch (msg.COMMAND) {
+    case "PATH_ADDED":
+      addPath(msg.DATA, false);
+      readAttributes(msg.DATA);
+      break;
+    case "PATH_REMOVED":
+      removePath(msg.DATA);
+      break;
+    case "PATH_RENAMED":
+      if (msg.DATA && msg.DATA.OLD && msg.DATA.NEW) { removePath(msg.DATA.OLD); addPath(msg.DATA.NEW, false); }
+      break;
+    default:
+      return;
+  }
+  render();
+}
+
+function connect() {
+  const ws = new WebSocket("ws://" + HOST + ":" + PORT);
+  ws.onmessage = onMessage;
+  ws.onopen = () => {
+    fetch("http://" + HOST + ":" + PORT + "/")
+      .then((r) => r.json())
+      .then((root) => {
+        nodes = new Map();
+        fresh = new Set();
+        collect(root);
+        render();
+        setStatus("live: " + HOST + ":" + PORT, true);
+      })
+      .catch((e) => setStatus("cannot read the tree: " + e));
+  };
+  ws.onclose = () => {
+    setStatus("waiting for an OSCQuery server on " + HOST + ":" + PORT + " (click expose in the patch)");
+    setTimeout(connect, 1000);
+  };
+}
+
+setStatus("waiting for an OSCQuery server on " + HOST + ":" + PORT + " (click expose in the patch)");
+connect();
+</script>
+</body>
+</html>

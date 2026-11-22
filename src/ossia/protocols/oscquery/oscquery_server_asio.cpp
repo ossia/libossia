@@ -280,6 +280,64 @@ bool oscquery_server_protocol_base::push_raw_bundle(
   return false;
 }
 
+// A bundle of values, each element with its own value (a parameter may come
+// several times). Sent to the clients in OSC bundles of at most 1400 bytes:
+// over UDP they stay under a usual Ethernet MTU.
+template <typename Policy>
+static bool push_values_bundle(
+    std::span<ossia::bundle_element> elements, Policy policy,
+    const std::function<bool(std::string_view, bool)>& write)
+{
+  constexpr std::size_t header = 16; // "#bundle\0" and the time tag
+  constexpr std::size_t limit = 1400;
+  bool ok = !elements.empty();
+  std::size_t begin = 0, size = header;
+  auto send = [&](std::size_t end) {
+    if(end == begin)
+      return;
+    ossia::net::make_bundle_bounded(
+        policy, std::span<ossia::bundle_element>(elements.data() + begin, end - begin),
+        [&](const ossia::net::bundle& b) {
+      ok &= write(std::string_view{b.data.data(), b.data.size()}, b.critical);
+    });
+    begin = end;
+    size = header;
+  };
+  for(std::size_t i = 0; i < elements.size(); i++)
+  {
+    auto& [param, value] = elements[i];
+    const std::size_t message
+        = 4 + ossia::oscquery::osc_writer::to_message(*param, value).size();
+    if(i > begin && size + message > limit)
+      send(i);
+    size += message;
+  }
+  send(elements.size());
+  return ok;
+}
+
+bool oscquery_server_protocol_base::push_bundle(
+    std::span<ossia::bundle_element> elements)
+{
+  using OscVersion = ossia::net::osc_extended_policy;
+  return push_values_bundle(
+      elements, ossia::net::bundle_server_policy<OscVersion>{},
+      [this](std::string_view data, bool critical) {
+    return write_impl(data, critical);
+  });
+}
+
+bool oscquery_server_protocol_base::push_bundle_bounded(
+    std::span<ossia::bundle_element> elements)
+{
+  using OscVersion = ossia::net::osc_extended_policy;
+  return push_values_bundle(
+      elements, ossia::net::bundle_bounded_server_policy<OscVersion>{},
+      [this](std::string_view data, bool critical) {
+    return write_impl(data, critical);
+  });
+}
+
 bool oscquery_server_protocol_base::echo_incoming_message(
     const net::message_origin_identifier& id, const net::parameter_base& addr,
     const ossia::value& val)
