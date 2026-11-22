@@ -1,5 +1,6 @@
 
 #include "AsyncTestUtils.hpp"
+#include "UnixSocketTestUtils.hpp"
 
 #include <ossia/network/context.hpp>
 
@@ -18,8 +19,10 @@ auto make_unix_client(ossia::net::network_context_ptr ctx)
   return ossia::net::make_osc_protocol(
       ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
             ossia::net::unix_dgram_configuration{
-                {ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.b.socket"}},
-                 ossia::net::send_fd_configuration{{"/tmp/ossia_echo.a.socket"}}}}});
+                {ossia::net::receive_fd_configuration{
+                     {ossia_test::unix_socket_path("echo.b")}},
+                 ossia::net::send_fd_configuration{
+                     {ossia_test::unix_socket_path("echo.a")}}}}});
 }
 
 auto make_unix_server(ossia::net::network_context_ptr ctx)
@@ -28,8 +31,10 @@ auto make_unix_server(ossia::net::network_context_ptr ctx)
   return ossia::net::make_osc_protocol(
       ctx, {conf::HOST, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
             ossia::net::unix_dgram_configuration{
-                {ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.a.socket"}},
-                 ossia::net::send_fd_configuration{{"/tmp/ossia_echo.b.socket"}}}}});
+                {ossia::net::receive_fd_configuration{
+                     {ossia_test::unix_socket_path("echo.a")}},
+                 ossia::net::send_fd_configuration{
+                     {ossia_test::unix_socket_path("echo.b")}}}}});
 }
 
 TEST_CASE("test_comm_osc_unix_simple", "test_comm_osc_unix_simple")
