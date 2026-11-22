@@ -117,9 +117,10 @@ int is_timesync_ready(
         }
 
         // previous TimeInterval with a not yet HAPPENED start event
-        // can't have reached its minimal duration
+        // can't have reached its minimal duration. A loop puts a start event
+        // back to PENDING while its interval runs on: that one has started.
         if(!is_happened(start_ev_status) && !is_finished(start_ev_status)
-           && !is_pending(start_ev_status))
+           && !(is_pending(start_ev_status) && timeInterval->running()))
         {
           minimalDurationReached = false;
           break;

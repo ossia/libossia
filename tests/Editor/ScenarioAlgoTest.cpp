@@ -28,6 +28,31 @@ static auto create_event(ossia::scenario& s)
   return ee;
 }
 
+// A time sync built in a chosen slot: the tests give syncs addresses that do
+// not follow the order they were created in.
+struct sync_slots
+{
+  alignas(ossia::time_sync) unsigned char storage[2][sizeof(ossia::time_sync)];
+
+  std::shared_ptr<ossia::time_sync> make(int slot)
+  {
+    return std::shared_ptr<ossia::time_sync>(
+        new(storage[slot]) ossia::time_sync,
+        [](ossia::time_sync* sync) { sync->~time_sync(); });
+  }
+};
+
+static auto create_event(ossia::scenario& s, std::shared_ptr<ossia::time_sync> en)
+{
+  en->set_expression(ossia::expressions::make_expression_true());
+  auto ee = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *en,
+      ossia::expressions::make_expression_true());
+  en->insert(en->get_time_events().end(), ee);
+  s.add_time_sync(std::move(en));
+  return ee;
+}
+
 static std::shared_ptr<ossia::time_interval> create_interval(
     ossia::time_interval::exec_callback callback, ossia::time_event& startEvent,
     ossia::time_event& endEvent, ossia::time_value nominal, ossia::time_value min,
@@ -423,28 +448,23 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(
       1, ossia::expressions::comparator::EQUAL, 1));
 
-  // TODO we would like another behaviour :
-  // right now there is an additional tick needed for triggering e2 after e1, while we would like them to happen directly
-  // however this means that c2 would not execute at all...
+  // e1 fires at the start of the tick, c2 (min 0) makes e2 ready at once and
+  // c0 is at its max: e2 fires in the same tick and c3 gets all of it.
   {
     s.interval->tick(2_tv, default_request());
     std::cout << e1->get_status() << " " << e2->get_status() << " " << e3->get_status()
               << std::endl;
 
-    // FIXME there is some indeterminism here. Hypothesis is that this is due because of a pointer set.
-    //REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(c0->get_date() == 25_tv);
+    REQUIRE(c0->get_date() == 0_tv);
     REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 0_tv);
-    //REQUIRE(e2->get_status() & time_event::status::FINISHED);
-    REQUIRE(e2->get_status() == time_event::status::NONE);
+    REQUIRE(e2->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c2->get_date() == 0_tv);
     REQUIRE(e3->get_status() == time_event::status::NONE);
 
-    //REQUIRE(c3->get_date() == 2_tv);
-    REQUIRE(c3->get_date() == 0_tv);
+    REQUIRE(c3->get_date() == 2_tv);
   }
 
   {
@@ -461,8 +481,7 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
     REQUIRE(c2->get_date() == 0_tv);
     REQUIRE(e3->get_status() == time_event::status::NONE);
 
-    //REQUIRE(c3->get_date() == 4_tv);
-    REQUIRE(c3->get_date() == 2_tv);
+    REQUIRE(c3->get_date() == 4_tv);
   }
 }
 
@@ -1634,6 +1653,180 @@ TEST_CASE("test_exec_chain_loop", "test_exec_chain_loop")
 
   REQUIRE(c0->get_date() == 5_tv);
   REQUIRE(c1->get_date() == 0_tv);
+}
+
+TEST_CASE("test_exec_sync_order", "test_exec_sync_order")
+{
+  using namespace ossia;
+
+  /*           c0
+   * e0 - - - - - - - - - - e2
+   * |    c1         c2     |
+   * | - - - - e1 - - - - - |
+   *
+   * e1 and e2 are both gone through in the tick where c1 reaches its min.
+   * e2 can only happen in that tick if e1 was gone through before it.
+   */
+  struct result
+  {
+    time_event::status e1_first_tick, e2_first_tick, e2_second_tick;
+    bool operator==(const result&) const noexcept = default;
+  };
+
+  const auto run = [](bool e1_created_first, int e1_slot) {
+    sync_slots slots;
+    root_scenario s;
+    ossia::scenario& scenario = *s.scenario;
+
+    std::shared_ptr<time_sync> n1, n2;
+    if(e1_created_first)
+    {
+      n1 = slots.make(e1_slot);
+      n2 = slots.make(1 - e1_slot);
+    }
+    else
+    {
+      n2 = slots.make(1 - e1_slot);
+      n1 = slots.make(e1_slot);
+    }
+    REQUIRE((n1.get() < n2.get()) == (e1_slot == 0));
+
+    std::shared_ptr<time_event> e0 = start_event(scenario);
+    std::shared_ptr<time_event> e1 = create_event(scenario, n1);
+    std::shared_ptr<time_event> e2 = create_event(scenario, n2);
+
+    auto c0 = create_interval({}, *e0, *e2, 20_tv, 0_tv, ossia::Infinite);
+    auto c1 = create_interval({}, *e0, *e1, 10_tv, 10_tv, ossia::Infinite);
+    auto c2 = create_interval({}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
+
+    s.scenario->add_time_interval(c0);
+    s.scenario->add_time_interval(c1);
+    s.scenario->add_time_interval(c2);
+
+    start_and_tick(s.interval);
+
+    result res;
+    s.interval->tick(15_tv, default_request());
+    res.e1_first_tick = e1->get_status();
+    res.e2_first_tick = e2->get_status();
+
+    s.interval->tick(1_tv, default_request());
+    res.e2_second_tick = e2->get_status();
+    return res;
+  };
+
+  for(bool e1_created_first : {true, false})
+  {
+    const result low = run(e1_created_first, 0);
+    const result high = run(e1_created_first, 1);
+
+    // Where the syncs are in memory does not matter
+    REQUIRE(low == high);
+
+    REQUIRE(low.e1_first_tick & time_event::status::FINISHED);
+    REQUIRE(low.e2_second_tick & time_event::status::FINISHED);
+    if(e1_created_first)
+      REQUIRE(low.e2_first_tick & time_event::status::FINISHED);
+  }
+}
+
+TEST_CASE("test_exec_loop_pending_start", "test_exec_loop_pending_start")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+  std::shared_ptr<time_event> e1 = create_event(scenario);
+  std::shared_ptr<time_event> e2 = create_event(scenario);
+  std::shared_ptr<time_event> e3 = create_event(scenario);
+
+  /*      c0         c1
+   * e0 - - - - e1 - - - - e2
+   *            | \ - g - /
+   *            |    c2
+   *            | - - - - - - - - - e3
+   *
+   * g loops back from e2 to e1: when it ends, e1 is pending again and waits
+   * for its trigger, while c2 which e1 started the first time is still running.
+   */
+  auto c0 = create_interval({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  auto c1 = create_interval({}, *e1, *e2, 10_tv, 10_tv, 10_tv);
+  auto g = create_interval({}, *e2, *e1, 5_tv, 5_tv, ossia::Infinite);
+  g->graphal = true;
+  auto c2 = create_interval({}, *e1, *e3, 30_tv, 30_tv, 30_tv);
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+  s.scenario->add_time_interval(g);
+  s.scenario->add_time_interval(c2);
+
+  start_and_tick(s.interval);
+
+  s.interval->tick(12_tv, default_request());
+  REQUIRE(e1->get_status() & time_event::status::FINISHED);
+  REQUIRE(c2->get_date() == 2_tv);
+
+  e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+  s.interval->tick(15_tv, default_request());
+  REQUIRE(e1->get_status() == time_event::status::PENDING);
+  REQUIRE(c2->get_date() == 17_tv);
+
+  // c2 has started even though the event that started it is pending again
+  s.interval->tick(15_tv, default_request());
+  REQUIRE(e3->get_status() & time_event::status::FINISHED);
+  REQUIRE(c2->get_date() == 0_tv);
+}
+
+TEST_CASE("test_exec_dispose_converging", "test_exec_dispose_converging")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+
+  // A sync with two events, whose conditions are both false
+  auto sync = std::make_shared<ossia::time_sync>();
+  auto ea = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *sync,
+      ossia::expressions::make_expression_false());
+  sync->insert(sync->get_time_events().end(), ea);
+  auto eb = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *sync,
+      ossia::expressions::make_expression_false());
+  sync->insert(sync->get_time_events().end(), eb);
+  scenario.add_time_sync(sync);
+
+  std::shared_ptr<time_event> ez = create_event(scenario);
+
+  /*      c0        c2
+   * e0 - - - - ea - - - - ez
+   * |    c1        c3     |
+   * | - - - -  eb - - - - |
+   *
+   * ea and eb are disposed one after the other: once both are, nothing can
+   * reach ez anymore.
+   */
+  auto c0 = create_interval({}, *e0, *ea, 10_tv, 10_tv, 10_tv);
+  auto c1 = create_interval({}, *e0, *eb, 10_tv, 10_tv, 10_tv);
+  auto c2 = create_interval({}, *ea, *ez, 10_tv, 10_tv, 10_tv);
+  auto c3 = create_interval({}, *eb, *ez, 10_tv, 10_tv, 10_tv);
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+  s.scenario->add_time_interval(c2);
+  s.scenario->add_time_interval(c3);
+
+  start_and_tick(s.interval);
+  s.interval->tick(15_tv, default_request());
+
+  const auto disposed = time_event::status(
+      uint8_t(time_event::status::DISPOSED) | uint8_t(time_event::status::FINISHED));
+  REQUIRE(ea->get_status() == disposed);
+  REQUIRE(eb->get_status() == disposed);
+  REQUIRE(ez->get_status() == disposed);
 }
 
 /*           Backward playback tests          */

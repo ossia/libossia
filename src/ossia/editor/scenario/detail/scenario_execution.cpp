@@ -102,8 +102,10 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
     for(auto& previousTimeInterval :
         nextTimeInterval->get_end_event().previous_time_intervals())
     {
-      if(previousTimeInterval->get_start_event().get_status()
-         != time_event::status::DISPOSED)
+      // An event disposed earlier is DISPOSED | FINISHED
+      const auto status = uint8_t(previousTimeInterval->get_start_event().get_status());
+      if((status & uint8_t(time_event::status::DISPOSED))
+         != uint8_t(time_event::status::DISPOSED))
       {
         dispose = false;
         break;
