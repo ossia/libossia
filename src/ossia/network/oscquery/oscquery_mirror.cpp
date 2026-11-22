@@ -441,8 +441,12 @@ bool oscquery_mirror_protocol::update(net::node_base& b)
 
 std::future<void> oscquery_mirror_protocol::update_async(net::node_base& b)
 {
-  m_namespacePromise = std::promise<void>{};
-  auto fut = m_namespacePromise.get_future();
+  std::future<void> fut;
+  {
+    std::lock_guard lock{m_namespaceMutex};
+    m_namespacePromise = std::promise<void>{};
+    fut = m_namespacePromise.get_future();
+  }
   http_send_message(b.osc_address());
   return fut;
 }
@@ -500,6 +504,25 @@ void oscquery_mirror_protocol::set_device(net::device_base& dev)
 
 void oscquery_mirror_protocol::run_commands()
 {
+  std::shared_ptr<rapidjson::Document> ns;
+  {
+    std::lock_guard lock{m_namespaceMutex};
+    ns = std::move(m_pendingNamespace);
+  }
+  if(ns)
+  {
+    json_parser::parse_namespace(m_device->get_root_node(), *ns);
+    std::lock_guard lock{m_namespaceMutex};
+    try
+    {
+      m_namespacePromise.set_value();
+    }
+    catch(const std::future_error&)
+    {
+      // A namespace nobody asked for
+    }
+  }
+
   bool ok = false;
   std::function<void()> cmd;
   do
@@ -747,7 +770,18 @@ bool oscquery_mirror_protocol::on_WSMessage(
           break;
         }
         case message_type::Namespace: {
+          if(m_namespaceInRunCommands)
+          {
+            {
+              std::lock_guard lock{m_namespaceMutex};
+              m_pendingNamespace = std::move(data);
+            }
+            if(m_commandCallback)
+              m_commandCallback();
+            break;
+          }
           json_parser::parse_namespace(m_device->get_root_node(), *data);
+          std::lock_guard lock{m_namespaceMutex};
           m_namespacePromise.set_value();
           break;
         }
