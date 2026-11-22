@@ -4,6 +4,7 @@
 
 #include "json_writer.hpp"
 
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
