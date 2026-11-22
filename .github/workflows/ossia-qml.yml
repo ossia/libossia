@@ -46,7 +46,6 @@ jobs:
   qml-mac:
     name: QML (macOS)
     runs-on: macos-15
-    environment: "Apple Certificate"
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/latest-mac-toolchain
@@ -62,15 +61,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release 
           cmake --build build
           cmake --build build --target install
-      # - name: Code Signing
-      #   shell: bash
-      #   env:
-      #     MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-      #     MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-      #     MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      #   run: |
-      #     source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
-      #     release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
       - name: Archive Package
         uses: actions/upload-artifact@v4

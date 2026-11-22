@@ -26,6 +26,8 @@ runs:
   using: "composite"
   steps:
     - name: Code Signing
+      # Fork PRs package the build output without importing a certificate or notarizing.
+      if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
       shell: bash
       env:
         MAC_CERT_B64: ${{ inputs.MAC_CERT_B64 }}
