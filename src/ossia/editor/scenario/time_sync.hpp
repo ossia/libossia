@@ -223,7 +223,15 @@ public:
   void set_is_being_triggered(bool v) noexcept;
   [[nodiscard]] bool is_being_triggered() const noexcept { return m_is_being_triggered; }
 
+  //! Rank of this time_sync among all those created in the process.
+  //! Scenarios order their syncs by it rather than by address, so that an
+  //! execution does not depend on where the objects were allocated.
+  [[nodiscard]] uint64_t creation_index() const noexcept { return m_creation_index; }
+
 private:
+  static uint64_t next_creation_index() noexcept;
+
+  const uint64_t m_creation_index{next_creation_index()};
   ossia::expression_ptr m_expression;
   container m_timeEvents;
 

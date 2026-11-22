@@ -9,6 +9,7 @@
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
@@ -19,9 +20,19 @@ namespace ossia
 {
 class time_event;
 class time_interval;
-class time_sync;
+
+//! Orders time syncs by creation rather than by address: the order in which a
+//! scenario goes through them is then the same from one run to the next.
+struct sync_compare
+{
+  bool operator()(const time_sync* lhs, const time_sync* rhs) const noexcept
+  {
+    return lhs->creation_index() < rhs->creation_index();
+  }
+};
+
 using interval_set = ossia::flat_set<time_interval*>;
-using sync_set = ossia::flat_set<time_sync*>;
+using sync_set = ossia::flat_set<time_sync*, sync_compare>;
 using small_sync_vec = ossia::small_vector<time_sync*, 4>;
 using small_event_vec = std::vector<time_event*>;
 struct overtick
@@ -34,7 +45,7 @@ struct overtick
   //! the sync starts writing there. -1 when the tick carried no sample span.
   int32_t start_sample{-1};
 };
-using overtick_map = ossia::flat_map<time_sync*, overtick>;
+using overtick_map = ossia::flat_map<time_sync*, overtick, sync_compare>;
 
 class scenario;
 using scenario_graph_vertex = time_sync*;

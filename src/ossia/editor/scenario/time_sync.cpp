@@ -18,6 +18,12 @@ void time_sync_callback::trigger_date_fixed(ossia::time_value) { }
 void time_sync_callback::left_evaluation() { }
 void time_sync_callback::finished_evaluation(bool) { }
 
+uint64_t time_sync::next_creation_index() noexcept
+{
+  static std::atomic<uint64_t> counter{};
+  return counter.fetch_add(1, std::memory_order_relaxed);
+}
+
 time_sync::time_sync()
     : m_expression(expressions::make_expression_true())
     , m_status{status::NOT_DONE}
