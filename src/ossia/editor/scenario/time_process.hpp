@@ -158,15 +158,30 @@ public:
       if(this->m_start_offset == 0_tv)
         static_cast<T*>(this)->state_impl(tok);
       else
-        static_cast<T*>(this)->state_impl(tok.add_offset(this->m_start_offset));
+        state_from_zero(tok.add_offset(this->m_start_offset));
     }
     else
     {
       tok.loop(
           this->m_start_offset, this->m_loop_duration,
-          [this](const token_request& tr) { static_cast<T*>(this)->state_impl(tr); },
+          [this](const token_request& tr) { state_from_zero(tr); },
           [this](const time_value& t) { static_cast<T*>(this)->transport_impl(t); });
     }
+  }
+
+private:
+  //! A negative start offset delays the content: before date 0 the process
+  //! is not run.
+  void state_from_zero(const ossia::token_request& tr)
+  {
+    if(this->m_start_offset >= 0_tv)
+    {
+      static_cast<T*>(this)->state_impl(tr);
+      return;
+    }
+    ossia::token_request clipped;
+    if(tr.clip_before_zero(clipped))
+      static_cast<T*>(this)->state_impl(clipped);
   }
 };
 

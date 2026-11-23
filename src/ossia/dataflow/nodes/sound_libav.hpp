@@ -268,17 +268,61 @@ public:
     }
   }
 
+  //! Copies file frames [frame, frame + count) into out; before the file's
+  //! first frame (a negative start offset delays the content) is silence.
+  template <typename T>
+  void fetch_file_range(int64_t frame, int64_t count, T** out) noexcept
+  {
+    const int64_t channels = int64_t(this->channels());
+    T** dst = (T**)alloca(sizeof(T*) * channels);
+    for(int64_t chan = 0; chan < channels; chan++)
+      dst[chan] = out[chan];
+    if(frame < 0)
+    {
+      const int64_t silent = std::min(-frame, count);
+      for(int64_t chan = 0; chan < channels; chan++)
+      {
+        std::fill_n(dst[chan], silent, T(0));
+        dst[chan] += silent;
+      }
+      frame += silent;
+      count -= silent;
+    }
+    if(count <= 0)
+      return;
+    ensure_window(frame, count);
+    read_window(frame, count, dst);
+  }
+
   template <typename T>
   void
   fetch_audio(int64_t start, int64_t samples_to_write, T** audio_array_base) noexcept
   {
-    if(this->channels() == 0 || samples_to_write <= 0)
+    const int64_t channels = int64_t(this->channels());
+    if(channels == 0 || samples_to_write <= 0)
       return;
-    if(start < 0)
-      start = 0;
 
-    ensure_window(start, samples_to_write);
-    read_window(start, samples_to_write, audio_array_base);
+    if(m_loops && m_loop_duration_samples > 0)
+    {
+      // Wrap the position first, then add the start offset: the same order as
+      // the other sound nodes (sound_utils.hpp, sound_mmap.hpp).
+      const int64_t loop = m_loop_duration_samples;
+      T** dst = (T**)alloca(sizeof(T*) * channels);
+      int64_t k = 0;
+      while(k < samples_to_write)
+      {
+        const int64_t wrapped = (((start + k) % loop) + loop) % loop;
+        const int64_t chunk = std::min(samples_to_write - k, loop - wrapped);
+        for(int64_t chan = 0; chan < channels; chan++)
+          dst[chan] = audio_array_base[chan] + k;
+        fetch_file_range(m_start_offset_samples + wrapped, chunk, dst);
+        k += chunk;
+      }
+    }
+    else
+    {
+      fetch_file_range(start + m_start_offset_samples, samples_to_write, audio_array_base);
+    }
   }
 
   template <typename T>
@@ -290,8 +334,10 @@ public:
       return;
 
     // `start` is the newest sample; read_window() zeroes what precedes the
-    // file, so `first` is left negative.
-    const int64_t first = start - samples_to_write + 1;
+    // file, so `first` is left negative. Not looping, the start offset moves
+    // the content as in fetch_audio().
+    const int64_t first
+        = start - samples_to_write + 1 + (m_loops ? 0 : m_start_offset_samples);
 
     ensure_window(std::max<int64_t>(0, first), samples_to_write);
     read_window(first, samples_to_write, audio_array_base);

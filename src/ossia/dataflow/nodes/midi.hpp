@@ -476,10 +476,40 @@ class midi_node_process final : public ossia::node_process
 public:
   using ossia::node_process::node_process;
 
+  // Two kinds of time reach the node's transport: the interval gives
+  // transport_impl the date of the parent (a seek, or the process added while
+  // its box plays), and a loop wrap in state() gives the date in the notes
+  // where the next loop starts. The parent's date maps to the notes the way
+  // the tokens of state() do, so a process joining a playing box plays in
+  // step with it.
+  void state(const ossia::token_request& tok) override
+  {
+    if(!this->m_loops)
+      return node_process::state(tok);
+    tok.loop(
+        this->m_start_offset, this->m_loop_duration,
+        [this](const ossia::token_request& tr) {
+      if(this->m_start_offset >= ossia::time_value{})
+        state_impl(tr);
+      else if(ossia::token_request clipped; tr.clip_before_zero(clipped))
+        state_impl(clipped);
+    }, [this](ossia::time_value t) { static_cast<midi&>(*node).transport(t); });
+  }
+
   void transport_impl(ossia::time_value date) override
   {
     midi& n = *static_cast<midi*>(node.get());
-    n.transport(date);
+    n.transport(notesTime(date));
+  }
+
+  //! Where a date of the parent falls in the notes
+  ossia::time_value notesTime(ossia::time_value date) const noexcept
+  {
+    const int64_t loop = this->m_loop_duration.impl;
+    if(!this->m_loops || loop <= 0)
+      return this->m_start_offset + date;
+    const int64_t in_loop = ((date.impl % loop) + loop) % loop;
+    return this->m_start_offset + ossia::time_value{in_loop};
   }
 
   void stop() override

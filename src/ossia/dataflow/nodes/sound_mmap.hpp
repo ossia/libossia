@@ -8,6 +8,7 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
+#include <algorithm>
 #include <type_traits>
 
 namespace ossia::nodes
@@ -124,9 +125,14 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int64_t pos = this->m_start_offset_samples
-                      + ((start + k) % this->m_loop_duration_samples);
-        if(pos >= file_duration)
+        // Floor-modulo, and a negative start offset delays the content: what
+        // comes before the file's first frame is silence.
+        const int64_t raw_pos = start + k;
+        const int64_t wrapped_pos
+            = ((raw_pos % this->m_loop_duration_samples) + this->m_loop_duration_samples)
+              % this->m_loop_duration_samples;
+        int64_t pos = this->m_start_offset_samples + wrapped_pos;
+        if(pos < 0 || pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
             audio_array[i][k] = 0;
@@ -163,24 +169,37 @@ public:
         source[i] = std::span(audio_array[i], samples_to_write);
       }
 
-      bool ok = start + m_start_offset_samples < file_duration;
+      // A negative read position (a negative start offset delays the content)
+      // is silence up to the file's first frame.
+      const int64_t read_start = start + m_start_offset_samples;
+      const int64_t silent
+          = std::clamp<int64_t>(-read_start, 0, samples_to_write);
+      for(int i = 0; i < channels; i++)
+        for(int k = 0; k < silent; k++)
+          audio_array[i][k] = 0;
+
+      bool ok = silent < samples_to_write && read_start + silent < file_duration;
       if(ok)
-        ok = ok && this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
+        ok = this->m_handle.seek_to_pcm_frame(read_start + silent);
 
       if(ok)
       {
-        const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
+        for(int i = 0; i < channels; i++)
+          source[i] = std::span(audio_array[i] + silent, samples_to_write - silent);
+        const auto count
+            = this->m_handle.read_pcm_frames(samples_to_write - silent, frame_data);
         m_converter(source, frame_data, count);
         for(int i = 0; i < channels; i++)
-          for(int k = count; k < samples_to_write; k++)
+          for(int64_t k = silent + count; k < samples_to_write; k++)
             audio_array[i][k] = 0;
       }
       else
       {
         for(int i = 0; i < channels; i++)
-          for(int k = 0; k < samples_to_write; k++)
+          for(int64_t k = silent; k < samples_to_write; k++)
             audio_array[i][k] = 0;
-        return;
+        if(silent == 0)
+          return;
       }
     }
 
@@ -213,9 +232,14 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int64_t pos = this->m_start_offset_samples
-                      + ((start + k) % this->m_loop_duration_samples);
-        if(pos >= file_duration)
+        // Floor-modulo, and a negative start offset delays the content: what
+        // comes before the file's first frame is silence.
+        const int64_t raw_pos = start + k;
+        const int64_t wrapped_pos
+            = ((raw_pos % this->m_loop_duration_samples) + this->m_loop_duration_samples)
+              % this->m_loop_duration_samples;
+        int64_t pos = this->m_start_offset_samples + wrapped_pos;
+        if(pos < 0 || pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
             audio_array[i][k] = 0;
@@ -252,19 +276,33 @@ public:
         source[i] = std::span(audio_array[i], samples_to_write);
       }
 
-      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
+      // A negative read position (a negative start offset delays the content)
+      // is silence up to the file's first frame.
+      const int64_t read_start = start + m_start_offset_samples;
+      const int64_t silent
+          = std::clamp<int64_t>(-read_start, 0, samples_to_write);
+      for(int i = 0; i < channels; i++)
+        for(int64_t k = 0; k < silent; k++)
+          audio_array[i][k] = 0;
+      if(silent == samples_to_write)
+        return;
+
+      const bool ok = this->m_handle.seek_to_pcm_frame(read_start + silent);
       if(!ok)
       {
         for(int i = 0; i < channels; i++)
-          for(int k = 0; k < samples_to_write; k++)
+          for(int64_t k = silent; k < samples_to_write; k++)
             audio_array[i][k] = 0;
         return;
       }
 
-      const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
+      for(int i = 0; i < channels; i++)
+        source[i] = std::span(audio_array[i] + silent, samples_to_write - silent);
+      const auto count
+          = this->m_handle.read_pcm_frames(samples_to_write - silent, frame_data);
       m_converter(source, frame_data, count);
       for(int i = 0; i < channels; i++)
-        for(int k = count; k < samples_to_write; k++)
+        for(int64_t k = silent + count; k < samples_to_write; k++)
           audio_array[i][k] = 0;
     }
   }

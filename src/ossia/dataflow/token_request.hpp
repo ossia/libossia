@@ -94,6 +94,56 @@ struct token_request
     return other;
   }
 
+  /**
+   * The part of this request at or after date 0, in `out`; false when none of
+   * it is.
+   *
+   * A negative start offset delays a process's content: the dates it is
+   * given start below zero, and before zero it has nothing to play. The
+   * piece kept keeps its place in the tick (offset) and its share of the
+   * carried sample span, cut the way loop() cuts its pieces.
+   */
+  [[nodiscard]] constexpr bool clip_before_zero(token_request& out) const noexcept
+  {
+    out = *this;
+    const int64_t from = prev_date.impl;
+    const int64_t to = date.impl;
+    if(to >= from)
+    {
+      // Forward, or a tick that does not advance
+      if(from >= 0)
+        return true;
+      if(to < 0 || (to == 0 && from < 0))
+        return false;
+      const int64_t total = to - from;
+      const int64_t cut = -from;
+      out.prev_date = time_value{0};
+      out.offset += time_value{cut};
+      if(start_sample >= 0 && length_sample >= 0)
+      {
+        const int64_t s0 = start_sample + (int64_t{length_sample} * cut + total / 2) / total;
+        out.start_sample = int32_t(s0);
+        out.length_sample = int32_t(start_sample + length_sample - s0);
+      }
+      return true;
+    }
+    else
+    {
+      // Backward
+      if(to >= 0)
+        return true;
+      if(from <= 0)
+        return false;
+      const int64_t total = from - to;
+      const int64_t kept = from;
+      out.date = time_value{0};
+      if(start_sample >= 0 && length_sample >= 0)
+        out.length_sample
+            = int32_t((int64_t{length_sample} * kept + total / 2) / total);
+      return true;
+    }
+  }
+
   template <typename Exec, typename Transport>
   constexpr void loop(
       ossia::time_value start_offset, ossia::time_value loop_duration, Exec f,
