@@ -169,12 +169,13 @@ public:
       catch(const std::exception& e)
       {
         ossia::logger().error("Error in request: {}", e.what());
+        con->set_status(websocketpp::http::status_code::internal_server_error);
       }
       catch(...)
       {
         ossia::logger().error("Error in request");
+        con->set_status(websocketpp::http::status_code::internal_server_error);
       }
-      con->set_status(websocketpp::http::status_code::internal_server_error);
     });
   }
 

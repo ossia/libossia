@@ -45,6 +45,33 @@ struct http_error
 
 using http_request = ossia::net::http_get_request<http_answer, http_error>;
 
+// The reading of an address that changed: its structure, or a 404 if it is
+// gone
+struct http_path_answer
+{
+  static constexpr auto reserve_expect = 65536 * 8;
+  oscquery_mirror_protocol& self;
+  std::string path;
+
+  template <typename T, typename S>
+  void operator()(T& req, int status, const S& body)
+  {
+    if(status >= 200 && status < 300)
+      self.on_path_read(path, body);
+    else if(status == 404)
+      self.on_path_gone(path);
+  }
+};
+
+struct http_path_error
+{
+  template <typename T>
+  void operator()(T& req, std::string_view)
+  {
+    req.close();
+  }
+};
+
 struct http_client_context
 {
   ossia::thread thread;
@@ -168,6 +195,47 @@ void oscquery_mirror_protocol::http_send_message(const rapidjson::StringBuffer& 
   auto hrq = std::make_shared<http_request>(
       http_answer{*this}, http_error{}, m_http->context, m_httpHost, str.GetString());
   hrq->resolve(m_httpHost, m_queryPort);
+}
+
+void oscquery_mirror_protocol::read_path(const std::string& path)
+{
+  using request = ossia::net::http_client_request<http_path_answer, http_path_error>;
+  auto hrq = std::make_shared<request>(
+      http_path_answer{*this, path}, http_path_error{}, m_http->context, "GET",
+      m_httpHost, path);
+  hrq->resolve(m_httpHost, m_queryPort);
+}
+
+void oscquery_mirror_protocol::on_path_read(
+    const std::string& path, const std::string& message)
+{
+  std::shared_ptr<rapidjson::Document> doc = json_parser::parse(message);
+  if(doc->IsNull() || !doc->IsObject())
+    return;
+  m_functionQueue.enqueue([this, path, doc = std::move(doc)] {
+    auto& root = m_device->get_root_node();
+    if(path == "/")
+      json_parser::parse_namespace(root, *doc);
+    else
+      json_parser::parse_path_added(root, path, *doc);
+  });
+  if(m_commandCallback)
+    m_commandCallback();
+}
+
+void oscquery_mirror_protocol::on_path_gone(const std::string& path)
+{
+  m_functionQueue.enqueue([this, path] {
+    if(auto node = ossia::net::find_node(m_device->get_root_node(), path))
+    {
+      if(m_zombie_on_remove)
+        ossia::net::set_zombie(*node, true);
+      else if(auto parent = node->get_parent())
+        parent->remove_child(*node);
+    }
+  });
+  if(m_commandCallback)
+    m_commandCallback();
 }
 
 void oscquery_mirror_protocol::ws_send_message(const std::string& str)
@@ -849,11 +917,11 @@ bool oscquery_mirror_protocol::on_WSMessage(
         }
 
         case message_type::PathChanged: {
-          m_functionQueue.enqueue([this, doc = std::move(data)] {
-            json_parser::parse_path_changed(m_device->get_root_node(), *doc);
-          });
-          if(m_commandCallback)
-            m_commandCallback();
+          // The proposal: the client asks for the structure of that address
+          auto dat_it = data->FindMember(detail::data());
+          if(dat_it != data->MemberEnd() && dat_it->value.IsString())
+            read_path(
+                std::string(dat_it->value.GetString(), dat_it->value.GetStringLength()));
           break;
         }
 
