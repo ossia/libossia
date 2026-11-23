@@ -13,6 +13,7 @@
 
 #include <nano_signal_slot.hpp>
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -178,7 +179,8 @@ public:
 protected:
   ossia::net::node_base& m_node;
   unit_t m_unit;
-  bool m_critical{};
+  // Read by the network threads, set by the host
+  std::atomic_bool m_critical{};
   bool m_disabled{};
   bool m_muted{};
   ossia::repetition_filter m_repetitionFilter{ossia::repetition_filter::OFF};

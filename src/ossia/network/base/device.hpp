@@ -6,6 +6,8 @@
 
 #include <nano_signal_slot.hpp>
 
+#include <atomic>
+
 namespace ossia
 {
 namespace net
@@ -77,9 +79,9 @@ public:
   void set_name(const std::string& str) { get_root_node().set_name(str); }
   std::string get_name() const { return get_root_node().get_name(); }
 
-  bool has_echo() { return m_echo; }
+  bool has_echo() { return m_echo.load(std::memory_order_relaxed); }
 
-  void set_echo(bool echo) { m_echo = echo; }
+  void set_echo(bool echo) { m_echo.store(echo, std::memory_order_relaxed); }
 
   void apply_incoming_message(
       const message_origin_identifier& id, ossia::net::parameter_base& param,
@@ -119,7 +121,8 @@ public:
 protected:
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
   device_capabilities m_capabilities{};
-  bool m_echo{false};
+  // Read by the network threads, set by the host
+  std::atomic_bool m_echo{false};
 };
 
 template <typename T>
