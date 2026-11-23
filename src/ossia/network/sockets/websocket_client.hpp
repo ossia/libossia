@@ -125,7 +125,10 @@ public:
     }
 
     scoped_lock guard(m_lock);
-    m_client->close(m_hdl, websocketpp::close::status::normal, "");
+    // The server may have closed the connection already, or be closing it:
+    // there is nothing left to close, the client stops all the same
+    websocketpp::lib::error_code ec;
+    m_client->close(m_hdl, websocketpp::close::status::normal, "", ec);
     m_client->stop();
     m_open = false;
   }

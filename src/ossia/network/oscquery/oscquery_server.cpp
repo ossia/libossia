@@ -407,6 +407,11 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 
 void oscquery_server_protocol::stop()
 {
+  // Withdraw the announcements first: clients that look the server up by name
+  // stop finding it before its connections close, and a server stopped but
+  // not destroyed is no longer announced.
+  disable_zeroconf();
+
   try
   {
     m_oscServer->stop();
@@ -564,8 +569,13 @@ try
 {
   auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
 
-  boost::asio::ip::tcp::socket& sock = con->get_raw_socket();
-  auto ip = sock.remote_endpoint().address().to_string();
+  // A client that left as soon as it connected has no address any more: its
+  // connection is closed already, there is no client to keep
+  boost::system::error_code ec;
+  const auto remote = con->get_raw_socket().remote_endpoint(ec);
+  if(ec)
+    return;
+  auto ip = remote.address().to_string();
   if(ip.substr(0, 7) == "::ffff:")
     ip = ip.substr(7);
 
