@@ -771,6 +771,85 @@ TEST_CASE("test_oscquery_critical_ws", "test_oscquery_critical_ws")
   REQUIRE(a->value().get<float>() == 4.5f);
 }
 
+// The EXTENSIONS of HOST_INFO, as a mirror connected to a server reads them
+static ossia::string_map<bool> host_info_extensions(int ws_port)
+{
+  auto proto = new ossia::oscquery::oscquery_mirror_protocol(
+      "ws://127.0.0.1:" + std::to_string(ws_port), ws_port + 10000);
+  generic_device clt{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
+  for(int i = 0; i < 200 && proto->get_host_info().extensions.empty(); i++)
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  return proto->get_host_info().extensions;
+}
+
+TEST_CASE(
+    "test_oscquery_host_info_extended_type", "test_oscquery_host_info_extended_type")
+{
+  // The tree is served with EXTENDED_TYPE: HOST_INFO declares it
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1240, 5690};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  auto& n = find_or_create_node(serv, "/main");
+  n.create_parameter(ossia::val_type::FLOAT);
+  n.set(extended_type_attribute{}, "custom");
+
+  auto ext = host_info_extensions(5690);
+  REQUIRE(!ext.empty());
+  auto it = ext.find("EXTENDED_TYPE");
+  REQUIRE(it != ext.end());
+  REQUIRE(it->second);
+}
+
+TEST_CASE("test_oscquery_host_info_echo", "test_oscquery_host_info_echo")
+{
+  // ECHO says what the device does: off by default
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1241, 5691};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  auto echo = [] {
+    auto ext = host_info_extensions(5691);
+    auto it = ext.find("ECHO");
+    REQUIRE(it != ext.end());
+    return it->second;
+  };
+  REQUIRE(!echo());
+  serv.set_echo(true);
+  REQUIRE(echo());
+  serv.set_echo(false);
+  REQUIRE(!echo());
+}
+
+TEST_CASE("test_oscquery_host_info_attributes", "test_oscquery_host_info_attributes")
+{
+  // Every attribute a node is served with is declared in EXTENSIONS
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1242, 5692};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  auto& n = find_or_create_node(serv, "/main");
+  n.create_parameter(ossia::val_type::FLOAT);
+  n.set(refresh_rate_attribute{}, 100);
+  n.set(value_step_size_attribute{}, 0.5);
+  n.set(priority_attribute{}, 50);
+  n.set(repetition_filter_attribute{}, repetition_filter::ON);
+  n.set(default_value_attribute{}, ossia::value(0.));
+  n.set(app_name_attribute{}, "AppName");
+
+  std::string json = oscquery::json_writer{}.query_namespace(n).GetString();
+  rapidjson::Document node;
+  node.Parse(json.c_str());
+  REQUIRE(!node.HasParseError());
+
+  auto ext = host_info_extensions(5692);
+  REQUIRE(!ext.empty());
+  for(auto it = node.MemberBegin(); it != node.MemberEnd(); ++it)
+  {
+    const std::string key = it->name.GetString();
+    if(key == "FULL_PATH" || key == "CONTENTS")
+      continue;
+    INFO(key);
+    auto e = ext.find(key);
+    REQUIRE(e != ext.end());
+    REQUIRE(e->second);
+  }
+}
+
 TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")
 {
   // Here we check that a nested list is not flatten when sent by OSC

@@ -28,6 +28,13 @@ public:
       const std::vector<ossia::net::osc_server_configuration>& osc_port,
       std::string_view local_ip, int ws_port);
 
+  //! echo: whether the server forwards a client's values back to it, as
+  //! ossia::net::device_base::has_echo() says
+  static string_t query_host_info(
+      std::string_view name,
+      const std::vector<ossia::net::osc_server_configuration>& osc_port,
+      std::string_view local_ip, int ws_port, bool echo);
+
   // Format interface
   // Queries
   //! Reply to the namespace query : /foo/bar

@@ -6,6 +6,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
@@ -113,4 +114,27 @@ TEST_CASE("test_parse_json_rgba8", "test_parse_json_rgba8")
   auto p = n->get_parameter();
   REQUIRE(p->get_unit() == ossia::rgba8_u{});
   REQUIRE(p->value() == ossia::value{ossia::make_vec(0, 59, 111, 255)});
+}
+
+TEST_CASE("test_json_rgb_extended_type", "test_json_rgb_extended_type")
+{
+  using namespace std::literals;
+  generic_device serv{"foo"};
+
+  // created as ossia.parameter does: the node gets the extended type "vecf"
+  auto& node = ossia::net::create_node(serv.get_root_node(), "/color");
+  auto p = ossia::try_setup_parameter("vec3f", node);
+  REQUIRE(p);
+  p->set_unit(ossia::rgb_u{});
+  p->push_value(ossia::make_vec(1., 0.5, 0.));
+
+  std::string json = oscquery::json_writer{}.query_namespace(node).GetString();
+  std::cerr << json;
+
+  // the unit's EXTENDED_TYPE only, not followed by the node's "vecf"
+  REQUIRE(
+      json.find("\"EXTENDED_TYPE\":[\"color.rgb.r\",\"color.rgb.g\",\"color.rgb.b\"]")
+      != std::string::npos);
+  const auto first = json.find("\"EXTENDED_TYPE\"");
+  REQUIRE(json.find("\"EXTENDED_TYPE\"", first + 1) == std::string::npos);
 }

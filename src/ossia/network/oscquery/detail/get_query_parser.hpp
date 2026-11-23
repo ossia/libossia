@@ -172,7 +172,7 @@ public:
 
           return oscquery::json_writer::query_host_info(
               proto.get_device().get_name(), transports(), local_client_ip,
-              proto.get_ws_port());
+              proto.get_ws_port(), proto.get_device().has_echo());
         }
       }
       return {};

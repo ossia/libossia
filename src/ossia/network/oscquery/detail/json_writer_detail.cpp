@@ -4,6 +4,7 @@
 
 #include "json_writer.hpp"
 
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
@@ -315,6 +316,11 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
 
   ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
     using Attr = typename decltype(attr)::type;
+    // A unit writes its own EXTENDED_TYPE (or none): a second key would hide it
+    // from clients that keep the last duplicate.
+    if constexpr(std::is_same_v<Attr, ossia::net::extended_type_attribute>)
+      if(addr && addr->get_unit())
+        return;
     auto res = Attr::getter(n);
     if(ossia::net::valid(res))
     {
@@ -543,6 +549,14 @@ json_writer::string_t json_writer::query_host_info(
     const std::vector<ossia::net::osc_server_configuration>& osc_port,
     std::string_view local_ip, int ws_port)
 {
+  return query_host_info(name, osc_port, local_ip, ws_port, true);
+}
+
+json_writer::string_t json_writer::query_host_info(
+    std::string_view name,
+    const std::vector<ossia::net::osc_server_configuration>& osc_port,
+    std::string_view local_ip, int ws_port, bool echo)
+{
   string_t buf;
   writer_t wr(buf);
 
@@ -576,10 +590,31 @@ json_writer::string_t json_writer::query_host_info(
   wr.Bool(true);
   wr.Key("UNIT");
   wr.Bool(true);
+  wr.Key("EXTENDED_TYPE");
+  wr.Bool(true);
   wr.Key("CRITICAL");
   wr.Bool(true);
   wr.Key("DESCRIPTION");
   wr.Bool(true);
+
+  // Every other attribute a node may be served with (REFRESH_RATE, PRIORITY,
+  // STEP_SIZE...), from the lists the writer serves, so that the two stay the
+  // same: a client takes an attribute missing from EXTENSIONS for not supported.
+  {
+    constexpr std::string_view written[]{
+        "TYPE",     "ACCESS", "VALUE",         "RANGE",    "TAGS",
+        "CLIPMODE", "UNIT",   "EXTENDED_TYPE", "CRITICAL", "DESCRIPTION"};
+    auto declare = [&](auto attr) {
+      using Attr = typename decltype(attr)::type;
+      const std::string_view key = detail::metadata<Attr>::key();
+      if(ossia::contains(written, key))
+        return;
+      write_json_key(wr, key);
+      wr.Bool(true);
+    };
+    ossia::for_each_tagged(detail::base_attributes{}, declare);
+    ossia::for_each_tagged(detail::extended_attributes{}, declare);
+  }
 
   wr.Key("HTML");
   wr.Bool(true);
@@ -591,7 +626,7 @@ json_writer::string_t json_writer::query_host_info(
   wr.Bool(true);
 
   wr.Key("ECHO");
-  wr.Bool(true);
+  wr.Bool(echo);
 
   wr.Key(detail::path_changed());
   wr.Bool(false);
