@@ -38,24 +38,11 @@ public:
   static string_t
   query_attributes(const ossia::net::node_base& node, const StringVec_T& methods)
   {
-    string_t buf;
-    writer_t wr(buf);
-
-    detail::json_writer_impl p{wr};
-
-    // Here we just write the attributes in the object directly
-    wr.StartObject();
-    for(auto& method : methods)
-    {
-      // Here we reply to the query which already has
-      // the key in the "oscquery" format so no need to convert
-      write_json_key(wr, method);
-      p.writeAttribute(node, method);
-    }
-    wr.EndObject();
-
-    return buf;
+    return query_attributes_impl(node, {methods.begin(), methods.end()});
   }
+
+  //! Whether a query can ask for this attribute
+  static bool known_attribute(std::string_view method);
 
   // Listen messages
   static string_t listen(std::string_view address);
@@ -94,6 +81,10 @@ public:
           std::pair<const ossia::net::node_base*, std::vector<std::string_view>>>& vec);
 
 private:
+  //! The members of the node as the tree writes it: what a query says agrees with it
+  static string_t query_attributes_impl(
+      const ossia::net::node_base& node, const std::vector<std::string_view>& methods);
+
   static void
   path_added_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void

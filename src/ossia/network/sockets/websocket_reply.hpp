@@ -21,7 +21,8 @@ struct server_reply
   {
     json,
     html,
-    binary
+    binary,
+    no_content //!< HTTP 204
   } type;
   std::string data;
 };

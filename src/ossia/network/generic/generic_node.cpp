@@ -110,8 +110,7 @@ ossia::net::parameter_base* generic_node::create_parameter(ossia::val_type type)
   if(!m_parameter)
   {
     // setup new parameter
-    m_parameter = std::make_unique<ossia::net::generic_parameter>(*this);
-    m_parameter->set_value_type(type);
+    m_parameter = std::make_unique<ossia::net::generic_parameter>(*this, type);
 
     // notify observers
     m_device.on_parameter_created(*m_parameter);

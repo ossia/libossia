@@ -37,6 +37,8 @@ protected:
   ossia::value m_previousValue; //! Used for repetition filter.
 public:
   generic_parameter(ossia::net::node_base& node_base);
+  //! Of that type from the start: its creation is a single change for the observers
+  generic_parameter(ossia::net::node_base& node_base, ossia::val_type type);
   generic_parameter(const parameter_data&, ossia::net::node_base& node_base);
 
   ~generic_parameter();

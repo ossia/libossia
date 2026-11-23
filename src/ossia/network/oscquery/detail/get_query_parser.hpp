@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/exceptions.hpp>
@@ -25,6 +26,21 @@ namespace oscquery
 class get_query_answerer
 {
 public:
+  //! A node attribute of the proposal or a key this server declares in the
+  //! EXTENSIONS of HOST_INFO: a query for one it does not serve is 204, any
+  //! other unknown attribute 400.
+  static bool proposal_or_declared(std::string_view key) noexcept
+  {
+    static constexpr std::string_view keys[]{
+        // proposal
+        "FULL_PATH", "CONTENTS", "TYPE", "ACCESS", "VALUE", "RANGE", "DESCRIPTION",
+        "TAGS", "EXTENDED_TYPE", "UNIT", "CRITICAL", "CLIPMODE", "OVERLOADS", "HTML",
+        // declared in EXTENSIONS (json_writer::query_host_info)
+        "OSC_STREAMING", "LISTEN", "ECHO", "PATH_CHANGED", "PATH_RENAMED", "PATH_ADDED",
+        "PATH_REMOVED"};
+    return ossia::contains(keys, key);
+  }
+
   template <typename OscqueryProtocol>
   static json_writer::string_t handle_listen(
       OscqueryProtocol& proto, const oscquery_server_protocol::connection_handler& hdl,
@@ -137,9 +153,16 @@ public:
           ossia::small_vector<std::string, 5> attributes;
           for(const auto& elt : parameters)
           {
-            if(elt.second.empty())
+            if(oscquery::json_writer::known_attribute(elt.first))
             {
               attributes.push_back(elt.first);
+            }
+            else if(!proposal_or_declared(elt.first))
+            {
+              // Proposal: an attribute outside the proposal and outside what
+              // this server serves or declares is a bad request, even beside
+              // a served one
+              throw bad_request_error{"Unknown attribute: " + elt.first};
             }
           }
 
@@ -147,6 +170,12 @@ public:
           {
             return oscquery::json_writer::query_attributes(*node, attributes);
           }
+
+          // A node attribute of the proposal, or an extension this server
+          // declares, that it does not serve here
+          ossia::net::server_reply none;
+          none.type = ossia::net::server_reply::data_type::no_content;
+          return none;
         }
         else
         {
