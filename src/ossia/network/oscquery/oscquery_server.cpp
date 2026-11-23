@@ -23,10 +23,24 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
+
+#include <boost/asio/ip/address.hpp>
 namespace ossia
 {
 namespace oscquery
 {
+
+// Whether the address a client connected from is this IPv4 address of a datagram
+static bool same_address(const std::string& client_ip, unsigned long address)
+{
+  boost::system::error_code ec;
+  auto ip = boost::asio::ip::make_address(client_ip, ec);
+  if(ec)
+    return false;
+  if(ip.is_v6() && ip.to_v6().is_v4_mapped())
+    ip = boost::asio::ip::make_address_v4(boost::asio::ip::v4_mapped, ip.to_v6());
+  return ip.is_v4() && ip.to_v4().to_uint() == address;
+}
 
 static uintptr_t
 client_identifier(const clients& clts, const oscpack::IpEndpointName& ip)
@@ -34,7 +48,7 @@ client_identifier(const clients& clts, const oscpack::IpEndpointName& ip)
   for(const auto& client_p : clts)
   {
     auto& c = *client_p;
-    if(c.remote_sender_port == ip.port)
+    if(c.remote_sender_port == ip.port && same_address(c.client_ip, ip.address))
     {
       return (uintptr_t)c.connection.lock().get();
     }
