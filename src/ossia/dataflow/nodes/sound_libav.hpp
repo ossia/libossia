@@ -61,7 +61,9 @@ public:
     m_channel_q = boost::circular_buffer<float>(
         m_handle ? 8192 * m_handle.channels() : 0);
     m_window_start = 0;
+    m_discard_before = 0;
     m_positioned = false;
+    m_placing = false;
   }
 
   void transport(time_value flicks) override { transport_scaled(flicks, 0.); }
@@ -101,6 +103,14 @@ public:
         if(frame->best_effort_timestamp != AV_NOPTS_VALUE)
           pts = frame->best_effort_timestamp;
 
+        if(m_placing)
+        {
+          // seek_window() gives up on a first frame without a timestamp.
+          if(!pts)
+            return true;
+          place_window(*pts);
+        }
+
         const int capacity = m_handle.out_capacity_for(in_samples);
         m_tmp.resize(std::size_t(capacity) * channels, boost::container::default_init);
         float* out_ptr = m_tmp.data();
@@ -139,6 +149,27 @@ public:
     }
   }
 
+  //! Frame of the content at timestamp `pts`, in this node's output rate.
+  int64_t frame_at(int64_t pts) const noexcept
+  {
+    return av_rescale_q(
+        pts - m_handle.start_pts(), m_handle.stream->time_base,
+        AVRational{1, int(m_handle.out_rate())});
+  }
+
+  //! Anchors the empty window on the first frame decoded after a seek. What
+  //! the decoder gives before it has been fed `m_preroll` frames is warm-up
+  //! and is dropped, as is anything before the content's first frame
+  //! (priming, pre-skip). From the stream's start nothing needs warming up.
+  void place_window(int64_t pts) noexcept
+  {
+    m_placing = false;
+    m_landed_at = frame_at(pts);
+    m_window_start = m_landed_at;
+    m_discard_before
+        = (m_seek_target <= 0) ? 0 : std::max<int64_t>(0, m_landed_at + m_preroll);
+  }
+
   //! Drops the oldest frames to make room.
   void push_window(const float* data, int64_t frames) noexcept
   {
@@ -155,57 +186,88 @@ public:
       m_channel_q.insert(
           m_channel_q.end(), data + (frames - keep) * channels,
           data + frames * channels);
-      return;
+    }
+    else
+    {
+      const int64_t overflow = std::max<int64_t>(0, held + frames - capacity);
+      if(overflow > 0)
+      {
+        m_channel_q.erase_begin(std::size_t(overflow * channels));
+        m_window_start += overflow;
+      }
+      m_channel_q.insert(m_channel_q.end(), data, data + frames * channels);
     }
 
-    const int64_t overflow = std::max<int64_t>(0, held + frames - capacity);
-    if(overflow > 0)
+    if(m_window_start < m_discard_before)
     {
-      m_channel_q.erase_begin(std::size_t(overflow * channels));
-      m_window_start += overflow;
+      const int64_t now_held = int64_t(m_channel_q.size()) / channels;
+      const int64_t drop = std::min(m_discard_before - m_window_start, now_held);
+      m_channel_q.erase_begin(std::size_t(drop * channels));
+      m_window_start += drop;
     }
-    m_channel_q.insert(m_channel_q.end(), data, data + frames * channels);
   }
 
-  //! Positions the window at or before `frame`. False if it cannot be seeked.
+  //! Positions the window at or before `frame`, the decoder warmed up by
+  //! `frame`. False if it cannot be seeked.
   bool seek_window(int64_t frame) noexcept
   {
-    m_channel_q.clear();
-    m_window_start = 0;
     m_positioned = false;
-    m_drained = false;
+    m_placing = false;
 
     const int64_t orate = m_handle.out_rate();
-    if(orate <= 0 || !m_handle.stream)
+    if(orate <= 0 || m_handle.rate() <= 0 || !m_handle.stream)
       return false;
 
-    // At or before: ensure_window() can only walk forward.
-    const int64_t flicks = int64_t(
-        std::llround(ossia::flicks_per_second<double> * double(frame) / double(orate)));
-    if(!ossia::seek_to_flick(
-           m_handle.format, m_handle.codec, m_handle.stream, flicks,
-           AVSEEK_FLAG_BACKWARD))
-      return false;
+    m_preroll
+        = av_rescale_rnd(m_handle.seek_preroll(), orate, m_handle.rate(), AV_ROUND_UP);
 
-    m_handle.flush_resampler();
+    // Demuxers can land after the target: MP4 by up to a frame (it searches
+    // its index without the edit list's shift), those that seek by estimate
+    // (MP3 without a seek table) by more. Then further back.
+    const int64_t margins[]
+        = {m_preroll, 3 * m_preroll, m_preroll + orate, m_preroll + 8 * orate};
+    for(const int64_t margin : margins)
+    {
+      m_channel_q.clear();
+      m_window_start = 0;
+      m_discard_before = 0;
+      m_drained = false;
+      m_seek_target = frame - margin;
 
-    // The timestamp only lines up with the first output sample right after a
-    // flush; from here the position is counted.
-    std::optional<int64_t> pts;
-    if(!decode_one(pts) || !pts)
-      return false;
+      // At or before: ensure_window() can only walk forward. The target can be
+      // before 0, to reach the stream's own first packets (AAC priming) that
+      // the decoder needs to warm up for the content's first frame.
+      constexpr auto flicks_tb = AVRational{1, ossia::flicks_per_second<int64_t>};
+      const int64_t flicks
+          = av_rescale_q(m_seek_target, AVRational{1, int(orate)}, flicks_tb)
+            + av_rescale_q(m_handle.start_pts(), m_handle.stream->time_base, flicks_tb);
+      if(!ossia::seek_to_flick(
+             m_handle.format, m_handle.codec, m_handle.stream, flicks,
+             AVSEEK_FLAG_BACKWARD))
+        return false;
 
-    const int64_t start_time = (m_handle.stream->start_time != AV_NOPTS_VALUE)
-                                   ? m_handle.stream->start_time
-                                   : 0;
-    const int64_t pos = av_rescale_q(
-        *pts - start_time, m_handle.stream->time_base, AVRational{1, int(orate)});
-    if(pos < 0)
-      return false;
+      m_handle.flush_resampler();
 
-    // decode_one may have trimmed the front to fit; m_window_start holds how
-    // much, and the seek position is on top of it.
-    m_window_start += pos;
+      // The timestamp only lines up with the first output sample right after
+      // a flush; from here the position is counted.
+      m_placing = true;
+      std::optional<int64_t> pts;
+      if(!decode_one(pts) || m_placing)
+      {
+        m_placing = false;
+        return false;
+      }
+
+      if(m_landed_at <= std::max<int64_t>(m_seek_target, 0))
+      {
+        m_positioned = true;
+        return true;
+      }
+    }
+
+    // Still after the target: better the decoder's warm-up than seeking again
+    // on every read.
+    m_discard_before = m_landed_at;
     m_positioned = true;
     return true;
   }
@@ -224,6 +286,7 @@ public:
 
     const int64_t held = int64_t(m_channel_q.size()) / channels;
     const bool in_reach = m_positioned && frame >= m_window_start
+                          && frame >= m_discard_before
                           && frame <= m_window_start + held + count;
     if(!in_reach && !seek_window(frame))
       return;
@@ -416,8 +479,19 @@ private:
   //! forwards. m_window_start is its first frame, in the handle's output rate.
   boost::circular_buffer<float> m_channel_q;
   int64_t m_window_start{};
+  //! Frames before this one are not content, or not yet decoded right.
+  int64_t m_discard_before{};
+
+  //! The last seek: where it aimed, where the decoder landed, and how far
+  //! before a frame the decoder must start for that frame to be right.
+  int64_t m_seek_target{};
+  int64_t m_landed_at{};
+  int64_t m_preroll{};
+
   bool m_positioned{};
   bool m_drained{};
+  //! The next decoded frame anchors the window.
+  bool m_placing{};
 };
 
 }

@@ -152,6 +152,20 @@ if(OSSIA_DATAFLOW)
   if(TARGET rubberband AND TARGET samplerate)
     target_link_libraries(ossia_SoundSyncTest PRIVATE rubberband samplerate)
   endif()
+
+  # The libav streaming sound node is header-only: the test brings FFmpeg.
+  find_package(PkgConfig QUIET)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(OSSIA_TEST_LIBAV QUIET IMPORTED_TARGET
+      libavcodec libavformat libavutil libswresample libavdevice libswscale)
+  endif()
+  if(OSSIA_TEST_LIBAV_FOUND)
+    ossia_add_test(SoundLibavCodecsTest      "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SoundLibavCodecsTest.cpp")
+    target_link_libraries(ossia_SoundLibavCodecsTest PRIVATE PkgConfig::OSSIA_TEST_LIBAV)
+    if(TARGET rubberband AND TARGET samplerate)
+      target_link_libraries(ossia_SoundLibavCodecsTest PRIVATE rubberband samplerate)
+    endif()
+  endif()
 endif()
 
 if(OSSIA_QML)

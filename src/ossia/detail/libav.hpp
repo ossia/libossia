@@ -11,6 +11,8 @@
 #define OSSIA_HAS_LIBAV 1
 #include <ossia/detail/flicks.hpp>
 
+#include <algorithm>
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -202,6 +204,11 @@ struct libav_handle
       cleanup();
       return;
     }
+    // The decoder trims encoder delay and padding (AV_PKT_DATA_SKIP_SAMPLES)
+    // itself, and can only move the frame's timestamp past what it trimmed
+    // when it knows the packets' time base: without it the first MP3 or Opus
+    // frame is stamped as if nothing had been trimmed.
+    codec->pkt_timebase = stream->time_base;
 
     if(avcodec_open2(codec, cdc, nullptr) < 0)
     {
@@ -262,11 +269,63 @@ struct libav_handle
   }
   int channels() const noexcept { return avstream_get_audio_channels(*stream); }
 
+  //! Timestamp, in the stream's time base, of the first frame of content.
+  int64_t start_pts() const noexcept
+  {
+    return stream->start_time != AV_NOPTS_VALUE ? stream->start_time : 0;
+  }
+
+  //! How many frames, in the file's rate, a decoder must be fed before the
+  //! frame it is seeked to for that frame to come out right.
+  int64_t seek_preroll() const noexcept
+  {
+    const AVCodecParameters& par = *stream->codecpar;
+    int64_t preroll = std::max(par.seek_preroll, 0);
+
+    // Each frame of a lossless intra-only codec (PCM, FLAC, ALAC...) decodes
+    // alone. Intra-only alone is not enough: MP3 is flagged so, because each
+    // packet can start a decode, not because it decodes right.
+    const AVCodecDescriptor* desc = avcodec_descriptor_get(par.codec_id);
+    constexpr int lossless_intra = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSLESS;
+    if(desc && (desc->props & lossless_intra) == lossless_intra
+       && !(desc->props & AV_CODEC_PROP_LOSSY))
+      return preroll;
+
+    // Transform codecs (MP3, AAC, Vorbis...) overlap each frame with the one
+    // before: the first frame out of a flushed decoder is missing half of it.
+    const int64_t frame = par.frame_size > 0 ? par.frame_size : 2048;
+    preroll = std::max(preroll, 2 * frame);
+
+    if(par.codec_id == AV_CODEC_ID_MP3 && par.sample_rate > 0)
+    {
+      // A layer III frame may start its data in the frames before it (the bit
+      // reservoir): until the decoder has seen those, it outputs silence. The
+      // reservoir is 511 bytes in MPEG-1, 255 in MPEG-2 and 2.5, and spans
+      // the most frames when they are smallest, at the lowest bit rate, which
+      // a VBR file uses wherever it is quiet: the average says nothing.
+      const int64_t rate = par.sample_rate;
+      const bool mpeg1 = rate >= 32000;
+      const int64_t reservoir = mpeg1 ? 511 : 255;
+      // Smallest frame, less its header and side information.
+      const int64_t smallest = mpeg1 ? 144 * 32000 / rate : 72 * 8000 / rate;
+      const int64_t data = std::max<int64_t>(1, smallest - (mpeg1 ? 36 : 21));
+      const int64_t mp3_frame = mpeg1 ? 1152 : 576;
+      const int64_t back = (reservoir + data - 1) / data;
+      preroll = std::max(preroll, (back + 2) * mp3_frame);
+    }
+    return preroll;
+  }
+
+  //! In the file's own rate.
   int64_t totalPCMFrameCount() const noexcept
   {
-    if(stream->duration > 0)
+    if(stream->duration > 0 && stream->codecpar->sample_rate > 0)
     {
-      return stream->duration;
+      // In the stream's time base, which is not the sample rate in MP3
+      // (1/14112000) or Matroska (1/1000) files.
+      return av_rescale_q(
+          stream->duration, stream->time_base,
+          AVRational{1, stream->codecpar->sample_rate});
     }
     else if(format->duration > 0)
     {
