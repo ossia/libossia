@@ -87,13 +87,22 @@ public:
    *
    * `mute(true)` mutes the process.
    * A muted process executes itself but does not send its state.
+   *
+   * This is the process's own mute. It is muted when it is, or when what
+   * contains it (its interval, a scenario, a graph) is: unmuting the
+   * container does not unmute a process muted on its own.
    */
   void mute(bool m);
 
+  //! The mute of what contains the process; containers call it.
+  void mute_from_parent(bool m);
+
   /**
-   * @brief True if the process is not currently muted.
+   * @brief True if the process is not currently muted, on its own or by its
+   * container.
    */
   [[nodiscard]] bool unmuted() const;
+  [[nodiscard]] bool muted_by_self() const noexcept { return m_self_muted; }
 
   /**
    * @brief Enables or disable the process.
@@ -143,6 +152,8 @@ protected:
   time_value m_start_offset{};
   bool m_loops = false; // TODO bitfields ?
   bool m_unmuted = true;
+  bool m_self_muted = false;
+  bool m_parent_muted = false;
   bool m_enabled = true;
 };
 

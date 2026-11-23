@@ -677,8 +677,8 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
   }
 
 #if defined(OSSIA_SCENARIO_DATAFLOW)
-  if(bool b = node->muted())
-    timeProcess->mute(b);
+  if(node->muted())
+    timeProcess->mute_from_parent(true);
 #endif
 
   // store a TimeProcess if it is not already stored
@@ -710,13 +710,21 @@ void time_interval::cleanup()
 
 void time_interval::mute(bool m)
 {
+  m_self_muted = m;
+  const bool muted = m_self_muted || m_parent_muted;
 #if defined(OSSIA_SCENARIO_DATAFLOW)
-  node->set_mute(m);
+  node->set_mute(muted);
 #endif
   for(auto& p : get_time_processes())
   {
-    p->mute(m);
+    p->mute_from_parent(muted);
   }
+}
+
+void time_interval::mute_from_parent(bool m)
+{
+  m_parent_muted = m;
+  mute(m_self_muted);
 }
 
 #if defined(OSSIA_SCENARIO_DATAFLOW)

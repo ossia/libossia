@@ -225,7 +225,11 @@ public:
 
   bool running() const noexcept { return m_running; }
   void cleanup();
+  //! The interval's own mute: its node and its processes are muted when it
+  //! is, or when the scenario holding it is.
   void mute(bool);
+  //! The mute of the scenario that holds the interval.
+  void mute_from_parent(bool);
 
 #if defined(OSSIA_SCENARIO_DATAFLOW)
   void set_tempo_curve(std::optional<tempo_curve> curve);
@@ -311,6 +315,8 @@ private:
   time_signature m_current_signature{};
   double m_quarter_duration{ossia::quarter_duration<double>};
   bool m_running{false};
+  bool m_self_muted{false};
+  bool m_parent_muted{false};
   bool m_hasTempo{false};
   bool m_hasSignature{false};
 };

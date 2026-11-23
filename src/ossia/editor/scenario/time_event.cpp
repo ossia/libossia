@@ -41,7 +41,7 @@ void time_event::add_time_process(std::shared_ptr<time_process> timeProcess)
   if(find(m_processes, timeProcess) == m_processes.end())
   {
     if(m_timesync->muted())
-      timeProcess->mute(true);
+      timeProcess->mute_from_parent(true);
     m_processes.push_back(std::move(timeProcess));
   }
 }
@@ -130,7 +130,7 @@ void time_event::mute(bool m)
 {
   for(auto& p : get_time_processes())
   {
-    p->mute(m);
+    p->mute_from_parent(m);
   }
 }
 }

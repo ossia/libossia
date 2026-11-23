@@ -47,12 +47,20 @@ void time_process::resume() { }
 
 void time_process::mute(bool m)
 {
-  m_unmuted = !m;
+  m_self_muted = m;
+  const bool muted = m_self_muted || m_parent_muted;
+  m_unmuted = !muted;
 #if defined(OSSIA_SCENARIO_DATAFLOW)
   if(node)
-    node->set_mute(m);
+    node->set_mute(muted);
 #endif
-  mute_impl(m);
+  mute_impl(muted);
+}
+
+void time_process::mute_from_parent(bool m)
+{
+  m_parent_muted = m;
+  mute(m_self_muted);
 }
 
 bool time_process::unmuted() const

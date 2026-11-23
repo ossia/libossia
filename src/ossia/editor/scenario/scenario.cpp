@@ -207,7 +207,7 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
     // m_sg.add_edge(itv.get());
 #if defined(OSSIA_SCENARIO_DATAFLOW)
     if(node->muted())
-      itv->mute(true);
+      itv->mute_from_parent(true);
 #endif
     m_intervals.push_back(std::move(itv));
 
@@ -335,7 +335,7 @@ void scenario::mute_impl(bool m)
 {
   for(auto& itv : get_time_intervals())
   {
-    itv->mute(m);
+    itv->mute_from_parent(m);
   }
   for(auto& s : get_time_syncs())
   {
