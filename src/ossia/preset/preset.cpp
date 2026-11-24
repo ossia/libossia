@@ -394,7 +394,7 @@ ossia_preset_result ossia_presets_key_to_value(
 
 ossia_preset_result ossia_free_string(const char* strptr)
 {
-  delete[] strptr;
+  std::free((void*)strptr);
   return OSSIA_PRESETS_OK;
 }
 

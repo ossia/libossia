@@ -155,12 +155,6 @@ public:
    */
   value(const value& v);
   /**
-   * @brief Create a value of type char
-   * @param a char
-   * @see ossia::value
-   */
-  value(char v);
-  /**
    * @brief Create a value of type int
    * @param an int
    * @see ossia::value
@@ -272,11 +266,6 @@ public:
   //*********************//
 
   /**
-   * @brief converts the value to a 8-bit character
-   * @return value converted to char
-   */
-  char to_char() const;
-  /**
    * @brief converts the value to an int
    * @return value converted to int
    */
@@ -327,12 +316,6 @@ public:
    * @return the reference to this value object
    */
   value& operator=(const value& v);
-  /**
-   * @brief operator = assigns with a character
-   * @param v : a char
-   * @return the reference to this value object
-   */
-  value& operator=(char v);
   /**
    * @brief operator = assigns with an integer
    * @param v : an int
@@ -681,11 +664,6 @@ public:
    * @brief adds an impulse parameter to the current node
    */
   void set_impulse();
-  /**
-   * Char: 8-bit value
-   * @brief adds a char parameter to the current node
-   */
-  void set_char();
   /**
    * Integer: 32-bit int.
    * @brief adds an int parameter to the current node

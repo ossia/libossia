@@ -17,6 +17,7 @@ public class CustomDevice : MonoBehaviour
     Ossia.Network.ossia_device_reset_static ();
   }
 
+  [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
   public delegate void debug_log_delegate(string str);
   void Start ()
   {

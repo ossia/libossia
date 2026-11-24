@@ -40,10 +40,6 @@ value::value(const value& v)
     : m_val{new ossia::value(*v.m_val)}
 {
 }
-value::value(char v)
-    : m_val{new ossia::value(v)}
-{
-}
 value::value(int v)
     : m_val{new ossia::value(v)}
 {
@@ -135,10 +131,6 @@ bool value::is_string() const
 {
   return m_val->get_type() == ossia::val_type::STRING;
 }
-char value::to_char() const
-{
-  return ossia::convert<int>(*m_val);
-}
 int value::to_int() const
 {
   return ossia::convert<int>(*m_val);
@@ -196,11 +188,6 @@ std::string value::to_string() const
 value& value::operator=(const value& v)
 {
   *m_val = *v.m_val;
-  return *this;
-}
-value& value::operator=(char v)
-{
-  *m_val = v;
   return *this;
 }
 value& value::operator=(int v)
