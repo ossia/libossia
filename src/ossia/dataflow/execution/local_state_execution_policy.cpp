@@ -46,7 +46,10 @@ void local_state_execution_policy::commit_common()
   // Why not just push to the audio address
   for(auto& elt : m_audioState)
   {
-    assert(elt.first);
+    // An entry stays once its parameter was written to, and the parameter may
+    // be gone since: only the ones written during this tick are touched.
+    if(elt.second.get().empty())
+      continue;
     elt.first->push_value(elt.second);
 
     for(auto& vec : elt.second.get())
