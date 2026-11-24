@@ -6,6 +6,11 @@
 
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#endif
 
 #include <map>
 
@@ -79,6 +84,22 @@ void ossia_device_free(ossia_device_t device)
       auto it = devs.devices.find(device->device->get_name());
       if(it != devs.devices.end())
       {
+        // A mirror applies the answers of its value reads on its HTTP
+        // thread, an OSCQuery server the messages of its clients on its own
+        // threads: stopped, their threads joined, before the nodes go
+        auto& proto = device->device->get_protocol();
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+        if(auto mirror
+           = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(&proto))
+          mirror->stop();
+        else if(
+            dynamic_cast<ossia::oscquery::oscquery_server_protocol*>(&proto)
+            || dynamic_cast<ossia::net::multiplex_protocol*>(&proto))
+          proto.stop();
+#else
+        if(dynamic_cast<ossia::net::multiplex_protocol*>(&proto))
+          proto.stop();
+#endif
         device->device->get_root_node().clear_children();
         devs.devices.erase(it);
       }
