@@ -646,8 +646,14 @@ struct OSSIA_EXPORT graph_util
       }
     }
 
+    int request_index = 0;
     for(const auto& request : first_node.requested_tokens)
     {
+      if(request_index++ == first_node.note_release_position())
+      {
+        [[unlikely]];
+        release_notes_before(first_node, request, e);
+      }
       first_node.begin_request(request, e);
       first_node.run(request, {&e});
       first_node.process_time(request, e);
@@ -685,8 +691,14 @@ struct OSSIA_EXPORT graph_util
     }
 
     log_inputs(first_node, logger);
+    int request_index = 0;
     for(const auto& request : first_node.requested_tokens)
     {
+      if(request_index++ == first_node.note_release_position())
+      {
+        [[unlikely]];
+        release_notes_before(first_node, request, e);
+      }
       first_node.begin_request(request, e);
       first_node.run(request, {&e});
       first_node.process_time(request, e);
@@ -722,11 +734,53 @@ struct OSSIA_EXPORT graph_util
     });
   }
 
-  static void finish_nodes(const node_map& nodes)
+  //! A node whose process stopped and started again within this execution:
+  //! what it held is stopped where the new run begins, in its own outputs,
+  //! once it has run.
+  static void release_notes_before(
+      graph_node& n, const ossia::token_request& request, execution_state& e)
+  {
+    const auto timestamp = request.physical_start(e.modelToSamplesRatio);
+    for(ossia::outlet* out : n.root_outputs())
+      if(out->which() == ossia::midi_port::which)
+        static_cast<ossia::midi_outlet*>(out)->release_held_notes_at(timestamp);
+    n.clear_note_release();
+  }
+
+  //! A node whose process stopped and which has run everything it was asked:
+  //! it will not write to its outputs again, so what it holds is stopped at
+  //! the other end of them, cable by cable and on its device.
+  static void release_notes_after(graph_node& n, execution_state& e)
+  {
+    for(ossia::outlet* out : n.root_outputs())
+    {
+      if(out->which() != ossia::midi_port::which)
+        continue;
+
+      auto& held = static_cast<ossia::midi_outlet*>(out)->held;
+      if(held.empty())
+        continue;
+
+      for(ossia::graph_edge* edge : out->targets)
+        if(edge->in && edge->in->which() == ossia::midi_port::which)
+          held.release(static_cast<ossia::midi_inlet*>(edge->in)->data.messages);
+
+      e.release_held_notes(*out);
+      held.clear();
+    }
+    n.clear_note_release();
+  }
+
+  static void finish_nodes(const node_map& nodes, execution_state& e)
   {
     for(auto& node : nodes)
     {
       ossia::graph_node& n = *node.first;
+      if(n.note_release_position() >= 0)
+      {
+        [[unlikely]];
+        release_notes_after(n, e);
+      }
       n.set_executed(false);
       n.disable();
     }

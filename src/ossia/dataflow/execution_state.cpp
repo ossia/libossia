@@ -136,13 +136,34 @@ void execution_state::register_midi_inlet(
     const ossia::inlet& port, net::midi::midi_stream& p)
 {
   // One registration per inlet: registering it again replaces the first.
-  auto [it, inserted] = m_midiInlets.try_emplace(&port, &p);
+  auto [it, inserted] = m_midiInlets.try_emplace(&port, midi_inlet_binding{&p, {}});
   if(!inserted)
   {
-    unregister_midi_parameter(it->second);
-    it->second = &p;
+    unregister_midi_parameter(it->second.stream);
+    if(it->second.stream != &p)
+      release_midi_input(port, it->second);
+    it->second.stream = &p;
   }
   register_midi_parameter(p);
+}
+
+void execution_state::track_midi_input(const ossia::inlet& in, std::size_t from)
+{
+  auto& messages = static_cast<const ossia::midi_inlet&>(in).data.messages;
+  if(messages.size() <= from)
+    return;
+  if(auto it = m_midiInlets.find(&in); it != m_midiInlets.end())
+    it->second.held.track(messages.data() + from, messages.data() + messages.size());
+}
+
+void execution_state::release_midi_input(
+    const ossia::inlet& in, midi_inlet_binding& b)
+{
+  // The inlet is only const for the sake of the registration interface: it
+  // belongs to a node of the graph this state executes.
+  auto& port = const_cast<ossia::midi_inlet&>(static_cast<const ossia::midi_inlet&>(in));
+  b.held.release(port.data.messages);
+  b.held.clear();
 }
 
 void execution_state::unregister_midi_parameter(net::midi::midi_stream* p)
@@ -274,7 +295,28 @@ void execution_state::register_port(const inlet& port)
 
 void execution_state::register_port(const outlet& port)
 {
-  // nothing to do
+#if defined(OSSIA_PROTOCOL_MIDI)
+  if(port.which() != ossia::midi_port::which)
+    return;
+
+  midi_outlet_binding binding;
+  if(auto addr = port.address.target<ossia::net::node_base*>())
+  {
+    binding.stream = dynamic_cast<ossia::net::midi::midi_stream*>(
+        &(*addr)->get_device().get_protocol());
+    if(binding.stream)
+      if(auto chan = binding.stream->stream_channel(**addr))
+        binding.channel = *chan;
+  }
+  else if(auto addr = port.address.target<ossia::net::parameter_base*>())
+  {
+    binding.stream = dynamic_cast<ossia::net::midi::midi_stream*>(
+        &(*addr)->get_node().get_device().get_protocol());
+  }
+
+  if(binding.stream)
+    m_midiOutlets.insert_or_assign(&port, binding);
+#endif
 }
 
 void execution_state::unregister_port(const inlet& port)
@@ -306,7 +348,8 @@ void execution_state::unregister_port(const inlet& port)
   {
     if(auto it = m_midiInlets.find(&port); it != m_midiInlets.end())
     {
-      unregister_midi_parameter(it->second);
+      unregister_midi_parameter(it->second.stream);
+      release_midi_input(port, it->second);
       m_midiInlets.erase(it);
     }
   }
@@ -315,7 +358,43 @@ void execution_state::unregister_port(const inlet& port)
 
 void execution_state::unregister_port(const outlet& port)
 {
-  // nothing to do
+#if defined(OSSIA_PROTOCOL_MIDI)
+  if(port.which() != ossia::midi_port::which)
+    return;
+
+  // The port leaves its device, which still plays the notes it was sent.
+  release_held_notes(port);
+  m_midiOutlets.erase(&port);
+#endif
+}
+
+void execution_state::release_held_notes(const outlet& port)
+{
+#if defined(OSSIA_PROTOCOL_MIDI)
+  if(port.which() != ossia::midi_port::which)
+    return;
+
+  auto it = m_midiOutlets.find(&port);
+  if(it == m_midiOutlets.end())
+    return;
+
+  const auto& held = static_cast<const ossia::midi_outlet&>(port).held;
+  if(!(port.scope & port::scope_t::both) || held.empty())
+    return;
+
+  // Straight to the stream rather than through the tick's state: the port may
+  // be about to be destroyed, and nothing may keep a reference to it.
+  const auto [stream, channel] = it->second;
+  ossia::midi_port offs;
+  held.release(offs.messages);
+  for(libremidi::ump& m : offs.messages)
+  {
+    if(channel > 0)
+      m.data[0] = (m.data[0] & ~uint32_t(0x000F0000))
+                  | (uint32_t((channel - 1) & 0x0F) << 16);
+    stream->push_value(m);
+  }
+#endif
 }
 
 void execution_state::apply_device_changes()
@@ -349,8 +428,19 @@ void execution_state::apply_device_changes()
     m_receivedMidi.erase(op.midi);
     for(auto it = m_midiInlets.begin(); it != m_midiInlets.end();)
     {
-      if(it->second == op.midi)
+      if(it->second.stream == op.midi)
+      {
+        // Whatever was held on the device is not going to be let go of there.
+        release_midi_input(*it->first, it->second);
         it = m_midiInlets.erase(it);
+      }
+      else
+        ++it;
+    }
+    for(auto it = m_midiOutlets.begin(); it != m_midiOutlets.end();)
+    {
+      if(it->second.stream == op.midi)
+        it = m_midiOutlets.erase(it);
       else
         ++it;
     }
@@ -454,6 +544,7 @@ void execution_state::reset()
   m_receivedValues.clear();
   m_receivedMidi.clear();
   m_midiInlets.clear();
+  m_midiOutlets.clear();
 }
 
 void execution_state::advance_tick(std::size_t t)
@@ -487,19 +578,38 @@ void execution_state::advance_tick(std::size_t t)
 #endif
 }
 
+namespace
+{
+// Follows what a MIDI inlet is given from its address in one copy
+struct midi_input_scope
+{
+  const inlet& in;
+  const bool midi = in.which() == ossia::midi_port::which;
+  const std::size_t from
+      = midi ? static_cast<const ossia::midi_inlet&>(in).data.messages.size() : 0;
+};
+}
+
 void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
 {
+  const midi_input_scope scope{in};
   if(!m_policy->find_and_copy(addr, in))
   {
-    copy_from_global(addr, in);
+    if(in.scope & port::scope_t::global)
+      in.visit(global_pull_visitor{*this, addr});
   }
+  if(scope.midi)
+    track_midi_input(in, scope.from);
 }
 
 void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
 {
   if(in.scope & port::scope_t::global)
   {
+    const midi_input_scope scope{in};
     in.visit(global_pull_visitor{*this, addr});
+    if(scope.midi)
+      track_midi_input(in, scope.from);
   }
 }
 
@@ -507,7 +617,10 @@ void execution_state::copy_from_global_node(net::node_base& node, inlet& in)
 {
   if(in.scope & port::scope_t::global)
   {
+    const midi_input_scope scope{in};
     in.visit(global_pull_node_visitor{*this, node});
+    if(scope.midi)
+      track_midi_input(in, scope.from);
   }
 }
 

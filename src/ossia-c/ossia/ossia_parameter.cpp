@@ -455,18 +455,6 @@ void ossia_parameter_push_4f(
     convert_parameter(address)->push_value(ossia::make_vec(f1, f2, f3, f4));
   });
 }
-void ossia_parameter_push_c(ossia_parameter_t address, char c)
-{
-  return safe_function(__func__, [=] {
-    if(!address)
-    {
-      ossia_log_error("ossia_parameter_push_c: address is null");
-      return;
-    }
-
-    convert_parameter(address)->push_value(c);
-  });
-}
 void ossia_parameter_push_s(ossia_parameter_t address, const char* s)
 {
   return safe_function(__func__, [=] {

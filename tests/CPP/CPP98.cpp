@@ -83,7 +83,7 @@ TEST_CASE("preset", "[preset]")
     list.push_back(3);
     list.push_back(2.68f);
     list.push_back("toto");
-    list.push_back('a');
+    list.push_back(static_cast<int>('a'));
     std::vector<opp::value> sublist;
     sublist.push_back("foo");
     sublist.push_back("bar");
@@ -173,7 +173,7 @@ TEST_CASE("preset", "[preset]")
     REQUIRE(n8.get_value().to_list()[0].to_int() == 3);
     REQUIRE(n8.get_value().to_list()[1].to_float() == 2.68f);
     REQUIRE(n8.get_value().to_list()[2].to_string() == std::string("toto"));
-    REQUIRE(n8.get_value().to_list()[3].to_char() == 'a');
+    REQUIRE(n8.get_value().to_list()[3].to_int() == static_cast<int>('a'));
     REQUIRE(n8.get_value().to_list()[4].to_list()[0].to_string() == std::string("foo"));
     REQUIRE(n8.get_value().to_list()[4].to_list()[1].to_string() == std::string("bar"));
     REQUIRE(n8.get_value().to_list()[4].to_list()[2].to_float() == 36.25);

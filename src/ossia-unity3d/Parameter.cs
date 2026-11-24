@@ -52,16 +52,14 @@ namespace Ossia
     { Network.ossia_parameter_push_3f (ossia_parameter, v1, v2, v3); }
     public void PushValue(float v1, float v2, float v3, float v4)
     { Network.ossia_parameter_push_4f (ossia_parameter, v1, v2, v3, v4); }
-    public void PushValue(char val)
-    { Network.ossia_parameter_push_c (ossia_parameter, val); }
     public void PushValue(bool val)
     { Network.ossia_parameter_push_b (ossia_parameter, val ? 1 : 0); }
     public void PushValue(string val)
     { Network.ossia_parameter_push_s (ossia_parameter, val); }
     public void PushValue(float[] val)
-    { Network.ossia_parameter_push_fn (ossia_parameter, val, val.Length); }
+    { Network.ossia_parameter_push_fn (ossia_parameter, val, new UIntPtr((uint)val.Length)); }
     public void PushValue(int[] val)
-    { Network.ossia_parameter_push_in (ossia_parameter, val, val.Length); }
+    { Network.ossia_parameter_push_in (ossia_parameter, val, new UIntPtr((uint)val.Length)); }
 
     public void SetValueUpdating(bool b)
     {
