@@ -36,6 +36,7 @@ public:
 
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
+    read_file_inlet();
     return m_sampler.run(t, e);
   }
 

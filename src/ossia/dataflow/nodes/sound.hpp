@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <functional>
+#include <string>
 #include <ossia/audio/fade.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/node_process.hpp>
@@ -368,6 +370,14 @@ class sound_node
     , public sound_processing_info
 {
 public:
+  //! A path received here asks for another file to be played. The node cannot
+  //! load it on the audio thread: it hands it to the host through on_file,
+  //! which is set before the node runs and must not block.
+  ossia::value_inlet file_in;
+  std::function<void(const std::string&)> on_file;
+
+  sound_node() { m_inlets.push_back(&file_in); }
+
   virtual void transport(time_value date) = 0;
 
   // Tempo-aware overload; resampling subclasses override to seek the file
@@ -379,6 +389,24 @@ public:
     (void)transport_info;
     transport(date);
   }
+
+protected:
+  //! Called first by run(): the paths received this tick go to the host
+  void read_file_inlet() noexcept
+  {
+    if(!on_file)
+      return;
+    // An address gives its value every tick: only a new path is handed over
+    for(const auto& v : file_in->get_data())
+      if(auto* path = v.value.target<std::string>(); path && *path != m_last_file)
+      {
+        m_last_file = *path;
+        on_file(*path);
+      }
+  }
+
+private:
+  std::string m_last_file;
 };
 
 class dummy_sound_node final : public sound_node
@@ -397,6 +425,7 @@ public:
 
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
+    read_file_inlet();
   }
 };
 
