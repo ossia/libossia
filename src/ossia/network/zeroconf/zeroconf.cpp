@@ -50,12 +50,19 @@ std::vector<minuit_connection_data> list_minuit_devices()
 
 std::vector<oscquery_connection_data> list_oscquery_devices()
 {
+  return list_oscquery_devices(std::chrono::milliseconds{5000});
+}
+
+std::vector<oscquery_connection_data>
+list_oscquery_devices(std::chrono::milliseconds timeout)
+{
   std::vector<oscquery_connection_data> cons;
 
 #if defined(OSSIA_DNSSD)
   auto browser = new servus::Servus("_oscjson._tcp");
   browser->beginBrowsing(servus::Interface::IF_ALL);
-  for(int i = 0; i < 500; i++)
+  const auto steps = timeout.count() / 10;
+  for(int64_t i = 0; i < steps; i++)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     browser->browse(0);

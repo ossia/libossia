@@ -559,7 +559,10 @@ PYBIND11_MODULE(ossia_python, m)
       .def_readwrite("host", &ossia::net::oscquery_connection_data::host)
       .def_readwrite("port", &ossia::net::oscquery_connection_data::port);
 
-  m.def("list_oscquery_devices", &ossia::net::list_oscquery_devices);
+  m.def(
+      "list_oscquery_devices",
+      static_cast<std::vector<ossia::net::oscquery_connection_data> (*)()>(
+          &ossia::net::list_oscquery_devices));
 
   py::class_<ossia_osc_device>(m, "OSCDevice")
       .def(py::init<std::string, std::string, uint16_t, uint16_t>())
