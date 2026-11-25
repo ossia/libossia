@@ -42,6 +42,13 @@ public:
   {
   }
 
+  //! For set_listen_filter: whether it sent LISTEN for that address
+  bool listens_to(std::string_view path)
+  {
+    std::lock_guard lck{listeningMutex};
+    return listening.find(path) != listening.end();
+  }
+
   void start_listen(std::string path, ossia::net::parameter_base* addr)
   {
     if(addr)

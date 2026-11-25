@@ -175,6 +175,62 @@ bool oscquery_server_protocol_base::write_impl(std::string_view data, bool criti
   return true;
 }
 
+void oscquery_server_protocol_base::write_to(
+    oscquery_client& client, std::string_view data, bool critical)
+{
+  if(!critical && client.osc_socket)
+    client.osc_socket->write(data.data(), data.size());
+  else
+    m_websocketServer->send_binary_message(client.connection, data);
+}
+
+template <typename Addresses>
+bool oscquery_server_protocol_base::write_bundle(const Addresses& addresses)
+{
+  using OscVersion = ossia::net::osc_extended_policy;
+  const ossia::net::bundle_client_policy<OscVersion> policy{};
+  if(!m_listenFilter)
+  {
+    if(auto bundle = ossia::net::make_bundle(policy, addresses))
+    {
+      return write_impl(
+          std::string_view{bundle->data.data(), bundle->data.size()}, bundle->critical);
+    }
+    return false;
+  }
+
+  // set_listen_filter: each client gets a bundle of the addresses it listens to
+  bool ok = true;
+  lock_t lock(m_clientsMutex);
+  for(auto& client_p : m_clients)
+  {
+    auto& client = *client_p;
+    Addresses subset;
+    for(const auto& a : addresses)
+    {
+      if constexpr(std::is_pointer_v<std::decay_t<decltype(a)>>)
+      {
+        if(client.listens_to(ossia::net::osc_address(*a)))
+          subset.push_back(a);
+      }
+      else
+      {
+        if(client.listens_to(ossia::net::osc_address(a)))
+          subset.push_back(a);
+      }
+    }
+    if(subset.empty())
+      continue;
+    if(auto bundle = ossia::net::make_bundle(policy, subset))
+      write_to(
+          client, std::string_view{bundle->data.data(), bundle->data.size()},
+          bundle->critical);
+    else
+      ok = false;
+  }
+  return ok;
+}
+
 template <typename T>
 bool oscquery_server_protocol_base::push_impl(const T& addr, const ossia::value& v)
 {
@@ -195,6 +251,8 @@ bool oscquery_server_protocol_base::push_impl(const T& addr, const ossia::value&
       for(auto& client_p : m_clients)
       {
         auto& client = *client_p;
+        if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+          continue;
         if(client.osc_socket)
         {
           if(m_logger.outbound_logger)
@@ -224,6 +282,8 @@ bool oscquery_server_protocol_base::push_impl(const T& addr, const ossia::value&
       for(auto& client_p : m_clients)
       {
         auto& client = *client_p;
+        if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+          continue;
         if(m_logger.outbound_logger)
         {
           m_logger.outbound_logger->info(
@@ -253,31 +313,13 @@ bool oscquery_server_protocol_base::push_raw(const net::full_parameter_data& add
 bool oscquery_server_protocol_base::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& addresses)
 {
-  using namespace ossia::net;
-  using OscVersion = osc_extended_policy;
-
-  if(auto bundle = ossia::net::make_bundle(
-         ossia::net::bundle_client_policy<OscVersion>{}, addresses))
-  {
-    return write_impl(
-        std::string_view{bundle->data.data(), bundle->data.size()}, bundle->critical);
-  }
-  return false;
+  return write_bundle(addresses);
 }
 
 bool oscquery_server_protocol_base::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  using namespace ossia::net;
-  using OscVersion = osc_extended_policy;
-
-  if(auto bundle = ossia::net::make_bundle(
-         ossia::net::bundle_client_policy<OscVersion>{}, addresses))
-  {
-    return write_impl(
-        std::string_view{bundle->data.data(), bundle->data.size()}, bundle->critical);
-  }
-  return false;
+  return write_bundle(addresses);
 }
 
 bool oscquery_server_protocol_base::echo_incoming_message(
@@ -300,6 +342,8 @@ bool oscquery_server_protocol_base::echo_incoming_message(
     for(auto& client_p : m_clients)
     {
       auto& client = *client_p;
+      if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+        continue;
       if(not_this_protocol || !is_same(client, id))
       {
         if(client.osc_socket)
@@ -332,6 +376,8 @@ bool oscquery_server_protocol_base::echo_incoming_message(
     for(auto& client_p : m_clients)
     {
       auto& client = *client_p;
+      if(m_listenFilter && !client.listens_to(ossia::net::osc_address(addr)))
+        continue;
       if(not_this_protocol || !is_same(client, id))
       {
 

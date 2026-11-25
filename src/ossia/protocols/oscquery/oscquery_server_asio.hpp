@@ -85,6 +85,20 @@ public:
   bool force_ws() const noexcept { return m_forceWS.load(std::memory_order_relaxed); }
   void set_force_ws(bool forceWS) noexcept;
 
+  /**
+   * @brief Whether a client gets only the values of the addresses it sent
+   * LISTEN for, as the OSCQuery proposal says.
+   *
+   * With this on, the server sends a client the values (its own changes and
+   * the echoes of other clients' writes, and bundles, each client getting a bundle of the addresses it listens to) of the addresses that client
+   * sent LISTEN for, and stops at IGNORE; a client that never sent LISTEN
+   * gets no value. For a host with a large tree whose clients each follow a
+   * few of its parameters. Off by default: every client gets every value, as
+   * before.
+   */
+  void set_listen_filter(bool b) noexcept { m_listenFilter = b; }
+  bool get_listen_filter() const noexcept { return m_listenFilter; }
+
   const std::vector<ossia::net::osc_server_configuration>&
   get_transports() const noexcept
   {
@@ -123,6 +137,9 @@ protected:
   bool push_impl(const T& addr, const ossia::value& v);
 
   bool write_impl(std::string_view data, bool critical);
+  void write_to(oscquery_client& client, std::string_view data, bool critical);
+  template <typename Addresses>
+  bool write_bundle(const Addresses& addresses);
 
   void update_zeroconf();
   // Exceptions here will be catched by the server
@@ -158,6 +175,9 @@ protected:
 
   // Will only send changes through WS
   std::atomic_bool m_forceWS{};
+
+  // See set_listen_filter
+  std::atomic_bool m_listenFilter{};
 };
 
 class OSSIA_EXPORT oscquery_server_protocol : public oscquery_server_protocol_base
