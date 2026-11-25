@@ -235,6 +235,15 @@ public:
   void set_tempo_curve(std::optional<tempo_curve> curve);
 #endif
   void set_time_signature_map(std::optional<time_signature_map> map);
+
+  //! Something reads the dates of this interval's node (a recording timed on
+  //! it): the node gets its tokens even without a process
+  void add_observer() noexcept { m_observers++; }
+  void remove_observer() noexcept
+  {
+    if(m_observers > 0)
+      m_observers--;
+  }
   void set_quarter_duration(double tu);
 
 #if defined(OSSIA_EXECUTION_LOG)
@@ -319,5 +328,6 @@ private:
   bool m_parent_muted{false};
   bool m_hasTempo{false};
   bool m_hasSignature{false};
+  int m_observers{};
 };
 }
