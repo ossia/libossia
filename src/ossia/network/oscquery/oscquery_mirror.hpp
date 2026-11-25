@@ -8,6 +8,11 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <chrono>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace osc
 {
@@ -33,6 +38,8 @@ namespace oscquery
 {
 struct osc_outbound_visitor;
 struct http_client_context;
+struct value_read;
+struct listen_reads;
 struct http_responder;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
@@ -121,6 +128,58 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
+  /**
+   * @brief Whether the mirror reads a value again after a crossing.
+   *
+   * When a client and its server write the same address in the same
+   * instant, each value crosses the other: the server applies the client's
+   * value last, the client applies the server's after its own, and each
+   * keeps the other's. On, the mirror notes the values it writes; a value
+   * it receives less than crossing_window after one of them, and different
+   * from it, is read again from the server (?VALUE) settle_delay later,
+   * unless it wrote that address again since.
+   *
+   * Off by default: the mirror behaves as before. For clients of servers
+   * that do not answer crossed writes themselves, where several clients
+   * write the same parameters (PRISM's Max, TouchDesigner, Unity and DAW
+   * hosts).
+   */
+  void set_reread_crossings(bool b) noexcept;
+  bool get_reread_crossings() const noexcept { return m_rereadCrossings; }
+  static constexpr std::chrono::milliseconds crossing_window{500};
+  static constexpr std::chrono::milliseconds settle_delay{100};
+
+  /**
+   * @brief Whether the mirror reads the value again after each LISTEN.
+   *
+   * A value the server changes between a client's LISTEN and the moment it
+   * applies it is never sent: the client keeps the value it had. On, after
+   * each LISTEN the mirror sends `<path>?VALUE&FULL_PATH` on the same
+   * WebSocket, which the server answers once the LISTEN is applied; the
+   * answer is matched to its read by its FULL_PATH, never by its rank. A
+   * value of that parameter that arrives before the answer is newer than
+   * it, and so is a write of this client since the read: the answer is then
+   * dropped, and an answer equal to the value is not a new value. A server
+   * that answers nothing on the WebSocket within listen_read_probe is read
+   * over HTTP from then on; a read it leaves unanswered for
+   * listen_read_timeout is sent again over HTTP.
+   *
+   * Off by default: the mirror behaves as before. For clients that follow
+   * parameters other clients write at the same time (PRISM's Max,
+   * TouchDesigner, Unity and DAW hosts).
+   */
+  void set_read_after_listen(bool b) noexcept { m_readAfterListen = b; }
+  bool get_read_after_listen() const noexcept { return m_readAfterListen; }
+  enum class listen_read_mode
+  {
+    unknown,
+    websocket,
+    http
+  };
+  listen_read_mode get_listen_read_mode() const;
+  static constexpr std::chrono::milliseconds listen_read_probe{1000};
+  static constexpr std::chrono::milliseconds listen_read_timeout{5000};
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -128,11 +187,18 @@ public:
 
 private:
   friend struct http_answer;
+  friend struct http_value_answer;
 
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
+  // A value read, and its answer for the address it was asked for
+  void read_value(std::shared_ptr<value_read> read);
+  void on_value_read(
+      const std::string& address, const std::string& message, bool only_if_differs);
+  void apply_value(
+      const std::string& address, const rapidjson::Value& obj, bool only_if_differs);
   void
   on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
@@ -153,6 +219,27 @@ private:
 
   void on_ws_disconnected() { m_hasWS = false; }
 
+  // set_reread_crossings: the last value this client wrote on each address,
+  // and the readings to come
+  struct crossing_state;
+  std::shared_ptr<crossing_state> m_crossing;
+  std::atomic_bool m_rereadCrossings{false};
+  void record_sent(const std::string& address, const ossia::value& v);
+  void check_crossing(std::string_view address);
+  // Whether this client wrote address after t
+  bool
+  written_since(const std::string& address, std::chrono::steady_clock::time_point t);
+
+  // set_read_after_listen: the reads that follow a LISTEN
+  std::atomic_bool m_readAfterListen{false};
+  std::shared_ptr<listen_reads> m_listenReads;
+  void read_after_listen(const std::string& address);
+  bool on_listen_read_answer(const rapidjson::Document& doc);
+  void listen_value_arrived(std::string_view address);
+  void arm_listen_read_timer();
+  void check_listen_reads();
+  void read_over_http(const std::vector<std::string>& addresses);
+
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
@@ -170,24 +257,6 @@ private:
     std::promise<void> promise;
     ossia::net::parameter_base* address{};
   };
-  struct get_ws_promise
-  {
-    get_ws_promise() = default;
-    get_ws_promise(const get_ws_promise&) = delete;
-    get_ws_promise(get_ws_promise&&) noexcept = default;
-    get_ws_promise& operator=(const get_ws_promise&) = delete;
-    get_ws_promise& operator=(get_ws_promise&&) noexcept = default;
-
-    get_ws_promise(std::promise<void>&& p, const std::string& addr)
-        : promise{std::move(p)}
-        , address{addr}
-    {
-    }
-    std::promise<void> promise;
-    std::string address{};
-  };
-
-  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
