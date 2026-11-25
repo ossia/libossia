@@ -56,10 +56,13 @@ public:
       ossia::net::network_context_ptr ctx, uint16_t, uint16_t)
       = delete;
 
+  //! bind: the address the WebSocket server listens on, every interface
+  //! ("0.0.0.0") by default; on another one, the server is not announced
+  //! over mDNS
   oscquery_server_protocol_base(
       ossia::net::network_context_ptr ctx,
       const std::vector<ossia::net::osc_server_configuration>& conf, uint16_t ws_port,
-      bool forceWS);
+      bool forceWS, std::string bind = "0.0.0.0");
   ~oscquery_server_protocol_base() override;
 
   bool pull(net::parameter_base&) override;
@@ -81,6 +84,13 @@ public:
   ossia::net::device_base& get_device() const noexcept { return *m_device; }
 
   int get_ws_port() const noexcept { return m_wsPort; }
+
+  //! The address the server listens on, "0.0.0.0" for every interface
+  const std::string& get_bind() const noexcept { return m_bind; }
+  bool bound_to_every_interface() const noexcept
+  {
+    return m_bind.empty() || m_bind == "0.0.0.0";
+  }
 
   bool force_ws() const noexcept { return m_forceWS.load(std::memory_order_relaxed); }
   void set_force_ws(bool forceWS) noexcept;
@@ -155,6 +165,7 @@ protected:
 
   // The local ports
   uint16_t m_wsPort{};
+  std::string m_bind;
 
   // Will only send changes through WS
   std::atomic_bool m_forceWS{};
@@ -166,7 +177,7 @@ public:
   struct osc_receiver_impl;
   explicit oscquery_server_protocol(
       ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234,
-      uint16_t ws_port = 5678, bool forceWS = false);
+      uint16_t ws_port = 5678, bool forceWS = false, std::string bind = "0.0.0.0");
   ~oscquery_server_protocol();
 
   void update_zeroconf();

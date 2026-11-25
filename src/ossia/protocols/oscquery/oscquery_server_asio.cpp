@@ -60,12 +60,13 @@ is_same(const oscquery_client& clt, const ossia::net::message_origin_identifier&
 oscquery_server_protocol_base::oscquery_server_protocol_base(
     ossia::net::network_context_ptr ctx,
     const std::vector<ossia::net::osc_server_configuration>& conf, uint16_t ws_port,
-    bool forceWS)
+    bool forceWS, std::string bind)
     : protocol_base{flags{SupportsMultiplex}}
     , m_context{std::move(ctx)}
     , m_websocketServer{std::make_unique<ossia::net::websocket_server>(m_context)}
     , m_oscConf{conf}
     , m_wsPort{ws_port}
+    , m_bind{std::move(bind)}
     , m_forceWS{forceWS}
 {
   m_clients.reserve(2);
@@ -417,7 +418,10 @@ void oscquery_server_protocol_base::set_device(net::device_base& dev)
           observe(p, true);
       });
 
-  m_websocketServer->listen(m_wsPort);
+  if(bound_to_every_interface())
+    m_websocketServer->listen(m_wsPort);
+  else
+    m_websocketServer->listen(m_bind, m_wsPort);
 }
 
 void oscquery_server_protocol_base::stop()
@@ -730,6 +734,13 @@ catch(...)
 
 void oscquery_server_protocol_base::update_zeroconf()
 {
+  // The announcement leaves on every interface: a server listening on one
+  // address only is not announced, its clients use that address
+  if(!bound_to_every_interface())
+  {
+    m_zeroconfServerWS = {};
+    return;
+  }
   try
   {
     m_zeroconfServerWS = net::make_zeroconf_server(
@@ -787,11 +798,12 @@ ossia::net::server_reply oscquery_server_protocol_base::on_binary_ws_message(
 
 oscquery_server_protocol::oscquery_server_protocol(
     ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port,
-    bool forceWS)
-    : oscquery_server_protocol_base{ctx, {ossia::net::udp_server_configuration{{{"0.0.0.0"}, osc_port}}}, ws_port, forceWS}
+    bool forceWS, std::string bind)
+    : oscquery_server_protocol_base{ctx, {ossia::net::udp_server_configuration{{{bind.empty() ? "0.0.0.0" : bind}, osc_port}}}, ws_port, forceWS, bind}
     , m_oscPort{osc_port}
     , m_oscServer{std::make_unique<osc_receiver_impl>(
-          ossia::net::inbound_socket_configuration{"0.0.0.0", osc_port},
+          ossia::net::inbound_socket_configuration{
+              bind.empty() ? "0.0.0.0" : bind, osc_port},
           m_context->context)}
 
 {
@@ -808,6 +820,11 @@ void oscquery_server_protocol::set_device(ossia::net::device_base& dev)
 
 void oscquery_server_protocol::update_zeroconf()
 {
+  if(!bound_to_every_interface())
+  {
+    m_zeroconfServerOSC = {};
+    return;
+  }
   try
   {
     int port = ossia::get<ossia::net::udp_server_configuration>(m_oscConf[0]).port;
