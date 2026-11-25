@@ -50,6 +50,7 @@ public:
       , m_connectRequest{http_verb_is(verb, "CONNECT")}
       , m_fun{std::move(f)}
       , m_err{std::move(err)}
+      , m_target{std::string(host) + std::string(path)}
   {
     m_request.reserve(256 + host.size() + path.size() + body.size());
     m_response.prepare(Fun::reserve_expect);
@@ -110,8 +111,14 @@ public:
       fmt::format_to(fmt::appender(m_request), "{}", body);
   }
 
+  //! host:port and the request, as an error names them
+  const std::string& target() const noexcept { return m_target; }
+
   void resolve(const std::string& server, const std::string& port)
   {
+    // What an error names: the host as it is resolved, and the request
+    const auto path = m_target.substr(std::min(m_target.find('/'), m_target.size()));
+    m_target = server + ":" + port + path;
     m_resolver.async_resolve(
         server, port,
         [self = this->shared_from_this()](
@@ -139,7 +146,7 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
     }
   }
@@ -158,7 +165,7 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
     }
   }
@@ -176,7 +183,7 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
     }
   }
@@ -194,7 +201,7 @@ private:
 
       if(!response_stream || http_version.substr(0, 5) != "HTTP/")
       {
-        ossia::logger().error("HTTP Error: Invalid response");
+        ossia::logger().error("HTTP Error: {}: invalid response", m_target);
         m_err(*this, "Invalid HTTP response");
         return;
       }
@@ -203,7 +210,7 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
     }
   }
@@ -225,7 +232,7 @@ private:
   {
     if(err && err != boost::asio::error::eof)
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
       return;
     }
@@ -234,7 +241,8 @@ private:
     std::string header;
     if(!std::getline(response_stream, header))
     {
-      ossia::logger().error("HTTP Error: response ended inside its headers");
+      ossia::logger().error(
+          "HTTP Error: {}: response ended inside its headers", m_target);
       m_err(*this, "HTTP response ended inside its headers");
       return;
     }
@@ -328,7 +336,8 @@ private:
       // otherwise the peer closed before sending the announced payload.
       if(m_contentLength > 0 && (int)m_response.size() < m_contentLength)
       {
-        ossia::logger().error("HTTP Error: response truncated before Content-Length");
+        ossia::logger().error(
+            "HTTP Error: {}: response truncated before Content-Length", m_target);
         m_err(*this, "HTTP response truncated before Content-Length");
         return;
       }
@@ -336,7 +345,7 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());
+      ossia::logger().error("HTTP Error: {}: {}", m_target, err.message());
       m_err(*this, err.message());
     }
   }
@@ -372,5 +381,7 @@ private:
   int m_statusCode{0};
   Fun m_fun;
   Err m_err;
+  //! host:port and the request, for the errors
+  std::string m_target;
 };
 }

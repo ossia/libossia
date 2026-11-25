@@ -9,11 +9,15 @@
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/http/http_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <spdlog/sinks/ostream_sink.h>
 
 #include "include_catch.hpp"
 
 #include <iostream>
+#include <sstream>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -769,6 +773,61 @@ TEST_CASE("test_oscquery_critical_ws", "test_oscquery_critical_ws")
 
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<float>() == 4.5f);
+}
+
+namespace
+{
+struct http_ignored
+{
+  static constexpr int reserve_expect = 65535;
+  template <typename T, typename S>
+  void operator()(T&, const S&)
+  {
+  }
+};
+struct http_error_ignored
+{
+  template <typename T>
+  void operator()(T&)
+  {
+  }
+};
+
+// What the HTTP client logs for GET <path> on host:port
+std::string http_client_log(const std::string& host, int port, const std::string& path)
+{
+  std::ostringstream log;
+  auto sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(log);
+  auto& sinks = ossia::logger().sinks();
+  sinks.push_back(sink);
+  boost::asio::io_context ctx;
+  using request = ossia::net::http_get_request<http_ignored, http_error_ignored>;
+  std::make_shared<request>(http_ignored{}, http_error_ignored{}, ctx, host, path)
+      ->resolve(host, std::to_string(port));
+  // Returns once the request has answered or failed; a refused connection
+  // takes about 2 s on Windows, whose loopback retries
+  ctx.run_for(std::chrono::seconds(30));
+  sinks.pop_back();
+  return log.str();
+}
+}
+
+TEST_CASE(
+    "test_oscquery_http_client_error_names", "test_oscquery_http_client_error_names")
+{
+  // An HTTP error says which host and which request it is about
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1246, 5696};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
+  auto status = http_client_log("127.0.0.1", 5696, "/nothing");
+  INFO(status);
+  REQUIRE(status.find("127.0.0.1:5696/nothing") != std::string::npos);
+  REQUIRE(status.find("status code") != std::string::npos);
+
+  // Nothing listens there: the connection is refused
+  auto refused = http_client_log("127.0.0.1", 5697, "/?HOST_INFO");
+  INFO(refused);
+  REQUIRE(refused.find("127.0.0.1:5697/?HOST_INFO") != std::string::npos);
 }
 
 TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")

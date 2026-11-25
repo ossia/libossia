@@ -33,7 +33,7 @@ class http_get_request
       }
       else
       {
-        ossia::logger().error("HTTP Error: status code {}", status);
+        ossia::logger().error("HTTP Error: {}: status code {}", req.target(), status);
         err(req);
       }
     }
