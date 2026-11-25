@@ -8,6 +8,8 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <memory>
+#include <mutex>
 
 namespace osc
 {
@@ -33,6 +35,7 @@ namespace oscquery
 {
 struct osc_outbound_visitor;
 struct http_client_context;
+struct value_read;
 struct http_responder;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
@@ -121,6 +124,35 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
+  /**
+   * @brief Whether the HTTP requests of the mirror go through two queues.
+   *
+   * Off, each request opens its own connection at once. On, the requests go
+   * through two queues, one request at a time in each, so at most two
+   * connections at a time: the readings of the tree (the namespace, the
+   * structure of an address a PATH_CHANGED names), and the rest (values,
+   * HOST_INFO, commands), in the order they were asked. A PATH_CHANGED is not
+   * read when a reading of its path or of an ancestor is still to be asked;
+   * when one is under way, asked before the change, that reading is asked
+   * once more after it.
+   *
+   * For a mirror of a large tree, or of a server that takes long to answer:
+   * a burst of PATH_CHANGED (an editor that changes many nodes) otherwise
+   * opens a connection for each, and the readings pile up. Off by default.
+   * Set it before update().
+   */
+  void set_request_queues(bool b) noexcept { m_requestQueues = b; }
+  bool get_request_queues() const noexcept { return m_requestQueues; }
+
+  //! The value reads of a mirror with set_request_queues: those waiting to be
+  //! sent, and since it was made those sent, failed, and cancelled because
+  //! their node was removed. All zero without the queues.
+  struct value_read_stats
+  {
+    std::size_t queued{}, sent{}, failed{}, cancelled{};
+  };
+  value_read_stats get_value_read_stats() const;
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -128,11 +160,21 @@ public:
 
 private:
   friend struct http_answer;
+  friend struct http_value_answer;
+  friend struct http_value_error;
+  friend struct http_path_answer;
 
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
+  // The structure of an address that changed, and what comes of it
+  void read_path(const std::string& path);
+  void on_path_read(const std::string& path, const std::string& message);
+  void on_path_gone(const std::string& path);
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
+  // A value read, and its answer for the address it was asked for
+  void read_value(std::shared_ptr<value_read> read);
+  void on_value_read(const std::string& address, const std::string& message);
   void
   on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
@@ -140,6 +182,28 @@ private:
 
   void http_send_message(const std::string& str);
   void http_send_message(const rapidjson::StringBuffer& str);
+
+  // set_request_queues
+  struct http_queues;
+  std::shared_ptr<http_queues> m_queues;
+  std::atomic_bool m_requestQueues{false};
+  void queue_value_request(std::string target, std::shared_ptr<value_read> read);
+  void pump_value_queue();
+  // A reading of the structure of path (of the namespace when name_space):
+  // not asked if a reading of path or of an ancestor is still to be asked;
+  // if one is under way, asked before this, that one is asked once more.
+  void queue_tree_reading(std::string path, bool name_space);
+  void pump_tree_queue();
+  // Through the queues, the errors of value reads: one line, then at most one
+  // a second that says how many failed since. status 0: a network error, that
+  // the HTTP client wrote.
+  void on_value_read_failed(const std::string& address, int status);
+  void log_value_read_error(const std::string& what);
+  void flush_value_read_errors();
+  // Through the queues, path and what is under it is removed: its value reads
+  // still to send are dropped, and a 404 for one sent is not an error for 10 s
+  void cancel_value_reads(const std::string& path);
+  bool removed_recently(const std::string& address);
 
   void ws_send_message(const std::string& str);
   void ws_send_binary_message(const std::string& str);
@@ -163,6 +227,7 @@ private:
 
   ossia::net::device_base* m_device{};
 
+  std::mutex m_namespaceMutex;
   std::promise<void> m_namespacePromise;
 
   struct get_osc_promise
@@ -170,24 +235,6 @@ private:
     std::promise<void> promise;
     ossia::net::parameter_base* address{};
   };
-  struct get_ws_promise
-  {
-    get_ws_promise() = default;
-    get_ws_promise(const get_ws_promise&) = delete;
-    get_ws_promise(get_ws_promise&&) noexcept = default;
-    get_ws_promise& operator=(const get_ws_promise&) = delete;
-    get_ws_promise& operator=(get_ws_promise&&) noexcept = default;
-
-    get_ws_promise(std::promise<void>&& p, const std::string& addr)
-        : promise{std::move(p)}
-        , address{addr}
-    {
-    }
-    std::promise<void> promise;
-    std::string address{};
-  };
-
-  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
