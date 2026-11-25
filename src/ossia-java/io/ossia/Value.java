@@ -35,10 +35,6 @@ public class Value implements AutoCloseable
   {
     impl = Ossia.INSTANCE.ossia_value_create_bool(v ? 1 : 0);
   }
-  public Value(byte v)
-  {
-    impl = Ossia.INSTANCE.ossia_value_create_char(v);
-  }
   public Value(String v)
   {
     impl = Ossia.INSTANCE.ossia_value_create_string(v);
@@ -108,11 +104,6 @@ public class Value implements AutoCloseable
     close();
     impl = Ossia.INSTANCE.ossia_value_create_bool(v ? 1 : 0);
   }
-  public void set(byte v)
-  {
-    close();
-    impl = Ossia.INSTANCE.ossia_value_create_char(v);
-  }
   public void set(String v)
   {
     close();
@@ -163,10 +154,6 @@ public class Value implements AutoCloseable
   {
     return Ossia.INSTANCE.ossia_value_to_int(impl);
   }
-  public byte getChar()
-  {
-    return Ossia.INSTANCE.ossia_value_to_char(impl);
-  }
   public String getString()
   {
     Pointer p = Ossia.INSTANCE.ossia_value_to_string(impl);
@@ -198,10 +185,6 @@ public class Value implements AutoCloseable
   public int asInt()
   {
     return Ossia.INSTANCE.ossia_value_convert_int(impl);
-  }
-  public byte asChar()
-  {
-    return Ossia.INSTANCE.ossia_value_convert_char(impl);
   }
   public String asString()
   {
@@ -338,10 +321,6 @@ public class Value implements AutoCloseable
   public boolean isInt()
   {
     return getType() == Type.INT_T;
-  }
-  public boolean isChar()
-  {
-    return getType() == Type.CHAR_T;
   }
   public boolean isVec2()
   {

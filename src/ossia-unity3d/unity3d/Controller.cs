@@ -119,6 +119,7 @@ namespace Ossia
     Ossia.MessageQueue Queue;
     Dictionary<IntPtr, Ossia.OssiaEnabledElement> Hash = new Dictionary<IntPtr, Ossia.OssiaEnabledElement>();
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DebugLogDelegate (string str);
 
     DebugLogDelegate callback_delegate = null;

@@ -34,10 +34,6 @@ public class Parameter
   {
     return Ossia.INSTANCE.ossia_parameter_to_int(impl);
   }
-  public byte getChar()
-  {
-    return Ossia.INSTANCE.ossia_parameter_to_char(impl);
-  }
   public String getString()
   {
     Pointer p = Ossia.INSTANCE.ossia_parameter_to_string(impl);
@@ -75,8 +71,6 @@ public class Parameter
   { Ossia.INSTANCE.ossia_parameter_push_f(impl, (float)v); }
   public void push(boolean v)
   { Ossia.INSTANCE.ossia_parameter_push_b(impl, v ? 1 : 0); }
-  public void push(byte v)
-  { Ossia.INSTANCE.ossia_parameter_push_c(impl, v); }
   public void push(String v)
   { Ossia.INSTANCE.ossia_parameter_push_s(impl, v); }
   public void push(float v1, float v2)

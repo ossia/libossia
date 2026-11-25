@@ -22,6 +22,7 @@ midi_protocol::midi_protocol(
     : protocol_base{flags{}}
     , m_context{ctx}
     , m_config{std::move(config)}
+    , to_midi2{m_config.controllers}
 {
   conf.on_message = [this](libremidi::message&& m) { midi_callback(std::move(m)); };
 
@@ -604,6 +605,39 @@ void midi_protocol::value_callback(
   m_dev->on_message(param);
 }
 
+void midi_protocol::on_conversion_error(const stdx::error& e)
+{
+  // This runs in the input callback: a device that keeps sending what cannot
+  // be translated gets one line per kind of error, not one per message.
+  static constexpr cmidi2_midi_conversion_result kinds[]{
+      CMIDI2_CONVERSION_RESULT_OUT_OF_SPACE,
+      CMIDI2_CONVERSION_RESULT_INVALID_SYSEX,
+      CMIDI2_CONVERSION_RESULT_INVALID_DTE_SEQUENCE,
+      CMIDI2_CONVERSION_RESULT_INVALID_STATUS,
+      CMIDI2_CONVERSION_RESULT_INCOMPLETE_SYSEX7,
+      CMIDI2_CONVERSION_RESULT_INVALID_INPUT};
+
+  uint32_t bit = 1u << std::size(kinds);
+  for(std::size_t i = 0; i < std::size(kinds); i++)
+  {
+    if(e == libremidi::from_cmidi2_result(kinds[i]))
+    {
+      bit = 1u << i;
+      break;
+    }
+  }
+
+  if(m_conversion_errors & bit)
+    return;
+  m_conversion_errors |= bit;
+
+  const auto msg = e.message();
+  ossia::logger().warn(
+      "MIDI input '{}': a message could not be translated to MIDI 2 ({}). "
+      "Further errors of this kind are not reported.",
+      m_config.device_name, std::string_view(msg.data(), msg.size()));
+}
+
 void midi_protocol::midi_callback(libremidi::message&& mess)
 {
   const auto n_bytes = mess.bytes.size();
@@ -639,9 +673,11 @@ void midi_protocol::midi_callback(libremidi::message&& mess)
   if(m_registers)
   {
     // System-exclusive arrives as all the SysEx7 packets it is made of.
-    this->to_midi2.convert_packets(
+    const auto err = this->to_midi2.convert_packets(
         mess.bytes.data(), mess.bytes.size(), mess.timestamp,
         [&](const libremidi::ump& u) { receive_ump(u); });
+    if(err != stdx::error{}) [[unlikely]]
+      on_conversion_error(err);
   }
 
   const auto chan = mess.get_channel();
