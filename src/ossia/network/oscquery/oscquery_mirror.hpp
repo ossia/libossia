@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/json_fwd.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
@@ -8,6 +9,10 @@
 #include <ossia/network/oscquery/host_info.hpp>
 
 #include <atomic>
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <string>
 
 namespace osc
 {
@@ -33,6 +38,7 @@ namespace oscquery
 {
 struct osc_outbound_visitor;
 struct http_client_context;
+struct value_read;
 struct http_responder;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
@@ -121,6 +127,31 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
+  /**
+   * @brief Whether a read of a parameter nothing follows asks the server.
+   *
+   * The server sends the values of what a client listens to, and a parameter
+   * with no callback is not listened to: its local value is the last one
+   * that came, which may be out of date. With this on, read_followed_value()
+   * asks the server for such a value, without waiting for the answer, at
+   * most every refresh_interval for an address, and gives the last value
+   * known meanwhile. For a host that polls values (a game engine reading
+   * them every frame) rather than following them. Off by default: reads
+   * are local, as before.
+   */
+  void set_read_unfollowed(bool b) noexcept { m_readUnfollowed = b; }
+  bool get_read_unfollowed() const noexcept { return m_readUnfollowed; }
+  static constexpr std::chrono::milliseconds refresh_interval{100};
+
+  //! Asks the server for the value of a parameter nothing follows, without
+  //! waiting for it: at most one request in flight for an address, and one
+  //! per refresh_interval
+  void refresh_unfollowed(const std::string& address);
+
+  //! Whether this client wrote that address within the last 500 ms: the
+  //! server may not have it yet
+  bool written_recently(const std::string& address);
+
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
@@ -128,11 +159,16 @@ public:
 
 private:
   friend struct http_answer;
+  friend struct http_value_answer;
 
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
   bool on_BinaryWSMessage(connection_handler hdl, const std::string& message);
+  // A value read, and its answer for the address it was asked for
+  void read_value(std::shared_ptr<value_read> read);
+  void on_value_read(
+      const std::string& address, const std::string& message, bool only_if_differs);
   void
   on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
@@ -170,24 +206,18 @@ private:
     std::promise<void> promise;
     ossia::net::parameter_base* address{};
   };
-  struct get_ws_promise
+  // set_read_unfollowed: the reads of a parameter nothing follows, by
+  // address (the last request and its answer to come), and the last writes
+  // of this client
+  std::atomic_bool m_readUnfollowed{false};
+  struct unfollowed_read
   {
-    get_ws_promise() = default;
-    get_ws_promise(const get_ws_promise&) = delete;
-    get_ws_promise(get_ws_promise&&) noexcept = default;
-    get_ws_promise& operator=(const get_ws_promise&) = delete;
-    get_ws_promise& operator=(get_ws_promise&&) noexcept = default;
-
-    get_ws_promise(std::promise<void>&& p, const std::string& addr)
-        : promise{std::move(p)}
-        , address{addr}
-    {
-    }
-    std::promise<void> promise;
-    std::string address{};
+    std::chrono::steady_clock::time_point asked{};
+    std::future<void> answer;
   };
-
-  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
+  std::mutex m_unfollowedMutex;
+  ossia::hash_map<std::string, unfollowed_read> m_unfollowed;
+  ossia::hash_map<std::string, std::chrono::steady_clock::time_point> m_written;
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
@@ -207,6 +237,11 @@ private:
   std::atomic<bool> m_feedback{true};
   bool m_zombie_on_remove{true};
 };
+
+//! The value to give someone who reads a parameter. On a mirror with
+//! set_read_unfollowed(true), a parameter nothing follows is asked for (see
+//! there); otherwise, and on any other device, its value as it is.
+OSSIA_EXPORT ossia::value read_followed_value(ossia::net::parameter_base& param);
 
 //! Use this function to load a device preset in the OSCQuery format.
 OSSIA_EXPORT void load_oscquery_device(ossia::net::device_base& dev, std::string json);
