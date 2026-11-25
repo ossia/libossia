@@ -28,6 +28,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
     for(auto& node : nodes)
     {
       node->all_notes_off();
+      node->request_note_release();
     }
   }
 
@@ -36,6 +37,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
     for(auto& node : nodes)
     {
       node->all_notes_off();
+      node->request_note_release();
     }
   }
 
@@ -44,6 +46,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
     for(auto& node : nodes)
     {
       node->all_notes_off();
+      node->request_note_release();
     }
   }
 

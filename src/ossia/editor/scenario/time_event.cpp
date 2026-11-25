@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/expression/expression.hpp>
@@ -62,6 +63,8 @@ void time_event::tick(ossia::time_value date, ossia::time_value offset, double s
     proc->start();
     proc->state(ossia::token_request{0_tv, date, 0_tv, offset, speed, {}, {}});
     proc->stop();
+    if(proc->node)
+      proc->node->request_note_release();
   }
 }
 time_sync& time_event::get_time_sync() const
