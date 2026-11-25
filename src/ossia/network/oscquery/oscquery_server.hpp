@@ -82,6 +82,20 @@ public:
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 
+  /**
+   * @brief Whether the server applies the ACCESS of its parameters to what
+   * clients do, as the OSCQuery proposal says.
+   *
+   * With this on, what a client writes to a read-only parameter (by OSC, over
+   * UDP or WebSocket, or by JSON) is ignored, and the VALUE of a write-only
+   * parameter is not served to an attribute query. For a host whose
+   * parameters have an access mode its clients must keep to (a server
+   * exposing measurements that clients must not overwrite). Off by default:
+   * clients write and read every parameter, as before.
+   */
+  void set_apply_access(bool b) noexcept { m_applyAccess = b; }
+  bool get_apply_access() const noexcept { return m_applyAccess; }
+
   void disable_zeroconf();
   void set_zeroconf_servers(
       net::zeroconf_server oscquery_server, net::zeroconf_server osc_server);
@@ -145,6 +159,7 @@ private:
 
   bool m_echo{};
   bool m_disableZeroconf{};
+  std::atomic_bool m_applyAccess{};
 
   // TODO could we make an intermediate base class for oscquery_{server,mirror}
   // that hold that function queue and other shared members/methods ?

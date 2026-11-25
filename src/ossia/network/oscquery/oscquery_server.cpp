@@ -547,8 +547,8 @@ try
   }();
   auto id = ossia::net::message_origin_identifier{*this, ident};
   ossia::net::on_input_message<true>(
-      m.AddressPattern(), ossia::net::osc_message_applier{id, m}, m_listening, *m_device,
-      m_logger);
+      m.AddressPattern(), ossia::net::osc_client_message_applier{{id, m}, m_applyAccess},
+      m_listening, *m_device, m_logger);
 }
 catch(const std::exception& e)
 {
