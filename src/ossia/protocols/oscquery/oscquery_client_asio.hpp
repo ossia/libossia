@@ -21,6 +21,12 @@ struct oscquery_client
   std::unique_ptr<ossia::net::udp_send_socket> osc_socket;
   int remote_sender_port{};
 
+  // For the PEERS extension: its TCP port, the name it gave itself
+  // (CLIENT_NAME), the UDP port it receives OSC on
+  int client_port{};
+  std::string name;
+  int osc_port{};
+
 public:
   oscquery_client() = delete;
   oscquery_client(const oscquery_client& other) noexcept = delete;
@@ -60,6 +66,7 @@ public:
         ossia::net::outbound_socket_configuration{.host = client_ip, .port = port},
         proto.m_context->context);
     osc_socket->connect();
+    osc_port = port;
   }
 };
 

@@ -30,6 +30,12 @@ struct oscquery_client
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> sender;
   int remote_sender_port{};
 
+  // For the PEERS extension: its TCP port, the name it gave itself
+  // (CLIENT_NAME), the UDP port it receives OSC on
+  int client_port{};
+  std::string name;
+  int osc_port{};
+
 public:
   oscquery_client() = delete;
   oscquery_client(const oscquery_client& other) noexcept = delete;
@@ -67,6 +73,7 @@ public:
   {
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
         proto.get_logger(), client_ip, port);
+    osc_port = port;
   }
 };
 }

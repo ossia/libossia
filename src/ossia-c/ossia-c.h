@@ -184,6 +184,24 @@ OSSIA_EXPORT
 ossia_protocol_t ossia_protocol_oscquery_server_create(int osc_port, int ws_port);
 
 /**
+ * @brief Turn on or off the PEERS and CLIENT_NAME extensions of an OSCQuery
+ * server, off by default.
+ *
+ * On, the server declares both in its HOST_INFO, answers /?PEERS with its
+ * clients and the UDP sources that are none of them, and takes the name a
+ * client gives itself with the CLIENT_NAME command. For hosts that show who
+ * reaches a device.
+ *
+ * @param proto a protocol from ossia_protocol_oscquery_server_create
+ * @param enable 0 to turn off, anything else to turn on
+ *
+ * @see ossia::oscquery::oscquery_server_protocol::set_peers_extension
+ * @note Multithread guarantees: MT-safe
+ */
+OSSIA_EXPORT
+void ossia_protocol_oscquery_server_set_peers(ossia_protocol_t proto, int enable);
+
+/**
  * @brief Instantiate an OSCQuery client.
  * @param host something like ws://127.0.0.1:5678
  *

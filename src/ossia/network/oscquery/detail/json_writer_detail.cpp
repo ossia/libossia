@@ -13,6 +13,7 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/domain_to_json.hpp>
 #include <ossia/network/oscquery/detail/oscquery_units.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/value/format_value.hpp>
 #include <ossia/network/value/value.hpp>
@@ -543,6 +544,14 @@ json_writer::string_t json_writer::query_host_info(
     const std::vector<ossia::net::osc_server_configuration>& osc_port,
     std::string_view local_ip, int ws_port)
 {
+  return query_host_info(name, osc_port, local_ip, ws_port, false);
+}
+
+json_writer::string_t json_writer::query_host_info(
+    std::string_view name,
+    const std::vector<ossia::net::osc_server_configuration>& osc_port,
+    std::string_view local_ip, int ws_port, bool peers)
+{
   string_t buf;
   writer_t wr(buf);
 
@@ -601,6 +610,14 @@ json_writer::string_t json_writer::query_host_info(
   wr.Bool(true);
   wr.Key(detail::path_removed());
   wr.Bool(true);
+
+  if(peers)
+  {
+    write_json_key(wr, detail::peers());
+    wr.Bool(true);
+    write_json_key(wr, detail::client_name());
+    wr.Bool(true);
+  }
 
   wr.EndObject();
 

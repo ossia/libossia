@@ -33,6 +33,10 @@ class websocket_server;
 namespace oscquery
 {
 struct oscquery_client;
+namespace detail
+{
+class peer_senders;
+}
 using clients = std::vector<std::unique_ptr<oscquery_client>>;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
@@ -81,6 +85,24 @@ public:
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
+
+  /**
+   * @brief The PEERS and CLIENT_NAME extensions (detail/peers.hpp).
+   *
+   * Off by default: the server answers and declares as before. On, it
+   * declares both in HOST_INFO, answers /?PEERS with its clients and the UDP sources
+   * that are none of them, and
+   * takes the name a client gives itself with CLIENT_NAME. For hosts that
+   * show who reaches a device or name their peers, such as the maps of the
+   * devices of a lab.
+   */
+  void set_peers_extension(bool b) noexcept { m_peersExtension = b; }
+  bool get_peers_extension() const noexcept { return m_peersExtension; }
+
+  //! The answer to /?PEERS
+  std::string query_peers();
+  //! CLIENT_NAME: the name the client of hdl gives itself
+  void set_client_name(const connection_handler& hdl, std::string name);
 
   void disable_zeroconf();
   void set_zeroconf_servers(
@@ -145,6 +167,9 @@ private:
 
   bool m_echo{};
   bool m_disableZeroconf{};
+
+  std::atomic_bool m_peersExtension{false};
+  std::unique_ptr<detail::peer_senders> m_peerSenders;
 
   // TODO could we make an intermediate base class for oscquery_{server,mirror}
   // that hold that function queue and other shared members/methods ?

@@ -2,6 +2,7 @@
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/peers.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 namespace ossia::oscquery
@@ -33,6 +34,17 @@ struct json_query_answerer
     }
     else
     {
+      // The CLIENT_NAME command of the PEERS extension
+      if constexpr(requires { proto.get_peers_extension(); })
+      {
+        std::string name;
+        if(proto.get_peers_extension() && detail::parse_client_name(doc, name))
+        {
+          proto.set_client_name(hdl, std::move(name));
+          return rapidjson::StringBuffer{};
+        }
+      }
+
       switch(json_parser::message_type(doc))
       {
         case message_type::StartOscStreaming:
