@@ -824,3 +824,71 @@ TEST_CASE("read_audio_from_buffer_negative_start", "[sound][regression]")
     check(4, 0);
   }
 }
+
+namespace
+{
+std::vector<char> make_rf64(
+    uint64_t declared_sample_count, uint32_t frames, uint16_t channels,
+    uint32_t extra_declared_bytes = 0)
+{
+  std::vector<char> f;
+  auto put = [&](const void* p, std::size_t n) {
+    f.insert(f.end(), (const char*)p, (const char*)p + n);
+  };
+  auto u16 = [&](uint16_t v) { put(&v, 2); };
+  auto u32 = [&](uint32_t v) { put(&v, 4); };
+  auto u64 = [&](uint64_t v) { put(&v, 8); };
+
+  const uint64_t data_bytes = uint64_t(frames) * channels * 2;
+  put("RF64", 4);
+  u32(0xFFFFFFFF);
+  put("WAVE", 4);
+  put("ds64", 4);
+  u32(28);
+  u64(4 + 36 + 24 + 8 + data_bytes);
+  u64(data_bytes + extra_declared_bytes);
+  u64(declared_sample_count);
+  u32(0);
+  put("fmt ", 4);
+  u32(16);
+  u16(1);
+  u16(channels);
+  u32(48000);
+  u32(48000 * channels * 2);
+  u16(channels * 2);
+  u16(16);
+  put("data", 4);
+  u32(0xFFFFFFFF);
+  for(uint32_t i = 0; i < frames * channels; i++)
+    u16(int16_t(i));
+  return f;
+}
+}
+
+TEST_CASE("rf64_frame_count_comes_from_the_data_size", "[drwav]")
+{
+  using namespace ossia;
+
+  SECTION("a wrong ds64 sample count is ignored")
+  {
+    auto f = make_rf64(17, 1000, 2);
+    drwav_handle h{f.data(), f.size()};
+    REQUIRE(h.channels() == 2);
+    REQUIRE(h.totalPCMFrameCount() == 1000);
+
+    REQUIRE(h.seek_to_pcm_frame(990));
+    int16_t buf[2 * 64]{};
+    REQUIRE(h.read_pcm_frames_s16(64, buf) == 10);
+    REQUIRE(buf[0] == 1980);
+
+    drwav_handle copy{h};
+    REQUIRE(copy.totalPCMFrameCount() == 1000);
+  }
+
+  SECTION("a data size past the end of the file is clamped")
+  {
+    auto f = make_rf64(0, 1000, 2, 4000);
+    drwav_handle h{f.data(), f.size()};
+    REQUIRE(h.totalPCMFrameCount() == 1000);
+  }
+}
