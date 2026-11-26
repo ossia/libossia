@@ -824,3 +824,28 @@ TEST_CASE("read_audio_from_buffer_negative_start", "[sound][regression]")
     check(4, 0);
   }
 }
+
+// A sound is set to loop and given its loop length by two commands, which a
+// tick can fall between: looping without a length yet reads the plain sound.
+TEST_CASE("read_audio_from_buffer_loop_without_length", "[sound][regression]")
+{
+  constexpr int64_t len = 64;
+  std::vector<float> left(len);
+  for(int64_t i = 0; i < len; i++)
+    left[i] = 1.f + i;
+  ossia::audio_span<float> data;
+  data.push_back(std::span<const float>(left.data(), len));
+
+  constexpr int64_t n = 16;
+  for(int64_t start : {int64_t(0), int64_t(8), len - 4})
+  {
+    std::vector<float> out_l(n, -1.f);
+    float* out[1] = {out_l.data()};
+    ossia::read_audio_from_buffer<float>(data, start, n, 0, 0, true, out);
+    for(int64_t k = 0; k < n; k++)
+    {
+      const int64_t pos = start + k;
+      CHECK(out_l[k] == (pos < len ? left[pos] : 0.f));
+    }
+  }
+}

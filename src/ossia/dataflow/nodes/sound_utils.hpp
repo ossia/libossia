@@ -87,7 +87,9 @@ static void read_audio_from_buffer(
     return;
   const int64_t file_duration = data[0].size();
 
-  if(loops)
+  // A loop without a length yet (its settings arrive one after the other
+  // while it plays) is read as the plain sound
+  if(loops && loop_duration > 0)
   {
     // Case where we won't loop around at all in that buffer
     if(start + samples_to_write < loop_duration)
