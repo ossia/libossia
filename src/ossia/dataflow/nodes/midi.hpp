@@ -484,6 +484,13 @@ public:
   // step with it.
   void state(const ossia::token_request& tok) override
   {
+    // Looping or the start offset changed since the notes were last placed:
+    // the playhead is elsewhere in them
+    if(!placed_with_current_settings())
+    {
+      remember_settings();
+      static_cast<midi&>(*node).transport(notesTime(tok.prev_date));
+    }
     if(!this->m_loops)
       return node_process::state(tok);
     tok.loop(
@@ -499,7 +506,14 @@ public:
   void transport_impl(ossia::time_value date) override
   {
     midi& n = *static_cast<midi*>(node.get());
+    remember_settings();
     n.transport(notesTime(date));
+  }
+
+  void start() override
+  {
+    remember_settings();
+    node_process::start();
   }
 
   //! Where a date of the parent falls in the notes
@@ -518,5 +532,24 @@ public:
     n.request(ossia::token_request{});
     n.mustStop = true;
   }
+
+private:
+  bool placed_with_current_settings() const noexcept
+  {
+    return m_placed_loops == this->m_loops
+           && m_placed_loop_duration == this->m_loop_duration
+           && m_placed_start_offset == this->m_start_offset;
+  }
+  void remember_settings() noexcept
+  {
+    m_placed_loops = this->m_loops;
+    m_placed_loop_duration = this->m_loop_duration;
+    m_placed_start_offset = this->m_start_offset;
+  }
+
+  // The looping and start offset notesTime() last placed the notes with
+  ossia::time_value m_placed_loop_duration{};
+  ossia::time_value m_placed_start_offset{};
+  bool m_placed_loops{};
 };
 }
