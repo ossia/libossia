@@ -55,6 +55,10 @@ public:
   inlet_ptr in{};
   node_ptr out_node{};
   node_ptr in_node{};
+
+  //! The edge only watches its outlet (monitoring, recording): the outlet
+  //! still writes to its address, as when nothing is connected to it.
+  bool observer{};
 };
 /*
 template <typename... Args>

@@ -465,7 +465,17 @@ struct OSSIA_EXPORT graph_util
   static void teardown_outlet(outlet& out, execution_state& e)
   {
     out.post_process();
-    bool must_copy = out.targets.empty();
+    // An outlet with no connection writes to its address; edges that only
+    // observe it are not connections
+    bool must_copy = true;
+    for(const auto& tgt : out.targets)
+    {
+      if(!tgt->observer)
+      {
+        must_copy = false;
+        break;
+      }
+    }
 
     // If some following glutton nodes aren't enabled, then we copy to the
     // env.
