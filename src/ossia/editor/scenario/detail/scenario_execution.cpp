@@ -518,9 +518,34 @@ void scenario::state_impl(const ossia::token_request& tk)
           // taken at, and runs to the end of the parent's window.
           const int32_t cut = it->second.start_sample;
           const int32_t cut_end = cut >= 0 ? span_end : -1;
+
+          // It starts part of the way through the tick in the music too:
+          // handed the tick's whole musical span, it would place a bar line
+          // it starts on somewhere after its first sample.
+          ossia::token_request from_cut = tk;
+          if(tick_ms.impl > 0 && remaining_tick.impl >= 0
+             && remaining_tick.impl < tick_ms.impl)
+          {
+            const double done
+                = double(tick_ms.impl - remaining_tick.impl) / double(tick_ms.impl);
+            from_cut.musical_start_position
+                = tk.musical_start_position
+                  + done * (tk.musical_end_position - tk.musical_start_position);
+            // A sync quantized to a bar is triggered a flick before its line:
+            // it is on it
+            constexpr double a_flick = 1e-6;
+            if(from_cut.musical_start_position + a_flick >= tk.musical_end_last_bar
+               && tk.musical_end_last_bar > tk.musical_start_last_bar)
+            {
+              from_cut.musical_start_last_bar = tk.musical_end_last_bar;
+              if(from_cut.musical_start_position < tk.musical_end_last_bar)
+                from_cut.musical_start_position = tk.musical_end_last_bar;
+            }
+          }
           for(const auto& interval : ev.next_time_intervals())
           {
-            run_interval(*interval, tk, tick_ms, remaining_tick, offset, cut, cut_end);
+            run_interval(
+                *interval, from_cut, tick_ms, remaining_tick, offset, cut, cut_end);
           }
         }
       }
